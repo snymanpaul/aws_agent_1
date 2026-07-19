@@ -485,6 +485,17 @@ graph TD
 
 Current open work lives in `NEXT_STEPS_PLAN.md`.
 
+#### Tier 22: Platform Convergence — post-v1.48 (L94+, in progress)
+
+*Plan: `LEARNING_PLAN_v148_impact.md`. Stack: strands 1.48.0 / tools 0.8.4 / agentcore 1.18.1 / evals 1.0.2.*
+
+| Level | Topic | Status | Where |
+|-------|-------|--------|-------|
+| [94](docs/levels/L94-v148-upgrade-regression-sweep.md) | SDK v1.48 upgrade + regression sweep; L61 count_tokens vindicated by re-probe | Done | `_sandbox/probe_l94_*.py` |
+| 95 | Checkpoint runtime end-to-end (real crash + `checkpointResume`) | Next | `13_state_persistence/checkpoint_runtime.py` |
+| 96 | Interventions: control plane unified (Deny/Guide/Confirm/Transform + Cedar) | Planned | `08_production/interventions_unified.py` |
+| 97-100 | L87 memory rematch · sandbox tier · red-team+chaos · agentic context mgmt | Planned (AWS/cost check-in first) | see `LEARNING_PLAN_v148_impact.md` |
+
 ---
 
 ## Local Development Setup

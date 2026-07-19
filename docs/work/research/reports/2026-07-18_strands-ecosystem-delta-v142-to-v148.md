@@ -202,11 +202,16 @@ stateDiagram-v2
 
 - **Interrupts — unchanged since 1.42.** `interrupt.py` identical diff; `event.interrupt`,
   `result.interrupts` (`agent_result.py:39`) behave as before.
-- **`count_tokens` — not a bare chars/4 heuristic at HEAD.** Base `Model.count_tokens` uses
-  tiktoken `cl100k_base` when available, falling back to chars/4 (text) / chars/2 (JSON)
-  (`models/model.py:266-292`). Native APIs behind `use_native_token_count` for Anthropic
-  (`models/anthropic.py:402`) and Bedrock (`models/bedrock.py:843`). Only in-range change: JSON
-  blocks now counted (`8f4a8ebe`). See Corrections below re L61.
+- **`count_tokens` — CORRECTED 2026-07-18 (runtime probe): it IS the chars/4 heuristic; L61 was
+  right.** The earlier draft of this bullet claimed a tiktoken-first path — that was a
+  docstring-read, refuted by `_sandbox/probe_l94_count_tokens.py`: with tiktoken importable, the
+  SDK count matches `ceil(chars/4)` **exactly** on all four test strings (plain/code/CJK/punct)
+  and diverges from true cl100k_base counts by up to 4x on CJK. The installed 1.48 source shows
+  why: `Model.count_tokens` unconditionally calls `_estimate_tokens_with_heuristic(...)`, and the
+  only "tiktoken" occurrences in `models/model.py` are in docstrings (lines 99, 276) — there is no
+  tiktoken import or code path in the module. The docstring/code mismatch exists upstream at both
+  1.42 and 1.48. Native APIs behind `use_native_token_count` for Anthropic/Bedrock are real. Only
+  in-range change: JSON blocks now counted (`8f4a8ebe`).
 - **`Limits` invocation caps — present, unchanged shape** (`types/agent.py:17-45`); stop reasons
   `limit_turns`/`limit_total_tokens`/`limit_output_tokens` in the literal.
 - **MultiAgentPlugin — present, pre-1.42, unchanged** (`plugins/multiagent_plugin.py:1-30`).
@@ -476,10 +481,11 @@ flowchart LR
    remains valid as the 1.42-era workaround and as a portability pattern.
 2. **L39** (`docs/levels/L39-typescript-sdk.md`): "A2A not supported in TypeScript" was already
    wrong at ts v1.4 — the module predates it. Needs correction independent of this delta.
-3. **L61** (`docs/levels/L61-token-counting.md`): our finding "the v1.42 path is chars/4" conflicts
-   with HEAD source showing tiktoken-first with chars/4 fallback (`models/model.py:266-292`).
-   Plausible reconciliation: tiktoken absent from our env at the time → fallback path measured.
-   Re-probe live before correcting either document; do not assert from memory.
+3. **L61** (`docs/levels/L61-token-counting.md`): RESOLVED 2026-07-18 in L61's favour. The runtime
+   re-probe (`_sandbox/probe_l94_count_tokens.py`) confirmed the chars/4 path is unconditional at
+   1.48 with tiktoken installed; the conflicting "tiktoken-first" claim in this report's first
+   draft was a docstring-read and has been corrected above. No change needed to the L61 doc beyond
+   a confirmation note.
 
 ## 7. Perspectives
 

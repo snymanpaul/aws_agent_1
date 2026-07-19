@@ -49,7 +49,7 @@ flowchart LR
 | `docs/levels/L65-experimental-checkpoint.md` | "checkpoint is TYPES-ONLY" | True at 1.42; wired runtime with `checkpointResume` at 1.43+ (delta §1) | **Fixed** — note added |
 | `docs/levels/L39-typescript-sdk.md` | "A2A not supported in TypeScript" | Wrong even at ts v1.4 — module predates it (delta §5) | **Fixed** — note added |
 | `LEARNING_PLAN.md` Deferred table | "Managed Harness … still blocked" | AgentCore Harness announced GA at Summit NY 2026 (delta §9, [2]) | **Fixed** — marked GA-announced, SDK surface unverified |
-| `docs/levels/L61-token-counting.md` | "the v1.42 path is chars/4" | Conflicts with HEAD source (tiktoken-first, chars/4 fallback). **Not edited** — needs a live re-probe first (repo rule: no correction without bytes). Scheduled in L94. | Deferred |
+| `docs/levels/L61-token-counting.md` | "the v1.42 path is chars/4" | **L61 was RIGHT** — L94 re-probe confirmed chars/4 is unconditional at 1.48 even with tiktoken installed; the delta report's tiktoken-first claim was a docstring-read, now corrected. | **Resolved (L94)** |
 
 ## 3. Baseline-drift risks (no action until re-run, but recorded)
 

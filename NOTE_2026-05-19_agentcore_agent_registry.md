@@ -1,6 +1,6 @@
 # Note: AWS AgentCore Agent Registry — has first-class `AGENT_SKILLS`
 
-**Date**: 2026-05-19
+**Date**: 2026-05-19 (historical note — the follow-up below was since built as L71)
 **Source**: hands-on validation against live AWS account `<data-account-id>` (us-east-1), admin SSO.
 **Why this note**: discovered while benchmarking agent "skills" across the industry. Relevant to this project's AgentCore line (L27 deploy, L33 Policy, L34 Evaluations) — the Agent Registry is a natural sibling capability and a strong candidate for a future level.
 
@@ -59,6 +59,9 @@ c.list_registries()   # [] on a fresh account — API works, nothing created yet
 
 AWS's is arguably broader: skills sit alongside MCP servers and A2A agents in one governed catalog, rather than a skills-specific registry.
 
-## Suggested follow-up for this project
+## Follow-up — DONE as L71
 
-Candidate new level (Tier: AgentCore): **"AgentCore Agent Registry — publish & discover a skill"** — create a registry, add an `AGENT_SKILLS` record, submit for approval, then `SearchRegistryRecords` to discover it. Pairs naturally with the existing L30 (Strands `AgentSkills` — the *local* skills story) to contrast local-plugin skills vs cloud-registry skills.
+The candidate level proposed here was built as **L71** (`15_agentcore_registry/agent_registry.py`,
+[docs/levels/L71-agentcore-agent-registry.md](docs/levels/L71-agentcore-agent-registry.md)): registry
+created, `AGENT_SKILLS` record published, approval gate verified (`SearchRegistryRecords` returns only
+`APPROVED` records), discovery confirmed. The L30 local-vs-cloud-registry contrast is recorded there.

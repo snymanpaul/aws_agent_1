@@ -50,6 +50,7 @@ uv run pytest
 18_agentcore_config/    # L75: config bundles (versioned resource config)
 19_agentcore_agui/      # L76: AG-UI native (serve_ag_ui)
 artifacts/          # L77 ADK patterns + review-gate architecture (verified on Gemini + Bedrock)
+docs/levels/        # One doc per lesson, L01-L93 (linked from LEARNING_PLAN.md tables)
 tools/              # get_model + quality gates: no_sim_check, eval_harness, ship_gate
 ```
 

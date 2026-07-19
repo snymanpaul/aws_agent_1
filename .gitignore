@@ -45,6 +45,9 @@ lance_vectors/
 # L63 tool-offload demo output (generated)
 artifacts/l63_demo/
 
+# Local working notes (never publish)
+todo.md
+
 # MCP config (user-specific)
 .mcp.json
 .agentcore.json

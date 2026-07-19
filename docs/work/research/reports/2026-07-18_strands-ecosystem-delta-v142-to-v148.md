@@ -365,9 +365,11 @@ Substantive items per release (release bodies mostly point at CHANGELOG + PR lis
 
 Top-level modules at v1.18.1 (verified in source): `config_bundle`, `evaluation`, `gateway`,
 `identity`, `knowledge_base`, `memory`, `payments`, `policy`, `runtime`, `services`, `tools`.
-Versus this repo's known set, three names are new territory: **`evaluation`, `knowledge_base`,
-`policy`**. `code_interpreter`/`browser`/`registry` are not top-level names at 1.18.1 (likely
-relocated, e.g. under `tools/` — exact mapping UNKNOWN from release notes).
+Versus this repo's known set, three names looked like new territory: **`evaluation`,
+`knowledge_base`, `policy`** — but only `knowledge_base` is actually new in the gap
+(`evaluation` dates to v1.1.1, `policy` to v1.10.0), and `code_interpreter`/`browser` were never
+relocated (always under `tools/`); `registry` has never been an SDK module at all. Full evidence
+in section 8.
 
 Breaking/behavior: console-script entrypoint removed (1.15.1); a2a-sdk capped <1.0 (1.14.1);
 `requests` now optional extra (1.14.1); starlette major bump (1.18.1); `EvaluatorOutput.label`
@@ -499,10 +501,61 @@ flowchart LR
   in-repo agent skills, an AGENTS.md router, and RFCs for agent-run cross-SDK translation
   (Strandslator) — the same posture this repo's README describes for its own construction.
 
-## UNKNOWN / not exhausted
+## 8. Formerly-unknowns, resolved (2026-07-18 second pass)
 
-- bedrock-agentcore: first-appearance versions of `evaluation`/`knowledge_base`/`policy` modules;
-  the relocation mapping for code_interpreter/browser/registry.
-- strands-py: full internals of the a2a executor rewrite (`398343fa`), `sandbox/stream_process.py`,
-  and the 647-line tracer change beyond the public surface cited.
-- Shell SDK: docs read only at index level; package/source not yet examined.
+Grounded via a fresh clone of `aws/bedrock-agentcore-sdk-python` at `~/Code/bedrock-agentcore-sdk-python`
+(HEAD `a4bc13f`, 2026-07-17) plus deeper reads of the strands clone and the Shell docs/PyPI.
+
+### AgentCore module history (git first-appearance, `--diff-filter=A`)
+
+- **`evaluation` — NOT new.** First appeared at tag `v1.1.1` (`f242836` "Add Strands AgentCore
+  Evaluation integration (#183)"), long before this repo's 1.12 baseline; the 1.15.1 items were
+  extensions to an existing module we simply never inventoried.
+- **`policy` — NOT new either.** First appeared `v1.10.0` (`89fa76e` "feat: add policy client and
+  tests (#427)") — it existed at our baseline; L33 used the boto3 control plane instead and never
+  noticed the SDK client.
+- **`knowledge_base` — genuinely new in the gap.** First appeared `v1.15.0` (`a76cce8` "release:
+  nys summit (#532)") — so the "NY summit" release was not CI-only after all. Surface:
+  `KnowledgeBaseClient` (`src/bedrock_agentcore/knowledge_base/client.py`), a boto3-wrapping
+  control+data-plane client with wait/polling helpers and explicit terminal-status sets for KB
+  lifecycle, ingestion jobs, and per-document indexing (`_KB_FAILED_STATUSES`,
+  `_DOC_TERMINAL_STATUSES`, etc.). Pairs with the Strands `BedrockKnowledgeBaseStore` memory store.
+- **`code_interpreter` / `browser` — never relocated.** They have always lived under
+  `bedrock_agentcore/tools/` (`code_interpreter_client.py`, `browser_client.py`) — exactly the
+  import paths L72/L73 used. The earlier "not top-level" observation was a non-finding.
+- **`registry` — never a Python SDK module.** No registry client exists in the package at HEAD
+  (the only grep hits are incidental wording in `payments/integrations/`). The Agent Registry
+  remains boto3-only (`bedrock-agentcore-control`), which is how L71 correctly drove it.
+
+### strands-py internals
+
+- **a2a executor rewrite (`398343fa`, +320 lines executor, +363 lines tests).** Mechanism: the
+  server/executor now takes `agent_factory: Callable[[str], Agent]` — invoked once per
+  `context_id`, giving each remote caller an isolated Agent (`multiagent/a2a/executor.py:47,88-107`).
+  A single shared `agent` argument is deprecated because concurrent callers' messages interleaved
+  into one session — a real multi-tenancy bug class worth teaching.
+- **`sandbox/stream_process.py` (133 lines).** The shared process-supervision engine behind the
+  Docker/SSH sandbox backends: spawns the argv in its own process group and kills the whole tree
+  with `killpg` (documented rationale: an orphaned child holding the pipe write-end would hang the
+  readers), streams 64 KB `StreamChunk`s then one final `ExecutionResult`, wall-clock timeout
+  measured from spawn (not reset by output), signal death mapped to `128+signal` (SIGKILL → 137,
+  matching this repo's own podman OOM lore), cooperative cancellation via `finally`. Docstring
+  states it mirrors `strands-ts/src/sandbox/stream-process.ts` — cross-SDK parity in practice.
+- **Tracer change (`2d6e6502`).** The "647-line" figure was the combined diff (260 in `tracer.py`
+  + 320 in tests). Mechanism: redaction is opt-in via the `gen_ai_span_attributes_only` token;
+  a `gen_ai_unredacted_attributes=<list>` token is compiled into exact-match + glob patterns
+  (`telemetry/tracer.py:127-133`); with no token present all attributes emit unredacted (backward
+  compatible). Sensitive-by-policy attributes include `gen_ai.input.messages`.
+
+### Shell SDK (examined)
+
+Separate repo `github.com/strands-agents/shell`; shipped as **`strands-shell` 0.3.1 on PyPI**
+("A virtual shell for AI agents"; npm: `@strands-agents/shell`). Docs live at
+`site/src/content/docs/user-guide/shell/` (overview, quickstart, commands, configuration,
+security, mcp-server — also usable as an MCP server). What it is: an **in-process, Bourne-compatible
+virtual shell** — ships `grep`/`sed`/`jq`/`curl`/`find` and dozens more with **no fork/exec/raw
+syscalls**; isolation is an in-process VFS plus a mediation layer rather than an OS primitive.
+Docs' own comparison table: cold start under 1 ms (vs ~200 ms Docker, ~1 s cloud sandbox); network
+via URL allowlist + SSRF guard; secrets injected per request and never visible to the agent;
+platforms macOS/Linux/WASM. Positioning: the third sandbox option alongside `DockerSandbox`/
+`SshSandbox` for agents running hundreds of commands per task.

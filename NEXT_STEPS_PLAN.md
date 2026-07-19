@@ -12,24 +12,45 @@ L95 checkpoint runtime, L96 interventions+Cedar, L97 memory rematch (native unde
 store) + L97b semantic parity (native matches with real recall), L98 sandbox tier (Strands Shell vs
 Podman, Rust-source-grounded SSRF), L99 red-team the memory channel (explicit deny-policy defends),
 L100 context-mgmt verify (auto ~56% token cut confirms ~55%; accuracy lift an honest negative on
-Gemini's 1M window). Deferred by choice: authentic Bedrock-KB memory arm; full chaos-resilience
-evaluators; cross-model (Nova) pass of the L96/L99 security findings.
+Gemini's 1M window). Session-wide learnings: `.claude/learnings/reflections/SESSION_2026-07-19-reflection.md`.
 
-## Open items (in priority order)
+## Tier 22 follow-ons (deferred by choice — each a clean next session)
 
-1. **Operationalize the quality gates.** Wire `tools/no_sim_check.py` and `uv run pytest` into
+1. **Authentic `BedrockKnowledgeBaseStore` memory arm** (the real AWS L97b). L97b answered the
+   parity question with a local semantic store; this does it on a provisioned Bedrock KB (vector
+   index + embedding model + S3 data source + IAM). Billable, teardown-critical — probe-first, and
+   run it as a deliberate session with a teardown checklist on the agentic sandbox account.
+
+2. **Full chaos-resilience evaluators** (`strands_evals.chaos`). L99 did the red-team half; the
+   chaos half (failure-communication / partial-completion / recovery-strategy evaluators under
+   injected tool faults) is a level's worth on its own, reusing L99's red-team plumbing.
+
+3. **Cross-model (Bedrock Nova) pass of the L96/L99 security findings.** An L93-style check that
+   "explicit deny-policy defends against memory injection" (L99) and the intervention actions (L96)
+   hold on a different model family. Bedrock inference is cheap and leaves no resources to clean up.
+
+## Standing items
+
+4. **Operationalize the quality gates.** Wire `tools/no_sim_check.py` and `uv run pytest` into
    pre-commit and CI (GitHub Actions) so the anti-simulation bar is enforced on every push, not run
-   by hand. `ship_gate.py` stays manual (it spends money) but should be a documented release step.
+   by hand. Precedent exists: `tools/install_hooks.sh` already installs the `check_no_aws_ids`
+   pre-commit hook — extend that hook to run `no_sim_check` + `pytest`. `ship_gate.py` stays manual
+   (it spends money) but should be a documented release step.
 
-2. **Meta-eval: judge reliability at the ambiguous boundary.** L52 showed judges are reliable on
+5. **Meta-eval: judge reliability at the ambiguous boundary.** L52 showed judges are reliable on
    clear-cut cases; the ambiguous middle is its known weak spot. Build a graded-ambiguity dataset and
    measure where judge agreement collapses.
 
-3. **Memory safety and privacy evals.** L89 covered tool-result injection only. Extend to memory
-   poisoning (adversarial writes that corrupt later recall), PII handling in extracted LTM records,
-   and tenant isolation across memory stores.
+6. **Memory safety and privacy evals.** L89 + L99 covered tool-result and memory-record injection
+   (L99 found the explicit-policy defense); still open: PII handling in extracted LTM records and
+   tenant isolation across memory stores.
 
 ## On demand
 
 - Cloud ADOT online-eval (extends L34/F2 to continuous production sampling).
 - Package the eval harness for external use.
+
+## Data hygiene
+
+- L97b observations in `observations.jsonl` are keyed `"level": 971` (integer stand-in for "97b");
+  the reflection/docs use "97b". Normalize if a consumer filters the log by integer level.

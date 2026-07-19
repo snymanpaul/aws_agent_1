@@ -63,13 +63,11 @@ Two repo theses got upstream confirmation — the trust boundary (tools 0.8.x = 
 releases) and determinism-as-architecture (checkpoint/interrupt/cancel is now a formal stop-reason
 state machine).
 
-## Loose ends / data hygiene
+## Loose ends
 
-- **L97b observations use `"level": 971`** (an integer stand-in for "97b"); the reflection and level
-  doc use "97b". Harmless but inconsistent — if a consumer of `observations.jsonl` filters by level,
-  97b rows are under 971.
-- **Deferred by choice** (each a clean next session): the authentic `BedrockKnowledgeBaseStore`
-  memory arm; full chaos-resilience evaluators (`strands_evals.chaos`); a cross-model (Bedrock Nova)
-  pass of the L96/L99 security findings; operationalizing the gates in CI (NEXT_STEPS item 1).
-- **Orphaned-commit caveat:** the briefly-leaked account ID lives in a now-unreachable commit;
-  GitHub may serve orphaned SHAs until GC — a support purge would make it provably gone.
+Forward work (Tier 22 follow-ons, standing items, and the L97b `971` data-hygiene note) now lives in
+`NEXT_STEPS_PLAN.md` — that is the single source of truth for what to do next.
+
+One caveat that belongs with the incident record: the briefly-leaked account ID lives in a
+now-unreachable commit; GitHub may serve orphaned SHAs until GC — a support purge would make it
+provably gone.

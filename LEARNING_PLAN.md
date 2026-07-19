@@ -494,7 +494,8 @@ Current open work lives in `NEXT_STEPS_PLAN.md`.
 | [94](docs/levels/L94-v148-upgrade-regression-sweep.md) | SDK v1.48 upgrade + regression sweep; L61 count_tokens vindicated by re-probe | Done | `_sandbox/probe_l94_*.py` |
 | [95](docs/levels/L95-checkpoint-runtime-end-to-end.md) | Checkpoint runtime end-to-end: SIGKILL + fresh-process resume, exactly-once, Checkpoint≠state, interrupt>checkpoint | Done | `13_state_persistence/checkpoint_runtime.py` |
 | [96](docs/levels/L96-interventions-unified.md) | Interventions: control plane unified (Deny/Guide/Confirm/Transform + in-process Cedar) | Done | `08_production/interventions_unified.py` |
-| 97-100 | L87 memory rematch · sandbox tier · red-team+chaos · agentic context mgmt | Planned (AWS/cost check-in first) | see `LEARNING_PLAN_v148_impact.md` |
+| [97](docs/levels/L97-memory-rematch-native.md) | L87 rematch: native MemoryManager vs hand-built — native underperforms (lexical-recall miss); memory-injection hijack vector found | Done (local; L97b vector-KB rematch deferred to AWS) | `06_memory/memory_rematch_native.py` |
+| 98-100 | sandbox tier · red-team+chaos · agentic context mgmt | Planned (AWS/cost check-in first) | see `LEARNING_PLAN_v148_impact.md` |
 
 ---
 

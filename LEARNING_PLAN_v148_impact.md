@@ -132,7 +132,7 @@ flowchart TD
   bytes). **Guardrail:** don't re-use L22's prompt-level checks as the mechanism — the point is
   enforcement below the model. Cross-model: `Guide` acceptance is model-sensitive → second model.
 
-### L97 — Native MemoryManager vs the hand-built stack (the L87 rematch)
+### L97 — Native MemoryManager vs the hand-built stack (the L87 rematch)  ✅ DONE 2026-07-18 (+L97b semantic parity)
 - **Closes:** the biggest open question the delta created: does `Agent(memory_manager=...)` match
   the hand-built L78–L82 architecture on outcomes?
 - **Empirical objective:** run the L87 capstone eval (identical task, identical judge, N runs,
@@ -145,7 +145,7 @@ flowchart TD
   same L87 rule — arms identical except the memory system. Cross-model: extraction quality is
   model-sensitive → Nova/second model pass.
 
-### L98 — The sandbox tier: Shell vs Docker vs managed
+### L98 — The sandbox tier: Shell vs Docker vs managed  ✅ DONE 2026-07-19
 - **Closes:** L24's ad-hoc sandboxing and L72's single-option view; the new three-tier reality
   (in-process Strands Shell, local `DockerSandbox`, cloud AgentCore Code Interpreter).
 - **Empirical objective:** one task battery (file ops, grep/sed pipeline, a network call, a
@@ -158,7 +158,7 @@ flowchart TD
   `strands-shell` is a new dependency — probe-first (`_sandbox/probe_l98_shapes.py`), and the
   exfil attempts are the same real-attack discipline as L89.
 
-### L99 — Red-team and chaos the memory-backed harness
+### L99 — Red-team and chaos the memory-backed harness  ✅ DONE 2026-07-19 (red-team; chaos deferred)
 - **Closes:** NEXT_STEPS item 3 (memory safety/privacy evals) using first-party attack machinery
   instead of hand-rolled; extends L89 from one injection to a suite.
 - **Empirical objective:** `RedTeamExperiment` (Crescendo, GOAT, PAIR, SequentialBreak) against
@@ -171,7 +171,7 @@ flowchart TD
   `experimental/redteam` namespace — pin the exact evals version in the reflection. Cross-model:
   attack success is model-sensitive by definition → both models.
 
-### L100 — Agentic context management: verify the launch numbers
+### L100 — Agentic context management: verify the launch numbers  ✅ DONE 2026-07-19
 - **Closes:** L15/L53's manual machinery vs `context_manager="agentic"` and `"auto"`; the repo's
   "verify the marketing" signature applied to the launch post's ~55% token / 68%→98% accuracy
   claims [delta §9, source 1].

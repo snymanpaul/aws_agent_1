@@ -7,9 +7,13 @@ README as the front door. Prior plan items (cross-model validation, doc fixes, p
 **New (2026-07-18):** the ecosystem moved (strands 1.42→1.48, evals 1.0 GA, agentcore 1.18, Strands
 Shell). Delta: `docs/work/research/reports/2026-07-18_strands-ecosystem-delta-v142-to-v148.md`.
 Tier 22 (L94–L100) plan + sequencing: `LEARNING_PLAN_v148_impact.md`.
-**Done: L94** (upgrade + regression sweep; L61 vindicated), **L95** (checkpoint runtime end-to-end),
-**L96** (interventions unified + in-process Cedar). **Next: L97–L100** — need the AWS profile (KB /
-AgentCore Memory / Code Interpreter arms) and model budget (N-run evals); L99 subsumes item 3 below.
+**Tier 22 COMPLETE (L94–L100 + L97b), all on `origin/main`:** L94 upgrade+regression (L61 vindicated),
+L95 checkpoint runtime, L96 interventions+Cedar, L97 memory rematch (native underperforms on the test
+store) + L97b semantic parity (native matches with real recall), L98 sandbox tier (Strands Shell vs
+Podman, Rust-source-grounded SSRF), L99 red-team the memory channel (explicit deny-policy defends),
+L100 context-mgmt verify (auto ~56% token cut confirms ~55%; accuracy lift an honest negative on
+Gemini's 1M window). Deferred by choice: authentic Bedrock-KB memory arm; full chaos-resilience
+evaluators; cross-model (Nova) pass of the L96/L99 security findings.
 
 ## Open items (in priority order)
 

@@ -498,7 +498,7 @@ Current open work lives in `NEXT_STEPS_PLAN.md`.
 | [97b](docs/levels/L97b-memory-rematch-semantic.md) | Fair rematch with a custom semantic MemoryStore — native reaches FULL parity (1.00=1.00); L97's gap was the test store, not the abstraction; zero AWS | Done | `06_memory/memory_rematch_semantic.py` |
 | [99](docs/levels/L99-redteam-memory-channel.md) | Red-team the memory channel: explicit deny-policy defends against memory poison (weak 4/4 hijack vs strong 0/4); evals-1.0 red-team suite | Done | `13_quality/redteam_memory_channel.py` |
 | [98](docs/levels/L98-sandbox-tiers.md) | Sandbox tier: Strands Shell (~5ms, SSRF guard blocks IMDS/loopback/private) vs PodmanSandbox (~140ms/cmd) vs AgentCore CI; Rust-source-grounded + verified | Done | `16_agentcore_tools/sandbox_tiers.py` |
-| 100 | agentic context mgmt — verify the launch-post token/accuracy numbers | Planned | see `LEARNING_PLAN_v148_impact.md` |
+| [100](docs/levels/L100-context-mgmt-verify.md) | Verify context-mgmt launch numbers: `auto` cut tokens ~56% (confirms ~55%); 68→98% accuracy did NOT reproduce on Gemini's 1M window (honest negative); `agentic` model never self-compressed | Done | `13_quality/context_mgmt_verify.py` |
 
 ---
 

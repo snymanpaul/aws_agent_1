@@ -1,30 +1,36 @@
-# Learning Plan Addendum — Agentic Memory & Agentic Evals (L78–L87)
+# Track Overview — Agentic Memory & Agentic Evals (L78–L93)
 
-Closes the two gaps surfaced by the 2026-06-03 audit: the repo nails **single-agent memory** and
-**single-shot eval methodology**, but the **agentic** layer of both is simulated, archived, or
-API-shape-only. Each lesson below has a **falsifiable empirical success criterion** and an
+**Status: COMPLETE.** All levels built, run live, gate-clean, and reflected. Capstone result (L87):
+memory-backed harness 1.00 goal-success vs 0.00 memoryless, p = 0.0003 by permutation test. All six
+model-sensitive findings re-validated on Bedrock Nova Lite and labeled framework-inherent (L93).
+Per-level detail: the table below. This overview preserves the track's rationale and discipline.
+
+The track closed the two gaps surfaced by the 2026-06-03 audit: the repo nailed **single-agent
+memory** and **single-shot eval methodology**, but the **agentic** layer of both was simulated,
+archived, or API-shape-only. Each lesson carried a **falsifiable empirical success criterion** and an
 **anti-simulation guardrail** — because the repo's recurring failure mode was mocking these exact
 integrations (L14/L16/L26 all required full rewrites after simulation was caught).
 
-## The gaps (cited)
+## The gaps the audit found (all since closed)
 
-- **Agentic memory:** shared-across-agents memory has **zero usage** (grep `shared_context`/`GraphState`
-  in multi-agent dirs = 0); multi-agent→persistent memory is **simulated stubs**
-  (`debate_pattern.py:483-528`, `meta_agents.py:764-877`); the one real cross-session store is
-  **quarantined** (`_archive_hallucinated_l27/dynamodb_persistence.py`); AgentCore filtered LTM is
+- **Agentic memory:** shared-across-agents memory had **zero usage** (grep `shared_context`/`GraphState`
+  in multi-agent dirs = 0); multi-agent→persistent memory was **simulated stubs**
+  (`debate_pattern.py:483-528`, `meta_agents.py:764-877`); the one real cross-session store was
+  **quarantined** (`_archive_hallucinated_l27/dynamodb_persistence.py`); AgentCore filtered LTM was
   **extraction-gated** (`memory_async_ltm.py:16-23`). No consolidation/forgetting/conflict/long-horizon.
 - **Agentic evals:** trajectory captured as a **flat set of tool names** losing order+args
   (`evals_sdk.py:124`); tool-accuracy evaluators **imported but never run** (`evals_sdk.py:61`);
-  `GoalSuccessRate`/`Faithfulness` are **ADOT-gated, never executed**; **zero statistical significance**
-  anywhere; curriculum evals are **single-run**; **no unified harness** (4+ bespoke).
+  `GoalSuccessRate`/`Faithfulness` were **ADOT-gated, never executed**; **zero statistical significance**
+  anywhere; curriculum evals were **single-run**; **no unified harness** (4+ bespoke).
 
 ## Root cause → Foundation-first principle
 
-Both holes share one cause: **the agentic capability is gated behind infrastructure the repo never
-stood up** (a provisioned AgentCore LTM *strategy*; ADOT/OTel → Application Signals). So **F1 and F2
-below are prerequisites** — do them first or the new levels repeat the API-shape-only failure.
+Both holes shared one cause: **the agentic capability was gated behind infrastructure the repo had
+never stood up** (a provisioned AgentCore LTM *strategy*; ADOT/OTel → Application Signals). The
+foundations F1 and F2 were therefore built first; their specs live in the L80 and L84 level docs
+("Foundation prerequisite" sections).
 
-## Empirical guardrails (apply to every lesson)
+## Empirical guardrails (applied to every lesson; still the house rules)
 
 1. **Probe-first** — `_sandbox/probe_<level>_shapes.py` + `_state.py` before coding (CLAUDE.md rule).
 2. **No simulation** — no hardcoded memory strings, no mock MCP/boto. Prove with a **runtime-generated
@@ -64,7 +70,7 @@ flowchart TD
 
 ---
 
-## Per-level detail (moved to docs/levels/)
+## Per-level detail (in docs/levels/)
 
 | Level | File |
 |-------|------|
@@ -85,11 +91,9 @@ flowchart TD
 | L92 | [`docs/levels/L92-ship-gate.md`](docs/levels/L92-ship-gate.md) |
 | L93 | [`docs/levels/L93-cross-model-validation-nova-lite.md`](docs/levels/L93-cross-model-validation-nova-lite.md) |
 
-## Suggested execution order & sizing
-1. **F1, F2** (foundation; unblock the gated capabilities) — small each, mostly provisioning + probes.
-2. **L78 → L79 → L80 → L81** (memory depth), **L82** can run in parallel after L78.
+## Execution order (as run)
+1. **F1, F2** foundations first (provisioning + probes), proven end-to-end by their dependent levels
+   (F1+L80, F2+L84 as pairs).
+2. **L78 → L79 → L80 → L81** (memory depth), **L82** in parallel after L78.
 3. **L83 → L84 → L85 → L86** (eval depth).
-4. **L87** capstone last.
-
-Each is one level-sized unit (multi-iteration `.py`, run live, then `/reflect`). Do **F1+L80** and
-**F2+L84** as pairs — the foundation only earns its keep when the dependent level proves it end-to-end.
+4. **L87** capstone; **L88–L92** extensions under the same discipline; **L93** cross-model validation last.

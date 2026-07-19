@@ -130,7 +130,7 @@ graph TD
     L31[L31: Workflow] --> L46[L46: Hybrid LLM/Deterministic\n4 iterations]
     L8 --> L46
 
-    L23[L23: Error Recovery] --> L47[L47: Human-on-the-Loop]
+    L23[L23: Error Recovery] --> L47[L47: Human-in-the-Loop\nCheckpoints and Handoffs]
     L22 --> L47
 
     L5[L5: Sessions] --> L48[L48: Durable Execution]
@@ -145,16 +145,18 @@ graph TD
     L35 --> L51[L51: Evals Methodology\nFowler Eval Framework]
     L49 --> L51
 
-    L15[L15: Context Mgmt] --> L52[L52: Context Engineering]
-    L30[L30: Skills] --> L52
+    L51 --> L52[L52: Auto-Evaluator Reliability\nBiases, Calibration, Jury]
 
-    L51 --> L53[L53: Prompt Management\nPrompts as Code]
+    L15[L15: Context Mgmt] --> L53[L53: Context Engineering]
+    L30[L30: Skills] --> L53
 
-    L28[L28: SDK Advances] --> L54[L54: SLM Routing]
-    L46 --> L54
+    L51 --> L54[L54: Prompt Management\nPrompts as Code]
 
-    L9 --> L55[L55: Secure MCP\nArchitecture]
-    L22 --> L55
+    L28[L28: SDK Advances] --> L55[L55: SLM Routing]
+    L46 --> L55
+
+    L9 --> L56[L56: Secure MCP\nArchitecture]
+    L22 --> L56
 ```
 
 #### Tier 7: SDK Foundation & Plugins (L28-30)
@@ -215,7 +217,7 @@ graph TD
 | Level | Topic | Status | File |
 |-------|-------|--------|------|
 | 46 | Hybrid LLM/Deterministic Systems (4 iterations) | Done | `12_orchestration/hybrid_*.py` |
-| 47 | Human-on-the-Loop | Done | `12_orchestration/hitl_checkpoints.py` |
+| 47 | Human-in-the-Loop — Checkpoints and Handoffs | Done | `12_orchestration/hitl_checkpoints.py` |
 | 48 | Durable Execution | Done | `12_orchestration/durable_execution.py` |
 | 49 | Evals Harness — CI/CD for LLM Systems | Done | `12_orchestration/evals_harness.py` |
 | 50 | Toxic Flow Analysis — Multi-Turn Adversarial Defence | Done | `12_orchestration/toxic_flow.py` |
@@ -618,15 +620,18 @@ orchestrator = Agent(model=model, tools=[research_agent, code_agent])
 from strands.multiagent import Swarm
 
 swarm = Swarm(
-    agents=[agent1, agent2, agent3],
-    consensus_strategy="majority"
+    [agent1, agent2, agent3],        # positional list of agents
+    entry_point=agent1,
+    max_handoffs=10,
+    repetitive_handoff_detection_window=5,   # prevents ping-pong loops
+    repetitive_handoff_min_unique_agents=3,
 )
-result = swarm.collaborate("Analyze this architecture...")
+result = swarm("Analyze this architecture...")
 ```
 
 **Key Concepts:**
-- No single orchestrator
-- Consensus mechanisms
+- No single orchestrator — agents hand off to each other
+- Handoff caps and ping-pong detection keep the loop bounded
 - Parallel execution
 
 ---
@@ -657,9 +662,12 @@ graph.add_edge("executor", "reviewer")
 
 ```python
 from strands.tools.mcp import MCPClient
+from mcp import stdio_client, StdioServerParameters
 
-mcp_tools = MCPClient("github-mcp-server")
-agent = Agent(model=model, tools=[mcp_tools])
+params = StdioServerParameters(command="uvx", args=["mcp-server-fetch"])
+mcp_client = MCPClient(lambda: stdio_client(params))
+with mcp_client:
+    agent = Agent(model=model, tools=mcp_client.list_tools_sync())
 ```
 
 **Key Concepts:**
@@ -673,11 +681,15 @@ agent = Agent(model=model, tools=[mcp_tools])
 **Goal:** Deploy agents at scale
 
 ```python
-from strands.deploy import BedrockAgentCoreApp
+from bedrock_agentcore.runtime import BedrockAgentCoreApp
 
 agent = Agent(model=model, tools=[...])
-app = BedrockAgentCoreApp(agent)
-# Deploy via AWS CLI or CDK
+app = BedrockAgentCoreApp()
+
+@app.entrypoint
+def invoke(payload):
+    return str(agent(payload["prompt"]))
+# Deploy via the AgentCore CLI or CDK
 ```
 
 **Key Concepts:**
@@ -1955,7 +1967,7 @@ agent_tool:
 **Goal:** Four angles on the same problem — how do you reliably embed LLM judgment into deterministic production code without sacrificing correctness, security, or auditability?
 
 **Depends on:** L31 (Workflow DAG), L8 (Graph routing), L6 (Agents-as-Tools), L40 (thread safety)
-**Unlocks:** L47 (Human-on-the-Loop), L49 (Evals Harness)
+**Unlocks:** L47 (Human-in-the-Loop), L49 (Evals Harness)
 
 **Research basis:** ThoughtWorks Radar — LLM Guardrails (Languages & Frameworks, Vol.31, Oct 2024, Trial); Structured Output from LLMs (Techniques, Vol.33, Nov 2025, Trial — moved from Assess)
 
@@ -2294,7 +2306,7 @@ repair_rate = count(p for p in generate_plans(test_requests) if p.was_repaired) 
 ### Level 50: Toxic Flow Analysis — Unsafe Data Paths in Agentic Systems
 **Goal:** Apply toxic flow analysis to detect unsafe data paths in multi-agent architectures where the "lethal trifecta" is present — private data, untrusted content, and external communication all in scope
 
-**Depends on:** L46d (Trust Boundaries — single-turn guardrails), L22 (Safety), L55 (MCP Design — where the attack surface sits)
+**Depends on:** L46d (Trust Boundaries — single-turn guardrails), L22 (Safety), L56 (Secure MCP — where the attack surface sits)
 **Unlocks:** Architecture-level security analysis for multi-agent and MCP-connected systems
 
 **What ThoughtWorks means by "toxic flow analysis"** (Vol.33, Assess, Nov 2025):
@@ -2371,7 +2383,7 @@ for src in untrusted_sources:
 - The "lethal trifecta": private data + untrusted content + external channel, all reachable by the same agent
 - LLMs follow instructions: untrusted content can contain directives to exfiltrate private data via external channel
 - Mitigation: remove at least one element of the trifecta architecturally — structural, not prompt-based
-- Connection to L55: MCP tool responses are untrusted content by definition; MCP-connected agents face the trifecta
+- Connection to L56: MCP tool responses are untrusted content by definition; MCP-connected agents face the trifecta
 - Connection to L46d: L46d strips injection patterns from a single request; L50 analyses whether the agent *architecture* allows the data path to exist at all — a different layer
 
 **Sources:**
@@ -2386,7 +2398,7 @@ for src in untrusted_sources:
 **Goal:** Apply three named test types to LLM systems and decouple inference from testing so model/prompt changes can be evaluated without proportional API cost
 
 **Depends on:** L35 (Strands Evals SDK — understand the Strands-specific tooling first), L49 (Evals Harness — boundary contract testing)
-**Unlocks:** L53 (Prompt refactoring — Fowler explicitly ties the two together)
+**Unlocks:** L54 (Prompt refactoring — Fowler explicitly ties the two together)
 
 **How this differs from L35 and L49:**
 L35 = how to run evals using the Strands SDK. L49 = testing hybrid system boundary contracts (parse rate, override rate). L51 = the *methodology*: what test types to apply to probabilistic systems, and how to run many tests without paying for repeated LLM inference.
@@ -2487,7 +2499,7 @@ L51 proved the auto-evaluator detects *obvious* quality failures. ThoughtWorks R
 **Unlocks:** Higher output reliability from any downstream level without changing model or code
 
 **How this differs from L15:**
-L15 = managing the token budget (compression, summarization). L52 = deciding *what* information fills that budget, and how it is structured.
+L15 = managing the token budget (compression, summarization). L53 = deciding *what* information fills that budget, and how it is structured.
 
 **Research basis:** ThoughtWorks Technology Radar Vol.33 (2026), Assess tier, published November 5, 2025. Definition: "Context engineering is the systematic design and optimization of the information provided to a large language model during inference to reliably produce the desired output." The entry distinguishes this from prompt engineering: it considers "the entire configuration of context: how relevant knowledge, instructions and prior context are organized and delivered."
 
@@ -2544,7 +2556,7 @@ if agent_needs_external_data:
 
 ---
 
-### Level 54: Prompt Refactoring
+### Level 54: Prompt Management — Prompt Refactoring
 **Goal:** Apply refactoring discipline to prompts, using automated eval coverage as the safety net — the same way tests enable safe code refactoring
 
 **Depends on:** L51 (Evals Methodology — automated tests are the precondition Fowler states explicitly)
@@ -2687,7 +2699,7 @@ dedicated_mcp.add_tool(agent_appropriate_tool_2)
 - The security concern is specific: "no reliable, deterministic way to prevent an autonomous AI agent from misusing" endpoints when they are naively exposed
 - ThoughtWorks recommended pattern: dedicated MCP server *tailored for agentic workflows*, built *on top of* existing APIs — not a wrapper around them
 - FastAPI-MCP is mentioned as a related tool in the ThoughtWorks entry
-- vs L9: L9 shows how to consume existing MCP servers; L55 is about how to design one correctly for agents
+- vs L9: L9 shows how to consume existing MCP servers; L56 is about how to design one correctly for agents
 - ThoughtWorks verdict: **Hold** — do not do this; the design mismatch between APIs-for-humans and APIs-for-agents is fundamental
 
 **Sources:**

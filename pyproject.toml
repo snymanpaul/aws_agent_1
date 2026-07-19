@@ -36,6 +36,7 @@ dependencies = [
     "bedrock-agentcore>=1.12",
     "bedrock-agentcore-starter-toolkit>=0.3.9",
     "playwright>=1.60.0",
+    "strands-shell>=0.3.1",
 ]
 
 [dependency-groups]

@@ -284,6 +284,7 @@ dependencies = [
     { name = "strands-agents-sops" },
     { name = "strands-agents-tools" },
     { name = "strands-ai-functions" },
+    { name = "strands-shell" },
     { name = "temporalio" },
     { name = "tiktoken" },
     { name = "uvicorn" },
@@ -327,6 +328,7 @@ requires-dist = [
     { name = "strands-agents-sops", specifier = ">=1.1.1" },
     { name = "strands-agents-tools", specifier = ">=0.7.0" },
     { name = "strands-ai-functions", specifier = ">=0.1.0" },
+    { name = "strands-shell", specifier = ">=0.3.1" },
     { name = "temporalio", specifier = ">=1.23.0" },
     { name = "tiktoken", specifier = ">=0.12.0" },
     { name = "uvicorn", specifier = ">=0.38.0" },
@@ -4274,6 +4276,28 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/3e/0d/5cd2655eff54cb8f9934575f457e36b2da44b503e972960d748116defacf/strands_ai_functions-0.1.0.tar.gz", hash = "sha256:0786f0e9a3c6a5bea5d097778a2f4aafbcaac5978eea28645f99d6d41f464628", size = 91507, upload-time = "2026-02-23T17:58:16.789Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/81/6f/97964b2f575e425ddd771bb91b55e6ceea917f05cf776170e6e40d01965d/strands_ai_functions-0.1.0-py3-none-any.whl", hash = "sha256:d7afb4e14fdd5307a5bbe2ebaf38a4fe7da917421aa86630e5f8359d84882aec", size = 39187, upload-time = "2026-02-23T17:58:15.399Z" },
+]
+
+[[package]]
+name = "strands-shell"
+version = "0.3.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/4c/26/96b4b71baaeba9a84accdf7d93d9da0ab36014acb9d11abec5fbf1961353/strands_shell-0.3.1.tar.gz", hash = "sha256:03088b3143ed8f3e05cef944fb29f9c22d2be353a5fc9b5b2f90bf9b4b644b54", size = 288002, upload-time = "2026-07-17T15:02:52.024Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/54/8e/472fb21f6b596efd9c201eb4363924463788518286c2e5df2fa7d153b235/strands_shell-0.3.1-cp313-cp313-macosx_10_12_x86_64.whl", hash = "sha256:e0b4b08a3d4b0704d13e688392739b92581d1f994e13285f13022d249b4cbcd6", size = 4795955, upload-time = "2026-07-17T15:02:26.072Z" },
+    { url = "https://files.pythonhosted.org/packages/ee/12/887cbb25c7d28cf68ea75fc0b7da4dfeb5573f3217e430062c84c821febf/strands_shell-0.3.1-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:33dc08346677c403e210865a3e2470b5f029a6ca9240ea7df8277d472154df14", size = 4554073, upload-time = "2026-07-17T15:02:27.505Z" },
+    { url = "https://files.pythonhosted.org/packages/86/03/22416a0bff8bb25f5772db18c607ba12b1e394dbcd82ede1992ff7d524de/strands_shell-0.3.1-cp313-cp313-manylinux_2_28_aarch64.whl", hash = "sha256:a3bdfae7847ab037912b222629746004eb00502c70c098228d6d2c6a95623d57", size = 4764903, upload-time = "2026-07-17T15:02:28.967Z" },
+    { url = "https://files.pythonhosted.org/packages/13/76/ef27e71ad0f8158797a213420e3d35dcc49c33d7502c8502f2d65245e702/strands_shell-0.3.1-cp313-cp313-manylinux_2_28_x86_64.whl", hash = "sha256:cbf465aaa08ebbb6c6959b38ac029391ba4ddbc23ba0223cad650797893306a8", size = 5058684, upload-time = "2026-07-17T15:02:30.45Z" },
+    { url = "https://files.pythonhosted.org/packages/d4/5b/aa53b82bfc476bcc8f0dcb80f92480423f9d19e69631276a74a367234a28/strands_shell-0.3.1-cp313-cp313-win_amd64.whl", hash = "sha256:852e31ebd04d40504edbb17231f98ba570c4b057142280d8ff9671a6082868bb", size = 5076951, upload-time = "2026-07-17T15:02:32.144Z" },
+    { url = "https://files.pythonhosted.org/packages/36/dc/f3e813000c2fc8cebe45fc3658022cb064e23e7a0879308ba15ade5f4cf8/strands_shell-0.3.1-cp314-cp314-macosx_10_12_x86_64.whl", hash = "sha256:bd2ea36011b90c963c63e7b4f7ef06c7a232e4eccec123f2eaae9bbd19d6ca7e", size = 4798572, upload-time = "2026-07-17T15:02:33.851Z" },
+    { url = "https://files.pythonhosted.org/packages/70/33/74e2357f969d4f98657ea3eb8a26dba764ae8c59cc8c2f7417683606fc0f/strands_shell-0.3.1-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:cef5adc734d2bd2556d33c4660f740d31f64d7fb6fac5d13f6863ccc1b4e61be", size = 4555695, upload-time = "2026-07-17T15:02:35.358Z" },
+    { url = "https://files.pythonhosted.org/packages/16/26/639632b2e0fac3c74fb3d1d9c226f9e8ccf79edd1c1bbc57eefdc862086d/strands_shell-0.3.1-cp314-cp314-manylinux_2_28_aarch64.whl", hash = "sha256:277ce2334cd7fccc807280b07bff2a27955362ce0f779f9244bd6dff18099851", size = 4765123, upload-time = "2026-07-17T15:02:36.854Z" },
+    { url = "https://files.pythonhosted.org/packages/66/82/b5495bad18dc62441187483d8d637dce4147ea8786517fabf39289458746/strands_shell-0.3.1-cp314-cp314-manylinux_2_28_x86_64.whl", hash = "sha256:38ae4bab216c477ed3fa5cb62206959c5504d36fc4c5b4e5f709887ad08c9532", size = 5059813, upload-time = "2026-07-17T15:02:38.35Z" },
+    { url = "https://files.pythonhosted.org/packages/e7/5b/b931fba7d3104670227b583dd34ed255db73d869f26f2a4bfea5a77e5842/strands_shell-0.3.1-cp314-cp314-win_amd64.whl", hash = "sha256:8aa967b2089728649d90396ea5f4f32103e1183fa2f40c38b9ebdd5f8ac7dc9f", size = 5078311, upload-time = "2026-07-17T15:02:39.712Z" },
+    { url = "https://files.pythonhosted.org/packages/3e/6a/0504291525af31319fb95681d1bfd1552680c4e9dbba1139bf0c3bb3622f/strands_shell-0.3.1-cp314-cp314t-manylinux_2_28_aarch64.whl", hash = "sha256:105a0f4da1d0c6a79722babb43951ebd68832757f88827d68031be13701a8032", size = 4764302, upload-time = "2026-07-17T15:02:41.842Z" },
+    { url = "https://files.pythonhosted.org/packages/f6/cb/a03554875bde59b9d1a3c835b1d341d78bc7bcff427d066670834131088c/strands_shell-0.3.1-cp314-cp314t-manylinux_2_28_x86_64.whl", hash = "sha256:4f277c4d83eb236c8d35daf94014f479838dd991394283584d37da0b6ae4f3b0", size = 5061102, upload-time = "2026-07-17T15:02:43.652Z" },
+    { url = "https://files.pythonhosted.org/packages/73/90/78cd90172f81a7f8cc818384d3c66ed61072e028b201a0bbe2930a25836a/strands_shell-0.3.1-cp315-cp315-manylinux_2_28_x86_64.whl", hash = "sha256:917e303858a4f3af050ff19cd9d3dc271c472c5944f6c516db74c54288ecc34e", size = 5060488, upload-time = "2026-07-17T15:02:45.36Z" },
+    { url = "https://files.pythonhosted.org/packages/db/f8/d4470c61f83a494511dd0d26c691089e2162ae7eb45ceadf80108c8866c8/strands_shell-0.3.1-cp315-cp315t-manylinux_2_28_x86_64.whl", hash = "sha256:ca6d9fbdbe127afa8bb784f927e7161928b850be75c5f99e4946b8c203512e66", size = 5061161, upload-time = "2026-07-17T15:02:46.914Z" },
 ]
 
 [[package]]

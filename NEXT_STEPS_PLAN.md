@@ -6,8 +6,10 @@ README as the front door. Prior plan items (cross-model validation, doc fixes, p
 
 **New (2026-07-18):** the ecosystem moved (strands 1.42→1.48, evals 1.0 GA, agentcore 1.18, Strands
 Shell). Delta: `docs/work/research/reports/2026-07-18_strands-ecosystem-delta-v142-to-v148.md`.
-Proposed Tier 22 (L94–L100) with sequencing: `LEARNING_PLAN_v148_impact.md` — L94 (upgrade +
-regression sweep + L61 re-probe) is the entry point and partially subsumes item 3 below via L99.
+Tier 22 (L94–L100) plan + sequencing: `LEARNING_PLAN_v148_impact.md`.
+**Done: L94** (upgrade + regression sweep; L61 vindicated), **L95** (checkpoint runtime end-to-end),
+**L96** (interventions unified + in-process Cedar). **Next: L97–L100** — need the AWS profile (KB /
+AgentCore Memory / Code Interpreter arms) and model budget (N-run evals); L99 subsumes item 3 below.
 
 ## Open items (in priority order)
 

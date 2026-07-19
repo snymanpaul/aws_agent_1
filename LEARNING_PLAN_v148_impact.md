@@ -98,7 +98,7 @@ flowchart TD
     L96 -.controls under attack.-> L99
 ```
 
-### L94 — SDK v1.48 upgrade + regression sweep (foundation, do first)
+### L94 — SDK v1.48 upgrade + regression sweep (foundation, do first)  ✅ DONE 2026-07-18
 - **Closes:** the version gap; the L61 discrepancy; upgrade risk from §3.
 - **Empirical objective:** bump `strands-agents` to 1.48 (+ tools 0.8.4, agentcore 1.18.1,
   evals 1.0.2), `uv sync` clean, `uv run pytest` green, `no_sim_check` clean, and a smoke pass
@@ -109,7 +109,7 @@ flowchart TD
   runtime, not just in source. **Guardrail:** any lesson that breaks gets a cited cause (the §3
   behavior list is the suspect pool), not an exclusion — the L27-era `uv sync` lesson applies.
 
-### L95 — Checkpoint runtime end-to-end
+### L95 — Checkpoint runtime end-to-end  ✅ DONE 2026-07-18
 - **Closes:** L65's deferred auto-runtime ("needs Temporal" is no longer the only path).
 - **Empirical objective:** an agent checkpoints at `after_tools`, the process is killed for real,
   a fresh process resumes via `checkpointResume` and completes without re-running finished work.
@@ -120,7 +120,7 @@ flowchart TD
   only — assert that a checkpoint WITHOUT a session manager fails to restore state (negative
   control).
 
-### L96 — Interventions: the control plane unified
+### L96 — Interventions: the control plane unified  ✅ DONE 2026-07-18
 - **Closes:** four separately-built control stories (L22 guardrails, L29 steering, L33 Cedar,
   L47/L70 HITL) now have one first-party primitive.
 - **Empirical objective:** one `InterventionHandler` set reproduces the L22/L29/L47 behaviors:

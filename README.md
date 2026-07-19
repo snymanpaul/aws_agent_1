@@ -44,7 +44,7 @@ Model-sensitive findings were re-run on a second provider: Bedrock Claude Haiku 
 | ADK multi-agent patterns ported to Strands, verified on two models | L77 | `artifacts/adk_patterns/` |
 | Agentic memory and evals, cross-model capstone | L78 to L93 | `06_memory/`, `13_quality/`, `tools/` |
 
-Per-level detail is in `LEARNING_PLAN.md` (L1 to L76) and `LEARNING_PLAN_agentic_memory_evals.md` (L78 to L93). Each level has a lessons-learned write-up in `.claude/learnings/reflections/`, including what went wrong.
+Every lesson has its own doc in `docs/levels/` (one file per level, `L01` to `L93`). `LEARNING_PLAN.md` is the master index; `LEARNING_PLAN_agentic_memory_evals.md` is the track overview for the memory and evals arc. Each level also has a lessons-learned write-up in `.claude/learnings/reflections/`, including what went wrong.
 
 ## Running it
 

@@ -7,8 +7,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Progressive learning path for AWS Strands Agents SDK.
 
 **Status**: 93 levels (Dec 2025 – Jun 2026). Recent: agentic **memory** + **evals** (L78–L92),
-validated cross-model on Bedrock Nova Lite (L93). See `LEARNING_PLAN_agentic_memory_evals.md`,
-`NEXT_STEPS_PLAN.md`, and `.claude/learnings/reflections/`.
+validated cross-model on Bedrock Nova Lite (L93). Per-level docs: `docs/levels/` (one file per
+lesson). See also `LEARNING_PLAN_agentic_memory_evals.md`, `NEXT_STEPS_PLAN.md`, and
+`.claude/learnings/reflections/`.
 
 ## Quick Start
 
@@ -142,4 +143,5 @@ Use `/reflect` command after completing a level to ensure JSONL observation capt
 ## Resources
 
 - [Strands Docs](https://strandsagents.com/latest/) | [GitHub](https://github.com/strands-agents/sdk-python)
-- `LEARNING_PLAN.md` (L1–L76) + `LEARNING_PLAN_agentic_memory_evals.md` (L78–L93) — per-level patterns + status
+- `LEARNING_PLAN.md` (master index, links per level) + `docs/levels/` (one doc per lesson, L01–L93) +
+  `LEARNING_PLAN_agentic_memory_evals.md` (memory/evals track overview)

@@ -565,6 +565,7 @@ model = get_model("claude-sonnet-4")  # or haiku, opus, gemini-flash
 - [S3 Vectors + multimodal agents — DEV.to](https://dev.to/aws/dev-track-spotlight-build-multi-modal-ai-agents-with-strands-agents-and-amazon-s3-vectors-dev332-4jp5)
 - [strands-agents/samples: 05-agentic-rag](https://github.com/strands-agents/samples) — agentic RAG examples
 - [Research report: SOTA + community adoption](docs/work/research/reports/2026-03-18_strands-sota-agent-orchestration.md)
+- [Research report: ecosystem delta v1.42 → v1.48, 2026-06 → 2026-07](docs/work/research/reports/2026-07-18_strands-ecosystem-delta-v142-to-v148.md) — input to the L94+ extension decision
 
 ---
 

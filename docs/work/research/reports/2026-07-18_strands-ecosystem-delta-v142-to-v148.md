@@ -1,0 +1,508 @@
+# Strands Ecosystem Delta — v1.42 → v1.48 (2026-06-02 → 2026-07-17)
+
+**Date:** 2026-07-18
+**Purpose:** discrete record of everything that changed in the Strands/AgentCore ecosystem between
+this repo's last validated baseline (L93, 2026-06-04) and today. Input to the L94+ lesson-plan
+extension decision.
+
+## Method and sources
+
+Three parallel read-only explorations, consolidated here losslessly:
+
+1. **Core SDK**: fresh clone of the `strands-agents/sdk-python` monorepo at
+   `~/Code/strands-sdk-python`, HEAD `41f9f59b` (2026-07-17). 152 commits touching `strands-py`
+   between tags `python/v1.42.0` and `python/v1.48.0` were inventoried; key modules read at HEAD.
+   All `file:line` citations below are relative to `strands-py/src/strands/` at `python/v1.48.0`
+   unless noted.
+2. **Monorepo meta**: same clone — `strandly/`, `team/`, `test-infra/`, `strands-ts/` (tags
+   `typescript/v1.4.0` → `v1.10.0`), `site/` additions since 2026-06-01, root `AGENTS.md`.
+3. **Ecosystem packages**: GitHub release notes for `strands-agents/tools` (0.7.0 → 0.8.4),
+   `aws/bedrock-agentcore-sdk-python` (1.12 → 1.18.1), `strands-agents/evals` (0.1.14 → 1.0.2),
+   with the evals claim verified against the v1.0.2 source tree. PyPI versions verified
+   2026-07-18 via `pypi.org/pypi/<pkg>/json`.
+
+The old clone at `~/Documents/Code/strands-sdk-python` was unusable (OneDrive dataless-stub damage;
+file reads hang) and was replaced, not repaired.
+
+## Baseline vs current
+
+| Package | Repo baseline (L93) | Current (2026-07-17) | Releases in gap |
+|---------|--------------------|---------------------|-----------------|
+| strands-agents | 1.42.0 | 1.48.0 | 6 minors |
+| strands-agents-tools | 0.7.0 | 0.8.4 | 5 patches (hardening only) |
+| bedrock-agentcore | 1.12 | 1.18.1 | 6 minors + patches |
+| strands-agents-evals | 0.1.14 | 1.0.2 | 9 releases incl. 1.0 GA |
+
+```mermaid
+flowchart LR
+    subgraph baseline ["Baseline 2026-06-04 (L93)"]
+        B1[strands 1.42]
+        B2[tools 0.7.0]
+        B3[agentcore 1.12]
+        B4[evals 0.1.14]
+    end
+    subgraph current ["Current 2026-07-17"]
+        C1[strands 1.48]
+        C2[tools 0.8.4]
+        C3[agentcore 1.18.1]
+        C4[evals 1.0.2 GA]
+    end
+    B1 -->|"6 minors: interventions, memory,\nsandbox, storage, live checkpoint"| C1
+    B2 -->|"0 new tools,\n5 security-hardening releases"| C2
+    B3 -->|"tool-search, runtime shell,\nextraction_mode, LangGraph payments"| C3
+    B4 -->|"red-team + chaos + RCA + CLI,\nno API break"| C4
+```
+
+## The shape of the change
+
+Strands grew from an agent loop with add-ons into a platform with a **control plane**
+(interventions), a **memory subsystem**, a **sandbox layer**, and a **unified storage primitive**
+— four capabilities this repo currently hand-builds (L78–L82 memory behind hexagonal ports; L22/L29/
+L33/L47/L70 as separate control stories; L24's ad-hoc sandboxing; per-subsystem persistence).
+Meanwhile evals went GA with adversarial machinery, the tools package froze features in favour of
+security hardening, and AgentCore iterated incrementally.
+
+```mermaid
+mindmap
+  root((Strands 1.48<br/>platform shape))
+    Control plane
+      Interventions primitive
+      CedarAuthorization
+      HumanInTheLoop
+      Steering moved to vended_plugins
+    Memory subsystem
+      MemoryManager on Agent
+      MemoryStore protocol
+      BedrockKnowledgeBaseStore
+      TestMemoryStore
+      Injection as memory XML
+    Sandbox layer
+      Sandbox ABC
+      DockerSandbox / SshSandbox
+      sandbox_bash / sandbox_file_editor
+    Storage primitive
+      Storage protocol
+      InMemory / LocalFile / S3
+    Evals GA
+      Red-team suite
+      Chaos testing
+      RCA / detectors
+      strands-evals CLI
+```
+
+---
+
+## 1. Core Python SDK — 1.43 → 1.48
+
+Six new top-level namespaces since 1.42: `memory/`, `interventions/`, `sandbox/`, `storage/`,
+`injection/`, plus internal `_middleware/` and `_context_manager/`, and three vended packages
+`vended_interventions/`, `vended_memory_stores/`, `vended_tools/`. Experimental `steering` was
+deprecated and moved to production (`vended_plugins`).
+
+```mermaid
+flowchart TD
+    A[Agent] --> M["memory_manager=<br/>memory/memory_manager.py:72"]
+    A --> I["interventions=[...]<br/>agent/agent.py:181"]
+    A --> S["sandbox=<br/>agent/agent.py:189"]
+    A --> CM["context_manager='agentic'|'auto'<br/>agent/agent.py:502-563"]
+    M --> MS["MemoryStore protocol<br/>memory/types.py:254"]
+    MS --> KB[BedrockKnowledgeBaseStore]
+    MS --> TS2[TestMemoryStore]
+    I --> ACT["Proceed / Deny / Guide /<br/>Confirm / Transform<br/>interventions/actions.py:44-114"]
+    I --> CED["CedarAuthorization<br/>vended_interventions/cedar"]
+    I --> HITL["HumanInTheLoop<br/>vended_interventions/hitl"]
+    S --> DS[DockerSandbox]
+    S --> SSH[SshSandbox]
+    S --> VT["sandbox_bash / sandbox_file_editor<br/>vended_tools/"]
+    A --> ST["Storage protocol (1.48)<br/>storage/storage.py:69-122"]
+    ST --> IMS[InMemoryStorage]
+    ST --> LFS[LocalFileStorage]
+    ST --> S3S[S3Storage]
+```
+
+### Release-by-release (commits cited)
+
+**v1.43.0**
+- Checkpoint auto-runtime wired into the event loop (`cbd4f03a`) — see tracked-features below.
+- Interventions primitive with cancellation (`7e4f5cba`) — new `interventions/`.
+- Sandbox core abstraction (`fb4a2e41`) + Docker/SSH implementations (`5f4257f8`) — new `sandbox/`.
+- Message pinning in conversation managers (`43cc86e8`): `conversation_manager/compression/pin_message.py`.
+- `model_state` as a snapshot field (`9a6be270`); a2a uses native snapshot (`f133bbf8`).
+- `context_manager="auto"` facade on Agent (`4ba1f198`).
+- Optional hook ordering — new `HookOrder` class + `order=` kwarg on `add_callback` (`6dd249da`).
+- `claude-opus-4-8` added to context-window limits (`dc10b50d`).
+- Fixes: `count_tokens` includes JSON blocks (`8f4a8ebe`); a2a agent-factory context isolation (`398343fa`).
+
+**v1.44.0 (memory + agent-control release)**
+- Memory manager + extraction ported (`713a6de3`); `Agent(memory_manager=...)` with configurable
+  sync auto-flush (`6a2445f6`); memory injection (`a111c5d2`); default extraction trigger (`6f9cae05`).
+- `BedrockKnowledgeBaseStore` ported (`ac7aab32`) — new `vended_memory_stores/`.
+- Cedar authorization handler (`1f50d374`) + HumanInTheLoop (`8a509cf1`) — new `vended_interventions/`.
+- Agentic context management ported (`fbfd898c`) — new `_context_manager/modes/agentic/`.
+- Internal middleware system for `InvokeModelStage` (`2eafc765`) — new `_middleware/`.
+- Sandbox integrated with Agent (`fa2c75d2`) + vended sandbox tools/plugins (`1b8cd9ff`) — new
+  `vended_tools/` (`bash`, `file_editor`).
+- GraphBuilder: `invocation_state` passed to edge-condition calls (`a92502f5`).
+- GoalLoop vended plugin (`abda2588`); context-offloader turn-based eviction (`fd2daad5`).
+
+**v1.45.0**
+- `mistralai` 2.x support (`57cb09cc`) — breaking `feat(models)!`.
+- Per-invocation idempotency via `idempotency_token` (`226b3ec8`).
+- MCP progress notifications (`65f7a384`).
+- Managed Bedrock KB in retrieve + ACL; `initialize()` introduced in MemoryStores (`73a2a46a`).
+- Offloader search/grep (`4bc9a241`); `BedrockModel.format_request` public (`5c1247e2`); bidi image
+  input via `BidiImageInputEvent` (`e41f5150`).
+
+**v1.46.0**
+- Load MCP servers from JSON (`eb654d5c`).
+- Local memory store added (`84fff9a9`) — renamed next release.
+- Middleware: result handling, model-state isolation, system-prompt fidelity (`bc3d96a8`).
+- Memory: per-message sequence numbers to `add_messages` (`e050fc8b`); memory-manager telemetry (`d9b90614`).
+
+**v1.47.0**
+- Span redaction for telemetry (`2d6e6502`).
+- `continue_on_error` on MCP client (`b2662d3d`).
+- `LocalMemoryStore` → `TestMemoryStore` (`6c58f97c`) — breaking `fix(memory)!`.
+- Durable message identifiers — `tracking_id` on messages (`a1915b6c`).
+
+**v1.48.0**
+- Unified storage interface (`1aff2707`) — new `storage/` (`Storage` protocol + in-memory/local-file/S3).
+- `gen_ai_span_attributes_only` env var for telemetry (`b1e1c2ba`).
+- `client_name` on `MCPClient` for `clientInfo` (`612f47f7`).
+- Fix: symlink-attack prevention in `FileSessionManager` (`8658b9e0`).
+- Docs only: Bedrock `strict_tools` schema constraints documented (`7fb9a306`) — feature predates 1.42.
+
+### Fate of the features this repo tracked at 1.42
+
+- **Checkpoint — now a live runtime, not types-only.** At 1.42, `event_loop.py` and
+  `agent_result.py` had zero `checkpoint` refs. Now: `AgentResult.checkpoint: Checkpoint | None`
+  (`agent/agent_result.py:41`), populated only when `stop_reason == "checkpoint"`
+  (`agent_result.py:30-32`), serialized in `to_dict`/`from_dict` (`agent_result.py:109-110,130`).
+  `"checkpoint"` is a `StopReason` literal (`types/event_loop.py:42`), alongside new `"cancelled"`.
+  Resume: pass `{"checkpointResume": {"checkpoint": ckpt.to_dict()}}`
+  (`experimental/checkpoint/checkpoint.py:16`). Precedence: interrupt > checkpoint > cancel
+  (`checkpoint.py:18-22`). `Checkpoint` dropped `snapshot`/`app_data` (`d1f5480e`); now only
+  `position` (`after_model`/`after_tools`) + `cycle_index` (`checkpoint.py:55-56`). It captures
+  pause position, not conversation state — still pair with a `SessionManager`.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Running
+    Running --> Interrupted: event.interrupt (precedence 1)
+    Running --> Checkpointed: stop_reason == "checkpoint" (precedence 2)
+    Running --> Cancelled: stop_reason == "cancelled" (precedence 3)
+    Checkpointed --> Running: invoke with checkpointResume {checkpoint dict}
+    Interrupted --> Running: resume by interrupt id
+    Running --> Completed
+    Completed --> [*]
+```
+
+- **Interrupts — unchanged since 1.42.** `interrupt.py` identical diff; `event.interrupt`,
+  `result.interrupts` (`agent_result.py:39`) behave as before.
+- **`count_tokens` — not a bare chars/4 heuristic at HEAD.** Base `Model.count_tokens` uses
+  tiktoken `cl100k_base` when available, falling back to chars/4 (text) / chars/2 (JSON)
+  (`models/model.py:266-292`). Native APIs behind `use_native_token_count` for Anthropic
+  (`models/anthropic.py:402`) and Bedrock (`models/bedrock.py:843`). Only in-range change: JSON
+  blocks now counted (`8f4a8ebe`). See Corrections below re L61.
+- **`Limits` invocation caps — present, unchanged shape** (`types/agent.py:17-45`); stop reasons
+  `limit_turns`/`limit_total_tokens`/`limit_output_tokens` in the literal.
+- **MultiAgentPlugin — present, pre-1.42, unchanged** (`plugins/multiagent_plugin.py:1-30`).
+- **Steering — deprecated and relocated.** `experimental/steering/__init__.py` is a compat shim
+  emitting `DeprecationWarning`, redirecting to `strands.vended_plugins.steering`.
+- **bidi — refinements, no overhaul.** 8 kHz sample rate (`AudioSampleRate` literal) +
+  `BidiConnectionRestartEvent` (`ea3ce9df`); OpenAI image input via `BidiImageInputEvent`
+  (`e41f5150`); transcript role validation (`b8d03eac`); Nova Sonic region/user-agent fixes.
+- **Swarm / GraphBuilder.** Swarm essentially unchanged (9-line diff);
+  `repetitive_handoff_detection_window` as before (`multiagent/swarm.py:194`). GraphBuilder gained
+  `invocation_state`-aware edge conditions: new exports `EdgeCondition`,
+  `EdgeConditionWithContext`; `add_edge` accepts `(state, *, invocation_state) -> bool`,
+  auto-detected by signature so old conditions still work (`multiagent/graph.py:67-102,335-345`).
+- **Structured output — fixes only** (`ffe4f5d4`, `e955e450`); no API-shape change.
+- **CachePoint / strict_tools — present, unchanged shape** (`types/content.py:66,95,115`;
+  `models/bedrock.py:127-131,287,306-310`). In-range fix: cache point placed before non-PDF
+  document blocks (`beddc3f7`).
+- **Session managers.** `FileSessionManager` hardened against symlink attacks (`8658b9e0`),
+  encodes bytes in `SessionAgent.to_dict()` (`fd5ced1e`); `repository_session_manager.py` repairs
+  mid-iteration orphaned `toolUse` skips (`f282b616`). `S3SessionManager` largely untouched.
+
+### New capabilities — entry points for study
+
+- **Agentic memory** — `MemoryManager(stores=[...], search_tool_config, add_tool_config, injection)`
+  (`memory/memory_manager.py:72`); `Agent(memory_manager=...)` (`agent/agent.py:183`). Sync
+  `Agent(...)` auto-flushes extraction after each call; `invoke_async` does not
+  (`agent/agent.py:773-784`). Triggers: `InvocationTrigger` (every turn) or `IntervalTrigger(turns)`,
+  default every 5 turns (`memory/extraction/triggers.py`, `resolve_extraction_config.py:25`).
+  Stores implement the `MemoryStore` Protocol (`search` required; `add`/`add_messages`/`initialize`/
+  `get_tools` optional — `memory/types.py:254`). Memory injected as `<memory>` XML folded into the
+  last user message, not the system prompt (`injection/_message_injection.py`,
+  `memory/memory_manager.py:647`).
+- **Interventions** — override any of `before_invocation`/`before_tool_call`/`after_tool_call`/
+  `before_model_call`/`after_model_call`, sync or async (`interventions/handler.py:43-107`).
+  Actions: `Proceed`, `Deny`, `Guide`, `Confirm` (human approval, tool-call only), `Transform`
+  (in-place edit) (`interventions/actions.py:44-114`). Vended: `CedarAuthorization` via `cedarpy`
+  (`vended_interventions/cedar/cedar_authorization.py:71`), `HumanInTheLoop` (interrupt/resume or
+  inline `ask` — `vended_interventions/hitl/hitl.py`).
+- **Sandbox** — default `NotASandboxLocalEnvironment` (host, no isolation). `Sandbox` ABC has six
+  abstract ops: `execute_streaming`, `execute_code_streaming`, `read_file`, `write_file`,
+  `remove_file`, `list_files` (`sandbox/base.py:36-205`). `DockerSandbox` and `SshSandbox` extend
+  `PosixShellSandbox`. Vended `sandbox_bash` + `sandbox_file_editor` route through
+  `context.agent.sandbox`.
+- **Unified storage (1.48)** — `Storage` runtime-checkable Protocol: `write`/`read`/`delete`/`list`
+  over `bytes` (`storage/storage.py:69-122`).
+- **Internal middleware** — `_middleware/`, not public (via `agent._middleware_registry`); only
+  `InvokeModelStage` implemented, Input/Wrap/Output phases; `model_state` deliberately excluded
+  (`_middleware/README.md`, `_middleware/stages.py:35`).
+- **Agentic context management** — `Agent(context_manager="agentic")` injects
+  `summarize_context`/`truncate_context`/`pin_context` tools + a `<context-status>` token-usage
+  middleware so the model self-compresses (`_context_manager/modes/agentic/agentic_context.py`).
+  `"auto"` wires `SummarizingConversationManager` + in-memory `ContextOffloader`. Both conflict
+  with a stateful model.
+- **Telemetry** — opt-in span redaction: `gen_ai_span_attributes_only` +
+  `gen_ai_unredacted_attributes=<globs>`; unredacted by default (`telemetry/tracer.py:93-173`).
+  Dropped misleading `gen_ai.agent.name` from multiagent spans (`54a89486`); records `tool_trace`
+  on interrupted tool calls (`531d526a`).
+- **MCP client** — `client_name`/`application_name` for `clientInfo` (`612f47f7`),
+  `continue_on_error` per server (`tools/mcp/mcp_client.py:218`), `progress_callback`
+  (`mcp_client.py:220`), load servers from JSON with `disabled`/`continue_on_error` keys (`eb654d5c`).
+- **Durable message IDs** — messages carry a `tracking_id` UUID surviving session save/restore +
+  snapshots (`types/content.py:236-264`).
+
+### Breaking changes / deprecations (core SDK)
+
+- `feat(models)!` mistralai 2.x (`57cb09cc`): Mistral provider targets mistralai 2.x.
+- `fix(memory)!` `LocalMemoryStore` → `TestMemoryStore` (`6c58f97c`): class + package path renamed;
+  no `LocalMemoryStore` symbol remains.
+- `Checkpoint` dropped `snapshot`/`app_data` (`d1f5480e`).
+- `experimental.steering` deprecated → `strands.vended_plugins.steering` (`DeprecationWarning`).
+- `cache_prompt` deprecated (pre-existing) — use `SystemContentBlock` + `cachePoint`.
+- Dependency-range shifts that can break lockfiles: `litellm` upper bound moved to `<2.0.0` then
+  reverted to `<=1.91.1` (`ba89c8f9`, `298c6ed7`); `google-genai` to `<3.0.0`; `writer-sdk` to `<4.0.0`.
+
+---
+
+## 2. strands-agents-evals — 0.1.14 → 1.0.2 (GA)
+
+**Key finding: 1.0.0 is NOT an API rewrite.** Verified in the v1.0.2 source tree: the entire 0.1
+surface this repo uses is still exported — `Experiment`, `ExperimentGenerator` (`generators/`),
+`TopicPlanner` (`generators/topic_planner.py`), `ToolSelectionAccuracyEvaluator`,
+`GoalSuccessRateEvaluator`, `eval_task`/`EvalTaskHandler`/`TracedHandler` (top-level `__init__`).
+The GA is a maturity/versioning milestone (red-team GA), not a break of the classic API. Note
+`@eval_task`/`TracedHandler` actually landed in 0.1.16, just after this repo's 0.1.14 baseline.
+
+Per release:
+- v0.1.15 (2026-04-17): `CorrectnessEvaluator` (trace-based + reference-based); OpenSearchProvider
+  + OpenSearchSessionMapper.
+- v0.1.16 (2026-04-30): `@eval_task` decorator + `EvalTaskHandler`; detectors interface +
+  failure_detector; Model type on HarmfulnessEvaluator.
+- v0.1.17 (2026-05-08): multimodal (image-to-text) evaluators + prompt templates; RCA —
+  `analyze_root_cause` integrated into eval workflow (RCAItem; confidencelevel/diagnose_trigger →
+  enums); new RefusalEvaluator, StereotypingEvaluator, InstructionFollowingEvaluator;
+  ToolSimulator optional `tools` param; **default judge model → Claude Sonnet 4.6**.
+- v0.2.0 (2026-05-14): structured_output for ActorSimulator; strands-reviewer workflow;
+  DiagnosisTrigger export.
+- v0.2.1 (2026-05-29): chaos testing module (fault injection); evals-skills bundle.
+- v0.3.0 (2026-06-12): built-in red teaming (experimental/redteam); chaos-resilience evaluators
+  (failure-communication, partial-completion, recovery-strategy); Crescendo multi-turn attack;
+  the `strands-evals` CLI (single-case eval + generate); trace-based evaluators added to defaults;
+  **report now always flattened**; EvaluationReport importable from root.
+- v1.0.0 (2026-06-16): red-team GA — GOAT, PAIR, SequentialBreak, Bad Likert Judge multi-turn
+  attack strategies; async cases execution; RedTeamExperiment; per-risk-category judge rubrics;
+  simulator input → AgentInput.
+- v1.0.1 (2026-06-25): CLI `fetch` command (pull traces from different sources);
+  refusal/helpfulness prompt updates (tool params now in eval prompt).
+- v1.0.2 (2026-07-09): fix(redteam) rename structured-output models off leading underscore.
+
+Net-new: red-team suite (`strands_evals/experimental/redteam/` — RedTeamExperiment,
+generators/adversarial, evaluators/attack_success_evaluator; **still `experimental/` despite the
+1.0 package version**); chaos/fault-injection + chaos-resilience evaluators; RCA/failure detectors;
+multimodal evaluators; new evaluator classes not in the 0.1.14 vocabulary: Coherence, Conciseness,
+Correctness, ResponseRelevance, ToolParameterAccuracy, Interactions, plus deterministic
+Contains/Equals/StartsWith/StateEquals/ToolCalled; full `strands-evals` CLI (eval, generate, fetch).
+
+Behavior changes that shift scores: default judge model now Claude Sonnet 4.6 (0.1.17); report
+always flattened (0.3.0); simulator/ActorSimulator input switched to AgentInput (1.0.0);
+confidencelevel/diagnose_trigger became enums (0.1.17).
+
+```mermaid
+flowchart TD
+    E[strands-evals 1.0.2] --> CLS[Classic API intact:<br/>Experiment, ExperimentGenerator,<br/>TopicPlanner, eval_task, TracedHandler]
+    E --> RT["experimental/redteam (GA'd features,<br/>experimental namespace)"]
+    RT --> A1[Crescendo]
+    RT --> A2[GOAT]
+    RT --> A3[PAIR]
+    RT --> A4[SequentialBreak]
+    RT --> A5[Bad Likert Judge]
+    RT --> ASE[AttackSuccessEvaluator]
+    E --> CH[Chaos testing]
+    CH --> CH1[failure-communication]
+    CH --> CH2[partial-completion]
+    CH --> CH3[recovery-strategy]
+    E --> RCA[RCA + failure detectors]
+    E --> MM[Multimodal i2t evaluators]
+    E --> CLI[strands-evals CLI:<br/>eval / generate / fetch]
+```
+
+---
+
+## 3. bedrock-agentcore — 1.12 → 1.18.1
+
+Substantive items per release (release bodies mostly point at CHANGELOG + PR lists):
+- v1.13.0 (2026-06-02): AgentCore **tool-search plugin for Strands Agents**.
+- v1.14.0 (2026-06-05): **interactive runtime shell** support.
+- v1.14.1 (2026-06-11): a2a-sdk capped `<1.0` to restore A2A server startup; `requests` moved to an
+  optional `datasets` extra; x402 payments "extension"→"extensions" typo fix.
+- v1.15.0 (2026-06-17): mostly CI/test ("NY summit" release).
+- v1.15.1 (2026-06-25): evaluation-module work — `evaluationReferenceInputs` on EvaluatorInput;
+  KMS/tags/online-data-source/updated_at on batch eval; `EvaluatorOutput.label` made optional;
+  memory: guard `retrieve_customer_context` on empty content, correct `score` field for relevance
+  filtering; **removed an invalid CLI entrypoint from pyproject.toml**.
+- v1.16.0 (2026-06-30): **`extraction_mode` parameter on `MemoryClient.create_event`**.
+- v1.17.0 (2026-07-02): fix(runtime) prevent streaming-bridge deadlock on client disconnect.
+- v1.18.0 (2026-07-10): payments **LangGraph integration**; memory events ordered/floored to
+  millisecond resolution.
+- v1.18.1 (2026-07-17): tighten package-specifier validation in `install_packages()`; dep bumps
+  incl. starlette 0.49 → 1.3.1.
+
+Top-level modules at v1.18.1 (verified in source): `config_bundle`, `evaluation`, `gateway`,
+`identity`, `knowledge_base`, `memory`, `payments`, `policy`, `runtime`, `services`, `tools`.
+Versus this repo's known set, three names are new territory: **`evaluation`, `knowledge_base`,
+`policy`**. `code_interpreter`/`browser`/`registry` are not top-level names at 1.18.1 (likely
+relocated, e.g. under `tools/` — exact mapping UNKNOWN from release notes).
+
+Breaking/behavior: console-script entrypoint removed (1.15.1); a2a-sdk capped <1.0 (1.14.1);
+`requests` now optional extra (1.14.1); starlette major bump (1.18.1); `EvaluatorOutput.label`
+optional (1.15.1).
+
+---
+
+## 4. strands-agents-tools — 0.7.0 → 0.8.4
+
+**Zero new tools.** Every 0.8.x release is bug-fix / security hardening. Per release:
+- v0.8.0 (2026-06-03): code_interpreter blob support in `write_files` (binary uploads); shell
+  `non_interactive` driven by env var; mongodb_memory env vars take precedence over tool params.
+- v0.8.1 (2026-06-16): code_interpreter custom boto3 session (cross-account); http_request default
+  timeout (no more indefinite blocking); `STRANDS_NON_INTERACTIVE` added to PROTECTED_VARS.
+- v0.8.2 (2026-06-25): http_request `proxies` **removed from LLM-controllable input schema**;
+  generate_image extension follows requested output_format; CI actions sha-pinned.
+- v0.8.3 (2026-07-09): security cluster — calculator blocks sympify string-eval escape; memory
+  binds tenant namespace out of LLM-controllable inputs; `STRANDS_DISABLE_LOAD_TOOL` in
+  PROTECTED_VARS; python_repl restricts perms on persisted state/error logs; **load_tool now
+  prompts for confirmation** before loading a tool file.
+- v0.8.4 (2026-07-17): python_repl `non_interactive` via env var; CODEOWNERS.
+
+Behavior changes to watch: http_request timeout (long calls that used to hang now error);
+generate_image output paths differ; load_tool confirmation gate breaks non-interactive callers
+unless disabled; calculator rejects previously-accepted sympify string inputs; env vars now
+override tool params for shell/python_repl/mongodb_memory.
+
+**Perspective:** an entire release train spent removing LLM-controllable attack surface (proxies,
+tenant namespaces, tool loading, eval-string escapes) is upstream confirmation of the L22/L50/L56
+thesis — the trust boundary between model-controlled inputs and system-controlled config is where
+production agent security lives.
+
+---
+
+## 5. Monorepo meta
+
+- **`strandly/`** — private monorepo dev CLI (`@strands-agents/strandly`, `"private": true`,
+  single `src/cli.ts`, commander-based; commands setup/build/test/check/fmt/example/ci/link).
+  Not a product; not published.
+- **`team/`** — the SDK team's internal engineering discipline, published in-repo: `TENETS.md`,
+  `DECISIONS.md` (ADR log), `API_BAR_RAISING.md`, `FEATURE_LIFECYCLE.md`, `PR.md`,
+  `COMPATIBILITY.md`, `AGENT_GUIDELINES.md`. Plus `team/designs/` — 15 RFC-style docs, notably:
+  - `0007-intervention-primitive.md` — one deny/guide interface unifying authorization, steering,
+    guardrails ("model proposes, system enforces"); shipped as `interventions/` in 1.43/1.44.
+  - `0011-memory-manager.md` — native long-term cross-session memory; shipped in 1.44.
+  - `0009-context-offloader.md` (Accepted) — shipped; `0008-proactive-context-compression.md`
+    (Proposed).
+  - `0014-storage.md` — unify the 5 subsystems that each roll their own persistence; first cut
+    shipped as `storage/` in 1.48.
+  - `0012/0013 Strandslator` — an agentic workflow to auto-translate features across SDK languages
+    (meta-engineering: agents maintaining the SDK itself).
+  - `0004-stateful-models.md` (OpenAI Responses API on Bedrock, "Project Mantle"),
+    `0005-state-machine.md` (agent loop as orchestrated steps), `0006-cedar-authorization.md`.
+- **`test-infra/`** — CDK app provisioning shared integ-test resources (Bedrock KB + S3 Vectors
+  index; SSM-published resource IDs; SSH-over-SSM EC2 target; DESTROY removal policy). A clean
+  pattern for test infrastructure with no hardcoded IDs.
+- **`strands-ts` v1.5 → v1.10** — memory manager + Bedrock KB store (1.5), middleware (1.5),
+  agentic context management + Cedar interventions (1.6), namespaced Cedar + KB ACL (1.7), local
+  memory store + MCP JSON (1.8), durable-execution checkpoints under /experimental (1.9), unified
+  Storage + generic async Queue + OTEL attrs-only var (1.10). One breaking: middleware context
+  inputs copied to prevent mutation (1.6). **Correction: A2A was already in strands-ts at v1.4**
+  (added pre-1.4 in PR #601; `strands-ts/src/a2a/` exports A2AServer/A2AAgent/A2AExecutor).
+- **WASM** — `strands-py-wasm` deleted as "abandoned TypeScript-to-Python experiment"
+  (`5a291d9d`, 2026-06-22). Not relocated.
+- **`site/`** — 33 new .mdx guide pages since 2026-06-01. Entirely new sections: **Shell SDK**
+  (quickstart/commands/configuration/security/mcp-server), **red-teaming** + chaos + CLI under
+  evals-sdk, **Interventions** (cedar-authorization/steering/human-in-the-loop), **Sandbox**,
+  **Memory** concepts (incl. bedrock-knowledge-base), context-management concept page, new plugin
+  pages (context-injector, goal-loop), community pages (agentcore-tool-search, strands-apify).
+- **Agent-driven development** — root `CLAUDE.md` is literally `@AGENTS.md`; `AGENTS.md` routes
+  agents to `team/` for rationale; `.agents/` ships reference docs (code-verification,
+  terminology, mdx-authoring, voice-guide) and in-repo agent skills (pr-feedback, strands-review,
+  docs-audit, docs-writer).
+
+```mermaid
+flowchart LR
+    subgraph designs ["team/designs (RFCs)"]
+        D7[0007 intervention primitive]
+        D11[0011 memory manager]
+        D9[0009 context offloader]
+        D14[0014 storage]
+    end
+    subgraph shipped ["Shipped in 1.43-1.48"]
+        S1[interventions/ + vended cedar/hitl]
+        S2[memory/ + vended stores]
+        S3[ContextOffloader + turn eviction]
+        S4[storage/ protocol]
+    end
+    D7 --> S1
+    D11 --> S2
+    D9 --> S3
+    D14 --> S4
+```
+
+---
+
+## 6. Corrections this delta forces on our own lesson docs
+
+1. **L65** (`docs/levels/L65-experimental-checkpoint.md`): "types-only in 1.42" was true then, is
+   false at 1.48 — checkpoint is a wired runtime with resume. The lesson's hook-based realization
+   remains valid as the 1.42-era workaround and as a portability pattern.
+2. **L39** (`docs/levels/L39-typescript-sdk.md`): "A2A not supported in TypeScript" was already
+   wrong at ts v1.4 — the module predates it. Needs correction independent of this delta.
+3. **L61** (`docs/levels/L61-token-counting.md`): our finding "the v1.42 path is chars/4" conflicts
+   with HEAD source showing tiktoken-first with chars/4 fallback (`models/model.py:266-292`).
+   Plausible reconciliation: tiktoken absent from our env at the time → fallback path measured.
+   Re-probe live before correcting either document; do not assert from memory.
+
+## 7. Perspectives
+
+- **First-party-ization.** The largest pattern: capabilities this repo built by hand are now SDK
+  primitives — agentic memory (L78–L82 vs `memory/`), unified control (L22/L29/L33/L47/L70 vs
+  `interventions/`), sandboxing (L24 vs `sandbox/`), storage (L64/L63 vs `storage/`), agentic
+  context management (L15/L53 vs `context_manager="agentic"`). The repo's hand-built versions are
+  now the "understand the mechanism" layer under first-party equivalents — a comparison that is
+  itself lesson material (hand-rolled vs vended, what the abstraction hides, where it leaks).
+- **The control plane converged exactly as this repo's levels predicted.** Four separately-taught
+  control stories became one primitive with five hook points and five actions. The intervention
+  design doc's phrase "model proposes, system enforces" is the L46d trust-boundary lesson stated
+  as SDK policy.
+- **Evals grew teeth.** Red-teaming, chaos injection, and RCA move the eval story from "grade the
+  answer" to "attack the agent" — adjacent to, but beyond, L89's single-injection eval and the
+  NEXT_STEPS memory-safety item. The judge-model change (Sonnet 4.6) silently shifts any absolute
+  score comparisons against our recorded baselines.
+- **Security hardening as a release strategy.** tools 0.8.x shipped five releases of pure
+  attack-surface removal. Whatever lesson plan extension follows, the upstream trajectory says
+  security evals are not optional garnish.
+- **Meta-engineering is now upstream practice too.** The Strands team drives its own repo with
+  in-repo agent skills, an AGENTS.md router, and RFCs for agent-run cross-SDK translation
+  (Strandslator) — the same posture this repo's README describes for its own construction.
+
+## UNKNOWN / not exhausted
+
+- bedrock-agentcore: first-appearance versions of `evaluation`/`knowledge_base`/`policy` modules;
+  the relocation mapping for code_interpreter/browser/registry.
+- strands-py: full internals of the a2a executor rewrite (`398343fa`), `sandbox/stream_process.py`,
+  and the 647-line tracer change beyond the public surface cited.
+- Shell SDK: docs read only at index level; package/source not yet examined.

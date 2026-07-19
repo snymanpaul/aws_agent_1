@@ -9,6 +9,7 @@ Progressive learning path from basic agents to production multi-agent systems.
 
 **Status (2026-07):** L1–L93 complete. This file tracks L1–L76 plus the master index; L77 lives in
 `artifacts/adk_patterns/`, L78–L93 in `LEARNING_PLAN_agentic_memory_evals.md`. Open work: `NEXT_STEPS_PLAN.md`.
+Proposed next tier (L94–L100, post-v1.48 ecosystem delta): `LEARNING_PLAN_v148_impact.md`.
 
 ---
 
@@ -345,7 +346,7 @@ graph TD
 
 | Topic | Source | Status |
 |-------|--------|--------|
-| Managed Harness (declarative agent → Strands export) | AgentCore preview, April 2026 | Still blocked on Python SDK availability |
+| Managed Harness (declarative agent → Strands export) | AgentCore preview, April 2026 | **GA announced** at Summit NY 2026 (delta report §9); Python SDK surface still unverified — probe before building |
 | AgentCore CLI + CDK deployment | AgentCore CLI GA, April 2026 | **Unblocked 2026-06**: GA as the npm `@aws/agentcore` CLI (deprecates the Python starter-toolkit CLI) — no lesson yet |
 | Performance Optimization (recommendations + batch + A/B) | AgentCore preview, May 2026 | **Unblocked 2026-06**: available via `@aws/agentcore` CLI (`run recommendation`, `run batch-evaluation`) — no lesson yet |
 | Filesystem Persistence | AgentCore preview, April 2026 | Still blocked: not in `bedrock-agentcore` Python SDK |

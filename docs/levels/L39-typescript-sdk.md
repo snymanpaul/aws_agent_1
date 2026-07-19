@@ -3,6 +3,13 @@
 **Code:** `11_platform/typescript/agent.ts`
 **Reflection:** [`level-39-reflection.md`](../../.claude/learnings/reflections/level-39-reflection.md)
 
+> **Correction 2026-07-18:** the "A2A not supported in TypeScript" claim below was wrong even when
+> written — the a2a module predates ts v1.4 (`strands-ts/src/a2a/`, added in upstream PR #601,
+> exports A2AServer/A2AAgent/A2AExecutor). See the
+> [v1.42→v1.48 delta report](../work/research/reports/2026-07-18_strands-ecosystem-delta-v142-to-v148.md)
+> §5. The TS SDK has also moved well past "experimental" feature parity (memory manager,
+> middleware, Cedar interventions, durable checkpoints by ts v1.10).
+
 ### Level 39: TypeScript SDK
 **Goal:** Build Strands agents in TypeScript for Lambda and serverless deployments
 

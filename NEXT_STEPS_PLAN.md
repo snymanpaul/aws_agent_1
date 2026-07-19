@@ -4,6 +4,11 @@
 README as the front door. Prior plan items (cross-model validation, doc fixes, public README, push to
 `main`) are done; the record lives in `.claude/learnings/reflections/` and git history.
 
+**New (2026-07-18):** the ecosystem moved (strands 1.42→1.48, evals 1.0 GA, agentcore 1.18, Strands
+Shell). Delta: `docs/work/research/reports/2026-07-18_strands-ecosystem-delta-v142-to-v148.md`.
+Proposed Tier 22 (L94–L100) with sequencing: `LEARNING_PLAN_v148_impact.md` — L94 (upgrade +
+regression sweep + L61 re-probe) is the entry point and partially subsumes item 3 below via L99.
+
 ## Open items (in priority order)
 
 1. **Operationalize the quality gates.** Wire `tools/no_sim_check.py` and `uv run pytest` into

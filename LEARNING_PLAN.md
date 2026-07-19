@@ -7,6 +7,9 @@ Progressive learning path from basic agents to production multi-agent systems.
 **Framework:** Strands Agents SDK (open-source, Apache 2.0)
 **Why Strands:** Powers Amazon Q, Kiro, AWS Glue agents. Model-driven, minimal boilerplate.
 
+**Status (2026-07):** L1–L93 complete. This file tracks L1–L76 plus the master index; L77 lives in
+`artifacts/adk_patterns/`, L78–L93 in `LEARNING_PLAN_agentic_memory_evals.md`. Open work: `NEXT_STEPS_PLAN.md`.
+
 ---
 
 ## Progress Tracker
@@ -26,7 +29,7 @@ Progressive learning path from basic agents to production multi-agent systems.
 | 9 | MCP Integration | Done | `04_production/mcp_integration.py` |
 | 10 | AgentCore Deploy | Done | `04_production/agentcore_deploy.py` |
 
-### Extended Syllabus (L11-25)
+### Extended Syllabus (L11-27)
 
 #### Tier 1: Enhanced Capabilities (L11-13)
 
@@ -109,7 +112,7 @@ graph TD
     L1[L1-3: Basics] --> L39[L39: TypeScript SDK]
 ```
 
-### Proposed Extensions (L41+)
+### Extensions (L41+) — all built (Tiers 12-15 below)
 *Research basis: [2026-03-18 SOTA research report](docs/work/research/reports/2026-03-18_strands-sota-agent-orchestration.md)*
 
 ```mermaid
@@ -332,17 +335,17 @@ graph TD
 | 64 | SDK Snapshots — selective in-memory state capture | Done | `13_state_persistence/sdk_snapshots.py` |
 | 65 | Experimental Checkpoint — contract + hook realization (auto-runtime deferred, needs Temporal) | Done | `13_state_persistence/checkpoint.py` |
 | 66 | AgentCore Memory — async session manager + LTM metadata filter (v1.42 facet) | Done | `14_agentcore_platform/memory_async_ltm.py` |
-| 67 | AG-UI on AgentCore Runtime — `serve_ag_ui(agent)` | Planned | `14_agentcore_platform/agui_native.py` |
+| 67 | AG-UI on AgentCore Runtime — `serve_ag_ui(agent)` | Realized as L76 | `19_agentcore_agui/agui_native.py` |
 
-#### Deferred (AWS preview, no Python SDK surface yet — 2026-05-03)
+#### Deferred (status updated 2026-06; originally 2026-05-03)
 
-| Topic | Source | Block on |
-|-------|--------|----------|
-| Managed Harness (declarative agent → Strands export) | AgentCore preview, April 2026 | Python SDK availability |
-| AgentCore CLI + CDK deployment | AgentCore CLI GA, April 2026 | Lesson is CLI-driven, not Python-first |
-| Performance Optimization (recommendations + batch + A/B) | AgentCore preview, May 2026 | Control-plane API; today only OTel baggage keys |
-| Filesystem Persistence | AgentCore preview, April 2026 | Not in `bedrock-agentcore` 1.8.0 |
-| Protocol-level HITL Interrupts (`Interrupt` schema) | `ag-ui-protocol` PR #1569 merged 2026-04-30 | `ag-ui-protocol >= 0.1.19` PyPI publish |
+| Topic | Source | Status |
+|-------|--------|--------|
+| Managed Harness (declarative agent → Strands export) | AgentCore preview, April 2026 | Still blocked on Python SDK availability |
+| AgentCore CLI + CDK deployment | AgentCore CLI GA, April 2026 | **Unblocked 2026-06**: GA as the npm `@aws/agentcore` CLI (deprecates the Python starter-toolkit CLI) — no lesson yet |
+| Performance Optimization (recommendations + batch + A/B) | AgentCore preview, May 2026 | **Unblocked 2026-06**: available via `@aws/agentcore` CLI (`run recommendation`, `run batch-evaluation`) — no lesson yet |
+| Filesystem Persistence | AgentCore preview, April 2026 | Still blocked: not in `bedrock-agentcore` Python SDK |
+| Protocol-level HITL Interrupts (`Interrupt` schema) | `ag-ui-protocol` PR #1569 merged 2026-04-30 | Still blocked on `ag-ui-protocol >= 0.1.19` PyPI publish (SDK-native interrupts covered by L70) |
 
 ---
 
@@ -350,7 +353,7 @@ graph TD
 
 *SDK delta: strands 1.38 → 1.42, tools 0.5.2 → 0.7.0, bedrock-agentcore 1.8 → 1.12, botocore → 1.43.19 (for the dataset API). All lessons verified on **Gemini 2.5 Flash** (Anthropic budget paused; `get_model` routes Gemini direct, no LiteLLM). Reflections: `sdk-v142-gemini-pivot-reflection.md` + per-level `level-{7,8,15,22,27}-v142` / `level-{66,68,69}`.*
 
-**Numbering note:** the NEW lessons are **L68 (Invocation Limits)** and **L69 (Payments)** — they intentionally do NOT reuse the planned Tier-17 slots **L64 (SDK Snapshots)** / **L67 (AG-UI)**, which stay open roadmap. **L66 (AgentCore Memory)** is realized here via its async + LTM-filter facet.
+**Numbering note:** the NEW lessons are **L68 (Invocation Limits)** and **L69 (Payments)** — they intentionally do NOT reuse the planned Tier-17 slots **L64 (SDK Snapshots)** / **L67 (AG-UI)**, which were open roadmap at the time (both since closed: L64 in Tier 19, the AG-UI slot as L76). **L66 (AgentCore Memory)** is realized here via its async + LTM-filter facet.
 
 ```mermaid
 graph TD
@@ -464,6 +467,18 @@ graph TD
 - Pairs with **L30** (local Strands `AgentSkills`): L30 runs a skill in-process; L71 publishes/governs/discovers one org-wide.
 
 **Queue complete (user 2→1→3):** ✓ L71 Registry · ✓ L72 Code Interpreter + ✓ L73 Browser · ✓ L62 (Nova prompt caching). **Bedrock entitlement finding (validated live):** Claude is gated behind an unfilled use-case form (`Model use case details have not been submitted` / `GetUseCaseForModelAccess` "not filled out") — `agreementAvailability` metadata was misleading; a real Converse call is the truth. `strict_tools` is Claude-only (Nova/Llama/Mistral all reject). Filling the Bedrock model-access use-case form would unlock Claude + `strict_tools` + extended cache TTL.
+
+---
+
+#### Tier 21: Cross-Model Patterns + Agentic Memory & Evals (L77-93) — DONE
+
+| Level | Topic | Status | Where |
+|-------|-------|--------|-------|
+| 77 | ADK multi-agent patterns ported to Strands, verified on Gemini + Bedrock Claude Haiku (8/8 both) | Done | `artifacts/adk_patterns/` |
+| 78-92 | Agentic memory (shared, cross-session, LTM-filtered, long-horizon, durable resume) + agentic evals (trajectory, goal-success, significance, unified harness) + capstone | Done | `LEARNING_PLAN_agentic_memory_evals.md` (per-level detail) |
+| 93 | Cross-model validation of L78-92 model-sensitive findings on Bedrock Nova Lite — all 6 held (framework-inherent) | Done | `13_quality/crossmodel_validation.py` |
+
+Current open work lives in `NEXT_STEPS_PLAN.md`.
 
 ---
 

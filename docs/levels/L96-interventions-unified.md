@@ -24,6 +24,11 @@ primitive, each proven live with a runtime side-effect sentinel and a positive/n
 `Action::"<tool_name>"` / `Resource::"agent"`; `on_error="deny"` fails closed and can mask config
 bugs as authorization denials (debugged by calling `cedarpy.is_authorized` directly).
 
+**Cross-model validated (2026-07-19, Bedrock Nova Lite, `13_quality/crossmodel_nova_l96_l99.py`):**
+all four intervention behaviors are **framework-inherent** — Deny/Transform/Cedar hold by
+construction (enforcement below the model), and Guide even replicated (Nova re-reasoned to the
+correct tool after guidance).
+
 **Deferred:** the a2a `agent_factory` multi-tenancy iteration (shared-agent server leaks caller
 context vs `agent_factory` isolation) — needs a live A2A server+client pair; mechanism captured in
 the delta report §8, candidate for an L96b / L32 revisit.

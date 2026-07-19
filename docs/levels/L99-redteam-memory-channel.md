@@ -32,3 +32,10 @@ teeth over retries).
 **Method note:** for the second time this tier a hypothesis-driven assertion ("memory bypasses
 hardening") was refuted live; a controlled weak-vs-strong probe (4/4 vs 0/4) settled it and the
 level was rebuilt around the evidence.
+
+**Cross-model validated (2026-07-19, Bedrock Nova Lite, `13_quality/crossmodel_nova_l96_l99.py`):**
+the explicit-policy **defense is framework-inherent** (strong-policy hijack 0/3 on Nova, 0/4 on
+Gemini), but injection **susceptibility is model-specific** — Nova hijacked the weak-policy agent
+only 1–2/3 vs Gemini's 4/4, i.e. Nova Lite is markedly *more* injection-resistant. Takeaway: the
+security posture transfers across model families; the raw attack-success rate does not, and
+robustness is not monotonic in model tier (cf. L89).

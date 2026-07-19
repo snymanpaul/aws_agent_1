@@ -25,9 +25,12 @@ Gemini's 1M window). Session-wide learnings: `.claude/learnings/reflections/SESS
    chaos half (failure-communication / partial-completion / recovery-strategy evaluators under
    injected tool faults) is a level's worth on its own, reusing L99's red-team plumbing.
 
-3. **Cross-model (Bedrock Nova) pass of the L96/L99 security findings.** An L93-style check that
-   "explicit deny-policy defends against memory injection" (L99) and the intervention actions (L96)
-   hold on a different model family. Bedrock inference is cheap and leaves no resources to clean up.
+3. ~~**Cross-model (Bedrock Nova) pass of the L96/L99 security findings.**~~ **DONE 2026-07-19**
+   (`13_quality/crossmodel_nova_l96_l99.py`, reflection `crossmodel-nova-l96-l99-reflection.md`):
+   L96 interventions (Deny/Transform/Cedar/Guide) are framework-inherent on Nova; L99's
+   explicit-policy defense holds on Nova, but injection susceptibility is model-specific — Nova Lite
+   is markedly MORE injection-resistant than Gemini (1–2/3 vs 4/4). Security posture transfers;
+   raw attack-success rate does not.
 
 ## Standing items
 

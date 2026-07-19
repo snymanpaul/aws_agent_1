@@ -20,6 +20,9 @@ Three parallel read-only explorations, consolidated here losslessly:
    `aws/bedrock-agentcore-sdk-python` (1.12 → 1.18.1), `strands-agents/evals` (0.1.14 → 1.0.2),
    with the evals claim verified against the v1.0.2 source tree. PyPI versions verified
    2026-07-18 via `pypi.org/pypi/<pkg>/json`.
+4. **External coverage** (section 9): two web-research passes over AWS blogs, What's New, the
+   Strands blog, third-party writeups, and YouTube — written sources verified by fetching each
+   page; video metadata carries snippet-level confidence only (noted inline).
 
 The old clone at `~/Documents/Code/strands-sdk-python` was unusable (OneDrive dataless-stub damage;
 file reads hang) and was replaced, not repaired.
@@ -559,3 +562,91 @@ Docs' own comparison table: cold start under 1 ms (vs ~200 ms Docker, ~1 s cloud
 via URL allowlist + SSRF guard; secrets injected per request and never visible to the agent;
 platforms macOS/Linux/WASM. Positioning: the third sandbox option alongside `DockerSandbox`/
 `SshSandbox` for agents running hundreds of commands per task.
+
+---
+
+## 9. External coverage (web research, 2026-07-18)
+
+Two research passes: written sources (each verified by fetching the page) and video (YouTube fetch
+returned no usable metadata, so video titles/dates carry search-snippet confidence only — flagged
+per item). Numbered citations; consolidated URL list at the end.
+
+### The canonical written narrative
+
+The whole June feature wave has essentially **one canonical launch post**: the Strands blog's
+*"Reduced cost, better isolation, and more resilience"* [1] (2026-06-18). It adds measured claims
+the code-level delta cannot see:
+- the automatic context manager cut tokens **~55%** while lifting a benchmark task from **68% to
+  98% accuracy**;
+- Strands Shell startup is **sub-millisecond**;
+- Evals 1.0 red-teaming ships **5 risk categories** and **4 attack strategies** (Crescendo, GOAT,
+  PAIR, sequential-break).
+
+The AWS News Blog Summit New York index [2] (2026-06-17) and Amazon's own framing piece [8] name
+**platform-level additions invisible at the SDK layer of this report**: AgentCore **Managed
+Knowledge Base** (six connectors per [9]), **Web Search with zero data egress** (exposed as an MCP
+connector per [9]), **AgentCore Harness GA**, and **AWS Context**. Notably [8] does not mention
+Strands, Shell, or Evals by name — Amazon's corporate framing and the Strands project's framing
+are separate narratives. Caylent's roundup [9] (2026-07-13) is the best analytical third party.
+Payments/x402's canonical post [3] (2026-05-07, pre-window) confirms the Strands + LangGraph
+pairing that shipped in agentcore 1.18.0; supporting docs at [10], preview What's New at [4].
+
+### Best applied third-party coverage
+
+- Morgan Willis (AWS) on DEV.to [6]: hands-on hardening walkthrough composing **Shell + Cedar
+  interventions + steering**, taking a deliberately attackable agent from 6/9 breaches to 0 —
+  the closest thing to an official interventions tutorial in existence.
+- Help Net Security [5] (2026-07-10): deny-by-default Cedar authorization with a separate agent
+  identity in an SAP-ERP scenario ($250M purchase-order case study).
+- AWSInsider's "three layers of agent knowledge" [11] is flagged relevant but **UNVERIFIED**
+  (HTTP 403 on fetch) — do not cite its body.
+
+### Written-coverage negatives (verified absences)
+
+No dedicated blog post exists for: **interventions/Cedar** (SDK docs + changelog only),
+**the native memory manager** (nearest canonical is the pre-window KB worked example [7]),
+**the AgentCore tool-search plugin**, or **the interactive runtime shell** (both appear only
+inside summit roundups). For the June KB/Web Search launch there is no standalone What's New post;
+it exists only inside the summit index [2].
+
+### Video coverage
+
+Thin. The **only in-window, in-scope official video** is the AWS Summit New York 2026 keynote
+[V1] (2026-06-17, Swami Sivasubramanian + Chet Kapoor), which announces "better context management
+in the Harness SDK, a new isolated execution environment with Strands Shell, and chaos testing and
+red teaming in Strands Evals" at keynote depth — no code walkthroughs. No dedicated video exists
+for any individual in-scope feature (16 documented searches; see negatives). Background material:
+the pre-window "Build & Deploy Agents with Strands" intro series [V2-V4] (~May 2026), a New Stack
+Makers interview with Morgan Willis on intent-based tool design and AgentCore Gateway semantic
+tool search (52K → 2K tokens) [V5], and the June-2025 AWS Show and Tell on the *old* eval approach
+[V6] (historical contrast only). Known false positives: all "Strands Theme of the Day" videos are
+the NYT word puzzle, not the SDK.
+
+**Video negatives:** no findable video for interventions/Cedar, memory manager + KB store,
+sandbox/Strands Shell demos, evals red-teaming/chaos, in-window payments/x402, or individual
+Summit NY breakout sessions (recordings typically land weeks after the event — **re-check the AWS
+Events channel in August 2026**).
+
+### Sources
+
+Written (page-fetch verified except [11]):
+1. https://strandsagents.com/blog/reduced-cost-better-isolation-more-resilience/ — Strands Blog, Ryan Coleman & team, 2026-06-18. Canonical launch post: context management, Shell, Evals 1.0.
+2. https://aws.amazon.com/blogs/aws/top-announcements-of-the-aws-summit-in-new-york-2026/ — AWS News Blog, 2026-06-17. Summit index: Managed KB, Web Search, Harness GA, AWS Context.
+3. https://aws.amazon.com/blogs/machine-learning/agents-that-transact-introducing-amazon-bedrock-agentcore-payments-built-with-coinbase-and-stripe/ — AWS ML Blog, Preethi CN, 2026-05-07. Canonical payments/x402.
+4. https://aws.amazon.com/about-aws/whats-new/2026/04/amazon-bedrock-agentcore-payments-preview/ — AWS What's New, 2026-04. Payments preview.
+5. https://www.helpnetsecurity.com/2026/07/10/aws-agentic-ai-erp-automation/ — Help Net Security, Sinisa Markovic, 2026-07-10. Cedar deny-by-default in SAP-ERP.
+6. https://dev.to/aws/red-team-your-ai-agents-before-someone-else-does-o4i — DEV.to, Morgan Willis (AWS), ~2026-06-24 (page date renders "2024", likely typo; edited 2026-07-13). Shell + Cedar + red-team walkthrough.
+7. https://aws.amazon.com/blogs/machine-learning/building-intelligent-event-agents-using-amazon-bedrock-agentcore-and-amazon-bedrock-knowledge-bases/ — AWS ML Blog, 2026-02-25 (pre-window). Memory + KB worked example.
+8. https://www.aboutamazon.com/news/aws/aws-summit-nyc-2026-ai-agents — aboutamazon.com, Swami Sivasubramanian, 2026-06. Corporate framing; omits Strands/Shell/Evals by name.
+9. https://caylent.com/blog/aws-summit-new-york-2026-new-launches-and-capabilities — Caylent, Guille Ojeda, 2026-07-13. Analytical summit roundup.
+10. https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/payments.html — AgentCore devguide. Payments/x402 docs.
+11. https://awsinsider.net/articles/2026/06/25/amazon-bedrock-agentcore-adds-three-new-layers-of-agent-knowledge.aspx — AWSInsider, 2026-06-25. UNVERIFIED (HTTP 403).
+
+Video (snippet-confidence metadata):
+- V1. https://www.youtube.com/watch?v=x0sXP4Lipqc — AWS Summit New York 2026 Keynote, Amazon Web Services, 2026-06-17. In-window; announcement depth.
+- V2. https://www.youtube.com/watch?v=HFLZT01UVqc — Build & Deploy Agents with Strands S1E1, ~2026-05-07 (pre-window).
+- V3. https://www.youtube.com/watch?v=Dt7a7i726y0 — S1E2, ~2026-05-14 (pre-window).
+- V4. https://www.youtube.com/watch?v=xMexT_jPziU — S1E3, date unverified.
+- V5. https://www.youtube.com/watch?v=XGTbVm2dzdA — New Stack Makers, Morgan Willis on tool design + Gateway semantic tool search; date unverified (2026).
+- V6. https://www.youtube.com/watch?v=VgN-6_tmQHE — AWS Show and Tell: Strands observability/eval/deployment, 2025-06-25 (historical contrast).
+- (LinkedIn, not YouTube, unverified): Morgan Willis, "Strands Evals SDK Simplifies AI Agent Evaluation".

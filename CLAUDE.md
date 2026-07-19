@@ -82,6 +82,7 @@ Claude aliases route via the LiteLLM proxy at `localhost:4000`; `gemini*` goes d
 - `eval_harness.py` — composable evals: datasets + evaluators + multi-run + Wilson/bootstrap CIs +
   permutation significance + token/latency cost gate + regression baseline.
 - `ship_gate.py` — one auditable GO/NO-GO verdict over real runs (the "paid, audit-reproducible gate").
+- `check_no_aws_ids.py` — **BINDING RULE: never put AWS account info (12-digit account ids, `AWSAdministratorAccess-*` / SSO profile strings, account-bearing ARNs) in ANY `.md` or `.py` file.** This tripwire blocks it; install the pre-commit hook once per clone with `sh tools/install_hooks.sh`. Account ids belong only in local, gitignored config (`~/.aws`, `.claude/settings.local.json`), never in tracked files.
 
 **Anti-simulation is non-negotiable** (enforced by `tools/no_sim_check.py`): every lesson is
 structurally un-fakeable (runtime sentinels, real services, real crashes, positive/negative controls)

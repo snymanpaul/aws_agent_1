@@ -1,0 +1,143 @@
+# Level 27: Research Agent Deployment Configuration
+# =================================================
+#
+# This file documents all environment variables for deployment.
+# Copy and customize for your environment.
+#
+# Usage:
+#   - Local: Export these variables or use .env file
+#   - Docker: Pass via -e flags or --env-file
+#   - AgentCore: Configure in deployment settings
+
+# =============================================================================
+# AWS Configuration
+# =============================================================================
+
+# AWS Region for Bedrock and DynamoDB
+# Required: Yes
+# Default: us-east-1
+BEDROCK_REGION: us-east-1
+
+# DynamoDB table names
+# Required: Yes (if not using defaults)
+# Created by: setup_aws.sh
+DYNAMODB_SESSIONS_TABLE: research_agent_sessions
+DYNAMODB_CHECKPOINTS_TABLE: research_agent_checkpoints
+
+# =============================================================================
+# Bedrock Model Configuration
+# =============================================================================
+
+# Fast model (for quick iterations, web search)
+# Options: anthropic.claude-3-5-haiku-20241022-v1:0
+BEDROCK_FAST_MODEL: anthropic.claude-3-5-haiku-20241022-v1:0
+
+# Reasoning model (for analysis, synthesis)
+# Options: anthropic.claude-3-5-sonnet-20241022-v2:0
+BEDROCK_REASONING_MODEL: anthropic.claude-3-5-sonnet-20241022-v2:0
+
+# Critic model (for quality evaluation)
+# Options: anthropic.claude-3-5-sonnet-20241022-v2:0
+BEDROCK_CRITIC_MODEL: anthropic.claude-3-5-sonnet-20241022-v2:0
+
+# =============================================================================
+# External Service Configuration
+# =============================================================================
+
+# Perplexity API (for web search)
+# Required: Yes (for web search feature)
+# Get key from: https://www.perplexity.ai/settings/api
+PERPLEXITY_API_KEY: ""  # Your Perplexity API key
+PERPLEXITY_BASE_URL: https://api.perplexity.ai/chat/completions
+PERPLEXITY_MODEL: sonar
+
+# Graphiti MCP (for knowledge graph)
+# Required: No (graceful degradation if unavailable)
+# Note: External Graphiti service must be running
+GRAPHITI_MCP_URL: http://graphiti-host:8000/mcp
+
+# =============================================================================
+# Feature Flags
+# =============================================================================
+
+# Enable Graphiti knowledge graph integration
+# Set to "false" to disable (reduces dependencies)
+ENABLE_GRAPHITI: "true"
+
+# Enable Perplexity web search
+# Set to "false" to use only LLM knowledge fallback
+ENABLE_PERPLEXITY: "true"
+
+# Enable RAG document search (Bedrock Knowledge Base)
+# Note: Not yet implemented in L27 MVP
+ENABLE_RAG: "false"
+
+# =============================================================================
+# Research Configuration
+# =============================================================================
+
+# Quality threshold for report acceptance (0.0-1.0)
+# Reports below this score trigger refinement iterations
+QUALITY_THRESHOLD: "0.60"
+
+# Maximum refinement iterations
+MAX_ITERATIONS: "2"
+
+# Maximum sources per research query
+MAX_SOURCES: "10"
+
+# =============================================================================
+# Session Configuration
+# =============================================================================
+
+# TTL for session data in DynamoDB (days)
+SESSION_TTL_DAYS: "7"
+
+# TTL for checkpoint data in DynamoDB (hours)
+CHECKPOINT_TTL_HOURS: "24"
+
+# =============================================================================
+# Local Development (LiteLLM proxy)
+# =============================================================================
+
+# LiteLLM proxy for local development
+# Only used when NOT running in AWS environment
+LITELLM_BASE_URL: http://localhost:4000
+LITELLM_API_KEY: sk-local
+
+# Force DynamoDB usage locally (for testing)
+# Set to "true" to use real DynamoDB instead of LocalPersistence
+USE_DYNAMODB: "false"
+
+# =============================================================================
+# Example: Docker Run Command
+# =============================================================================
+#
+# docker run -p 8080:8080 \
+#   -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
+#   -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+#   -e BEDROCK_REGION=us-east-1 \
+#   -e PERPLEXITY_API_KEY=$PERPLEXITY_API_KEY \
+#   -e GRAPHITI_MCP_URL=http://graphiti:8000/mcp \
+#   -e ENABLE_GRAPHITI=true \
+#   -e ENABLE_PERPLEXITY=true \
+#   research-agent:l27
+#
+# =============================================================================
+
+# =============================================================================
+# Example: .env file for local development
+# =============================================================================
+#
+# Create a .env file in project root with:
+#
+# BEDROCK_REGION=us-east-1
+# PERPLEXITY_API_KEY=your-key-here
+# GRAPHITI_MCP_URL=http://localhost:8000/mcp
+# ENABLE_GRAPHITI=true
+# ENABLE_PERPLEXITY=true
+#
+# Then run:
+#   export $(cat .env | xargs) && uv run python 10_production/l27_agentcore_research_agent.py
+#
+# =============================================================================

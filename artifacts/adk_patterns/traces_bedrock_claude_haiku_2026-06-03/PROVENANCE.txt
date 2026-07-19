@@ -1,0 +1,3 @@
+Bedrock Claude-haiku-4-5 (us.anthropic.claude-haiku-4-5-20251001-v1:0), acct <agentic-account-id>, us-east-1.
+Captured 2026-06-03 from run_all.py (ADK_MODEL_PROVIDER=bedrock). 8/8 pass, 8/8 reproducible, ~35071 tok/full-pass.
+These are the artifact-backed cross-model traces the HANDOVER flagged as missing (traces/ overwrites in place).

@@ -1,0 +1,12 @@
+{"seq": 0, "ms": 149, "evt": "invoke.start", "agent": "coordinator"}
+{"seq": 1, "ms": 3242, "evt": "tool.start", "agent": "coordinator", "tool": "handoff_to_agent", "input": {"agent_name": "billing", "message": "User was charged twice for their subscription and is requesting a refund. Please investigate the duplicate charge and process the appropriate refund."}}
+{"seq": 2, "ms": 3242, "evt": "tool.end", "agent": "coordinator", "tool": "handoff_to_agent", "result": "[success] Handing off to billing: User was charged twice for their subscription and is requesting a refund. Please investigate the duplicate charge and process "}
+{"seq": 3, "ms": 4635, "evt": "invoke.end", "agent": "coordinator"}
+{"seq": 4, "ms": 4636, "evt": "invoke.start", "agent": "billing"}
+{"seq": 5, "ms": 7218, "evt": "invoke.end", "agent": "billing"}
+{"seq": 6, "ms": 7356, "evt": "invoke.start", "agent": "coordinator"}
+{"seq": 7, "ms": 10404, "evt": "tool.start", "agent": "coordinator", "tool": "handoff_to_agent", "input": {"agent_name": "tech", "message": "User is experiencing an app crash on login with error 500. This is a technical error that needs investigation and troubleshooting."}}
+{"seq": 8, "ms": 10404, "evt": "tool.end", "agent": "coordinator", "tool": "handoff_to_agent", "result": "[success] Handing off to tech: User is experiencing an app crash on login with error 500. This is a technical error that needs investigation and troubleshooting"}
+{"seq": 9, "ms": 11789, "evt": "invoke.end", "agent": "coordinator"}
+{"seq": 10, "ms": 11789, "evt": "invoke.start", "agent": "tech"}
+{"seq": 11, "ms": 14939, "evt": "invoke.end", "agent": "tech"}

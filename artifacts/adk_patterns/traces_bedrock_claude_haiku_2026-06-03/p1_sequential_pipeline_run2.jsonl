@@ -1,0 +1,6 @@
+{"seq": 0, "ms": 577, "evt": "invoke.start", "agent": "extract"}
+{"seq": 1, "ms": 3429, "evt": "invoke.end", "agent": "extract"}
+{"seq": 2, "ms": 3431, "evt": "invoke.start", "agent": "analyze"}
+{"seq": 3, "ms": 7087, "evt": "invoke.end", "agent": "analyze"}
+{"seq": 4, "ms": 7087, "evt": "invoke.start", "agent": "write"}
+{"seq": 5, "ms": 9764, "evt": "invoke.end", "agent": "write"}

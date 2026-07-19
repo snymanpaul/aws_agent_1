@@ -1,0 +1,25 @@
+DATA ACCESS AND SECURITY POLICY
+
+1. ROLE-BASED ACCESS CONTROL
+   - Standard users can access only non-sensitive data
+   - Analysts can access aggregated or anonymized PII data
+   - Managers can access PII for their direct reports only
+   - Administrators can access all data with audit logging
+   - No role may access data outside their assigned business unit
+
+2. PII HANDLING REQUIREMENTS
+   - PII data must never be exported to unsecured locations
+   - PII access requires business justification logged per request
+   - PII must be masked or anonymized in development environments
+   - Raw PII cannot be shared via email or chat applications
+
+3. AUDIT AND COMPLIANCE
+   - All data access must be logged with user ID and timestamp
+   - Access logs must be retained for 7 years minimum
+   - Bulk data exports (>1000 records) require manager approval
+   - Failed access attempts must trigger security alerts
+
+4. DATA RETENTION AND DELETION
+   - Customer data must be deleted within 30 days of account closure
+   - Backup data must follow the same retention rules as source
+   - Data deletion requests must be completed within 72 hours

@@ -1,0 +1,38 @@
+{
+  "timestamp": "2025-12-12T09:46:02.841821",
+  "observations_count": 134,
+  "systems": {
+    "JSON": {
+      "storage_dir": "./benchmark_json",
+      "records_stored": 268,
+      "store_time_ms": 71.63499994203448
+    },
+    "ChromaDB": {
+      "storage_dir": "./benchmark_chroma",
+      "records_stored": 268,
+      "store_time_ms": 37594.73783383146
+    },
+    "Graphiti": {
+      "group_id": "benchmark-094640",
+      "records_stored": 134,
+      "store_time_ms": 1376.2392080388963,
+      "note": "Async processing - wait ~24 min before querying"
+    },
+    "OpenMemory": {
+      "records_stored": 134,
+      "store_time_ms": 2123.1303331442177
+    },
+    "LanceDB_Local": {
+      "storage_path": "./benchmark_lancedb_local",
+      "embedding_type": "local",
+      "records_stored": 268,
+      "store_time_ms": 9664.253417169675
+    },
+    "LanceDB_API": {
+      "storage_path": "./benchmark_lancedb_api",
+      "embedding_type": "api",
+      "records_stored": 268,
+      "store_time_ms": 59701.59983308986
+    }
+  }
+}

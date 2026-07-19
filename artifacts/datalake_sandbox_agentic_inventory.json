@@ -1,0 +1,926 @@
+{
+  "account": "<data-account-id>",
+  "account_name": "the data-only sandbox account",
+  "region": "us-east-1",
+  "resources": {
+    "gateways": {
+      "list_key": "items",
+      "count": 1,
+      "items": [
+        {
+          "list_item": {
+            "gatewayId": "l27agentcore-gateway-hr4f5b0f6x",
+            "name": "l27agentcore-Gateway",
+            "status": "READY",
+            "createdAt": "2025-12-16 04:03:23.393594+00:00",
+            "updatedAt": "2026-04-14 03:12:26.597294+00:00",
+            "authorizerType": "CUSTOM_JWT",
+            "protocolType": "MCP"
+          },
+          "detail": {
+            "gatewayArn": "arn:aws:bedrock-agentcore:us-east-1:<data-account-id>:gateway/l27agentcore-gateway-hr4f5b0f6x",
+            "gatewayId": "l27agentcore-gateway-hr4f5b0f6x",
+            "gatewayUrl": "https://l27agentcore-gateway-hr4f5b0f6x.gateway.bedrock-agentcore.us-east-1.amazonaws.com/mcp",
+            "createdAt": "2025-12-16 04:03:23.393594+00:00",
+            "updatedAt": "2026-04-14 03:12:26.597294+00:00",
+            "status": "READY",
+            "name": "l27agentcore-Gateway",
+            "roleArn": "arn:aws:iam::<data-account-id>:role/l27agentcore-AgentCoreSta-l27agentcoreAgentCoreGate-jWuoSU2vKmMM",
+            "protocolType": "MCP",
+            "authorizerType": "CUSTOM_JWT",
+            "authorizerConfiguration": {
+              "customJWTAuthorizer": {
+                "discoveryUrl": "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_IETOPBoNC/.well-known/openid-configuration",
+                "allowedClients": [
+                  "5pgimpsa839u40bo6nutbf0p9b"
+                ]
+              }
+            },
+            "workloadIdentityDetails": {
+              "workloadIdentityArn": "arn:aws:bedrock-agentcore:us-east-1:<data-account-id>:workload-identity-directory/default/workload-identity/l27agentcore-gateway-hr4f5b0f6x"
+            }
+          },
+          "targets": [
+            {
+              "list": {
+                "targetId": "PAXLWQVW7F",
+                "name": "l27agentcore-Target",
+                "status": "READY",
+                "createdAt": "2025-12-16 04:03:32.268625+00:00",
+                "updatedAt": "2025-12-16 04:03:33.027529+00:00"
+              },
+              "detail": {
+                "gatewayArn": "arn:aws:bedrock-agentcore:us-east-1:<data-account-id>:gateway/l27agentcore-gateway-hr4f5b0f6x",
+                "targetId": "PAXLWQVW7F",
+                "createdAt": "2025-12-16 04:03:32.268625+00:00",
+                "updatedAt": "2025-12-16 04:03:33.027529+00:00",
+                "status": "READY",
+                "name": "l27agentcore-Target",
+                "targetConfiguration": {
+                  "mcp": {
+                    "lambda": {
+                      "lambdaArn": "arn:aws:lambda:us-east-1:<data-account-id>:function:l27agentcore-AgentCoreSta-l27agentcoreMcpLambda05F-2TrFxLBVyxZy",
+                      "toolSchema": {
+                        "inlinePayload": [
+                          {
+                            "name": "placeholder_tool",
+                            "description": "No-op tool that demonstrates passing arguments",
+                            "inputSchema": {
+                              "type": "object",
+                              "properties": {
+                                "string_param": {
+                                  "type": "string",
+                                  "description": "Example string parameter"
+                                },
+                                "int_param": {
+                                  "type": "integer",
+                                  "description": "Example integer parameter"
+                                },
+                                "float_array_param": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "number"
+                                  },
+                                  "description": "Example float array parameter"
+                                }
+                              },
+                              "required": []
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                },
+                "credentialProviderConfigurations": [
+                  {
+                    "credentialProviderType": "GATEWAY_IAM_ROLE"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "memories": {
+      "list_key": "memories",
+      "count": 1,
+      "items": [
+        {
+          "list_item": {
+            "arn": "arn:aws:bedrock-agentcore:us-east-1:<data-account-id>:memory/l27agentcore_Memory-9RYaOkDitt",
+            "id": "l27agentcore_Memory-9RYaOkDitt",
+            "status": "ACTIVE",
+            "createdAt": "2025-12-15 20:03:05.130000-08:00",
+            "updatedAt": "2025-12-15 20:03:05.298000-08:00"
+          },
+          "detail": {
+            "arn": "arn:aws:bedrock-agentcore:us-east-1:<data-account-id>:memory/l27agentcore_Memory-9RYaOkDitt",
+            "id": "l27agentcore_Memory-9RYaOkDitt",
+            "name": "l27agentcore_Memory",
+            "description": "Memory resource with 30 days event expiry",
+            "eventExpiryDuration": 30,
+            "status": "ACTIVE",
+            "createdAt": "2025-12-15 20:03:05.130000-08:00",
+            "updatedAt": "2025-12-15 20:03:05.298000-08:00",
+            "strategies": []
+          }
+        }
+      ]
+    },
+    "workload_identities": {
+      "list_key": "workloadIdentities",
+      "count": 3,
+      "items": [
+        {
+          "list_item": {
+            "name": "l27agentcore-gateway-hr4f5b0f6x",
+            "workloadIdentityArn": "arn:aws:bedrock-agentcore:us-east-1:<data-account-id>:workload-identity-directory/default/workload-identity/l27agentcore-gateway-hr4f5b0f6x"
+          },
+          "detail": {
+            "name": "l27agentcore-gateway-hr4f5b0f6x",
+            "workloadIdentityArn": "arn:aws:bedrock-agentcore:us-east-1:<data-account-id>:workload-identity-directory/default/workload-identity/l27agentcore-gateway-hr4f5b0f6x",
+            "allowedResourceOauth2ReturnUrls": [],
+            "createdTime": "2025-12-15 20:03:24.216000-08:00",
+            "lastUpdatedTime": "2025-12-15 20:03:24.216000-08:00"
+          }
+        },
+        {
+          "list_item": {
+            "name": "l67demopaymentmanager-ko7vfttx2m",
+            "workloadIdentityArn": "arn:aws:bedrock-agentcore:us-east-1:<data-account-id>:workload-identity-directory/default/workload-identity/l67demopaymentmanager-ko7vfttx2m"
+          },
+          "detail": {
+            "name": "l67demopaymentmanager-ko7vfttx2m",
+            "workloadIdentityArn": "arn:aws:bedrock-agentcore:us-east-1:<data-account-id>:workload-identity-directory/default/workload-identity/l67demopaymentmanager-ko7vfttx2m",
+            "allowedResourceOauth2ReturnUrls": [],
+            "createdTime": "2026-06-02 05:33:12.879000-07:00",
+            "lastUpdatedTime": "2026-06-02 05:33:12.879000-07:00"
+          }
+        },
+        {
+          "list_item": {
+            "name": "l27agentcore_Agent-8SQjr5BSN3",
+            "workloadIdentityArn": "arn:aws:bedrock-agentcore:us-east-1:<data-account-id>:workload-identity-directory/default/workload-identity/l27agentcore_Agent-8SQjr5BSN3"
+          },
+          "detail": {
+            "name": "l27agentcore_Agent-8SQjr5BSN3",
+            "workloadIdentityArn": "arn:aws:bedrock-agentcore:us-east-1:<data-account-id>:workload-identity-directory/default/workload-identity/l27agentcore_Agent-8SQjr5BSN3",
+            "allowedResourceOauth2ReturnUrls": [],
+            "createdTime": "2025-12-15 20:05:50.980000-08:00",
+            "lastUpdatedTime": "2025-12-15 20:05:50.980000-08:00"
+          }
+        }
+      ]
+    },
+    "evaluators": {
+      "list_key": "evaluators",
+      "count": 16,
+      "items": [
+        {
+          "list_item": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.Correctness",
+            "evaluatorId": "Builtin.Correctness",
+            "evaluatorName": "Builtin.Correctness",
+            "description": "Response Quality Metric. Evaluates whether the information in the agent's response is factually accurate",
+            "evaluatorType": "Builtin",
+            "level": "TRACE",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          },
+          "detail": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.Correctness",
+            "evaluatorId": "Builtin.Correctness",
+            "evaluatorName": "Builtin.Correctness",
+            "description": "Response Quality Metric. Evaluates whether the information in the agent's response is factually accurate",
+            "evaluatorConfig": {
+              "llmAsAJudge": {
+                "ratingScale": {
+                  "numerical": [
+                    {
+                      "value": 0.0,
+                      "label": "Incorrect"
+                    },
+                    {
+                      "value": 0.5,
+                      "label": "Partially correct"
+                    },
+                    {
+                      "value": 1.0,
+                      "label": "Correct"
+                    }
+                  ]
+                }
+              }
+            },
+            "level": "TRACE",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          }
+        },
+        {
+          "list_item": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.Faithfulness",
+            "evaluatorId": "Builtin.Faithfulness",
+            "evaluatorName": "Builtin.Faithfulness",
+            "description": "Response Quality Metric. Evaluates whether information in the response is supported by provided context/sources",
+            "evaluatorType": "Builtin",
+            "level": "TRACE",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          },
+          "detail": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.Faithfulness",
+            "evaluatorId": "Builtin.Faithfulness",
+            "evaluatorName": "Builtin.Faithfulness",
+            "description": "Response Quality Metric. Evaluates whether information in the response is supported by provided context/sources",
+            "evaluatorConfig": {
+              "llmAsAJudge": {
+                "ratingScale": {
+                  "numerical": [
+                    {
+                      "value": 0.0,
+                      "label": "Not at all"
+                    },
+                    {
+                      "value": 0.25,
+                      "label": "Not generally"
+                    },
+                    {
+                      "value": 0.5,
+                      "label": "Neutral/Mixed"
+                    },
+                    {
+                      "value": 0.75,
+                      "label": "Generally yes"
+                    },
+                    {
+                      "value": 1.0,
+                      "label": "Completely yes"
+                    }
+                  ]
+                }
+              }
+            },
+            "level": "TRACE",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          }
+        },
+        {
+          "list_item": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.Helpfulness",
+            "evaluatorId": "Builtin.Helpfulness",
+            "evaluatorName": "Builtin.Helpfulness",
+            "description": "Response Quality Metric. Evaluates from user's perspective how useful and valuable the agent's response is",
+            "evaluatorType": "Builtin",
+            "level": "TRACE",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          },
+          "detail": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.Helpfulness",
+            "evaluatorId": "Builtin.Helpfulness",
+            "evaluatorName": "Builtin.Helpfulness",
+            "description": "Response Quality Metric. Evaluates from user's perspective how useful and valuable the agent's response is",
+            "evaluatorConfig": {
+              "llmAsAJudge": {
+                "ratingScale": {
+                  "numerical": [
+                    {
+                      "value": 0.0,
+                      "label": "Not helpful at all"
+                    },
+                    {
+                      "value": 1.0,
+                      "label": "Very unhelpful"
+                    },
+                    {
+                      "value": 2.0,
+                      "label": "Somewhat unhelpful"
+                    },
+                    {
+                      "value": 3.0,
+                      "label": "Neutral/Mixed"
+                    },
+                    {
+                      "value": 4.0,
+                      "label": "Somewhat helpful"
+                    },
+                    {
+                      "value": 5.0,
+                      "label": "Very helpful"
+                    },
+                    {
+                      "value": 6.0,
+                      "label": "Above and beyond"
+                    }
+                  ]
+                }
+              }
+            },
+            "level": "TRACE",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          }
+        },
+        {
+          "list_item": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.ResponseRelevance",
+            "evaluatorId": "Builtin.ResponseRelevance",
+            "evaluatorName": "Builtin.ResponseRelevance",
+            "description": "Response Quality Metric. Evaluates whether the response appropriately addresses the user's query",
+            "evaluatorType": "Builtin",
+            "level": "TRACE",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          },
+          "detail": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.ResponseRelevance",
+            "evaluatorId": "Builtin.ResponseRelevance",
+            "evaluatorName": "Builtin.ResponseRelevance",
+            "description": "Response Quality Metric. Evaluates whether the response appropriately addresses the user's query",
+            "evaluatorConfig": {
+              "llmAsAJudge": {
+                "ratingScale": {
+                  "numerical": [
+                    {
+                      "value": 0.0,
+                      "label": "Stereotyping"
+                    },
+                    {
+                      "value": 1.0,
+                      "label": "Not Stereotyping"
+                    }
+                  ]
+                }
+              }
+            },
+            "level": "TRACE",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          }
+        },
+        {
+          "list_item": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.Conciseness",
+            "evaluatorId": "Builtin.Conciseness",
+            "evaluatorName": "Builtin.Conciseness",
+            "description": "Response Quality Metric. Evaluates whether the response is appropriately brief without missing key information",
+            "evaluatorType": "Builtin",
+            "level": "TRACE",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          },
+          "detail": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.Conciseness",
+            "evaluatorId": "Builtin.Conciseness",
+            "evaluatorName": "Builtin.Conciseness",
+            "description": "Response Quality Metric. Evaluates whether the response is appropriately brief without missing key information",
+            "evaluatorConfig": {
+              "llmAsAJudge": {
+                "ratingScale": {
+                  "numerical": [
+                    {
+                      "value": 0.0,
+                      "label": "Not concise"
+                    },
+                    {
+                      "value": 0.5,
+                      "label": "Mostly concise"
+                    },
+                    {
+                      "value": 1.0,
+                      "label": "Perfectly concise"
+                    }
+                  ]
+                }
+              }
+            },
+            "level": "TRACE",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          }
+        },
+        {
+          "list_item": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.Coherence",
+            "evaluatorId": "Builtin.Coherence",
+            "evaluatorName": "Builtin.Coherence",
+            "description": "Response Quality Metric. Evaluates whether the response is logically structured and coherent",
+            "evaluatorType": "Builtin",
+            "level": "TRACE",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          },
+          "detail": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.Coherence",
+            "evaluatorId": "Builtin.Coherence",
+            "evaluatorName": "Builtin.Coherence",
+            "description": "Response Quality Metric. Evaluates whether the response is logically structured and coherent",
+            "evaluatorConfig": {
+              "llmAsAJudge": {
+                "ratingScale": {
+                  "numerical": [
+                    {
+                      "value": 0.0,
+                      "label": "Not at all"
+                    },
+                    {
+                      "value": 0.25,
+                      "label": "Not generally"
+                    },
+                    {
+                      "value": 0.5,
+                      "label": "Neutral/Mixed"
+                    },
+                    {
+                      "value": 0.75,
+                      "label": "Generally yes"
+                    },
+                    {
+                      "value": 1.0,
+                      "label": "Yes"
+                    }
+                  ]
+                }
+              }
+            },
+            "level": "TRACE",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          }
+        },
+        {
+          "list_item": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.InstructionFollowing",
+            "evaluatorId": "Builtin.InstructionFollowing",
+            "evaluatorName": "Builtin.InstructionFollowing",
+            "description": "Response Quality Metric. Measures how well the agent follows the provided system instructions",
+            "evaluatorType": "Builtin",
+            "level": "TRACE",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          },
+          "detail": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.InstructionFollowing",
+            "evaluatorId": "Builtin.InstructionFollowing",
+            "evaluatorName": "Builtin.InstructionFollowing",
+            "description": "Response Quality Metric. Measures how well the agent follows the provided system instructions",
+            "evaluatorConfig": {
+              "llmAsAJudge": {
+                "ratingScale": {
+                  "numerical": [
+                    {
+                      "label": "Not applicable"
+                    },
+                    {
+                      "value": 0.0,
+                      "label": "No"
+                    },
+                    {
+                      "value": 1.0,
+                      "label": "Yes"
+                    }
+                  ]
+                }
+              }
+            },
+            "level": "TRACE",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          }
+        },
+        {
+          "list_item": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.Refusal",
+            "evaluatorId": "Builtin.Refusal",
+            "evaluatorName": "Builtin.Refusal",
+            "description": "Response Quality Metric. Detects when agent evades questions or directly refuses to answer",
+            "evaluatorType": "Builtin",
+            "level": "TRACE",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          },
+          "detail": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.Refusal",
+            "evaluatorId": "Builtin.Refusal",
+            "evaluatorName": "Builtin.Refusal",
+            "description": "Response Quality Metric. Detects when agent evades questions or directly refuses to answer",
+            "evaluatorConfig": {
+              "llmAsAJudge": {
+                "ratingScale": {
+                  "numerical": [
+                    {
+                      "value": 0.0,
+                      "label": "No"
+                    },
+                    {
+                      "value": 1.0,
+                      "label": "Yes"
+                    }
+                  ]
+                }
+              }
+            },
+            "level": "TRACE",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          }
+        },
+        {
+          "list_item": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.GoalSuccessRate",
+            "evaluatorId": "Builtin.GoalSuccessRate",
+            "evaluatorName": "Builtin.GoalSuccessRate",
+            "description": "Task Completion Metric. Evaluates whether the conversation successfully meets the user's goals",
+            "evaluatorType": "Builtin",
+            "level": "SESSION",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          },
+          "detail": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.GoalSuccessRate",
+            "evaluatorId": "Builtin.GoalSuccessRate",
+            "evaluatorName": "Builtin.GoalSuccessRate",
+            "description": "Task Completion Metric. Evaluates whether the conversation successfully meets the user's goals",
+            "evaluatorConfig": {
+              "llmAsAJudge": {
+                "ratingScale": {
+                  "numerical": [
+                    {
+                      "value": 0.0,
+                      "label": ""
+                    },
+                    {
+                      "value": 1.0,
+                      "label": ""
+                    }
+                  ]
+                }
+              }
+            },
+            "level": "SESSION",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          }
+        },
+        {
+          "list_item": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.ToolSelectionAccuracy",
+            "evaluatorId": "Builtin.ToolSelectionAccuracy",
+            "evaluatorName": "Builtin.ToolSelectionAccuracy",
+            "description": "Component Level Metric. Evaluates whether the agent selected the appropriate tool for the task",
+            "evaluatorType": "Builtin",
+            "level": "TOOL_CALL",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          },
+          "detail": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.ToolSelectionAccuracy",
+            "evaluatorId": "Builtin.ToolSelectionAccuracy",
+            "evaluatorName": "Builtin.ToolSelectionAccuracy",
+            "description": "Component Level Metric. Evaluates whether the agent selected the appropriate tool for the task",
+            "evaluatorConfig": {
+              "llmAsAJudge": {
+                "ratingScale": {
+                  "numerical": [
+                    {
+                      "value": 0.0,
+                      "label": "No"
+                    },
+                    {
+                      "value": 1.0,
+                      "label": "Yes"
+                    }
+                  ]
+                }
+              }
+            },
+            "level": "TOOL_CALL",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          }
+        },
+        {
+          "list_item": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.ToolParameterAccuracy",
+            "evaluatorId": "Builtin.ToolParameterAccuracy",
+            "evaluatorName": "Builtin.ToolParameterAccuracy",
+            "description": "Component Level Metric. Evaluates how accurately the agent extracts parameters from user queries",
+            "evaluatorType": "Builtin",
+            "level": "TOOL_CALL",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          },
+          "detail": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.ToolParameterAccuracy",
+            "evaluatorId": "Builtin.ToolParameterAccuracy",
+            "evaluatorName": "Builtin.ToolParameterAccuracy",
+            "description": "Component Level Metric. Evaluates how accurately the agent extracts parameters from user queries",
+            "evaluatorConfig": {
+              "llmAsAJudge": {
+                "ratingScale": {
+                  "numerical": [
+                    {
+                      "value": 0.0,
+                      "label": "No"
+                    },
+                    {
+                      "value": 1.0,
+                      "label": "Yes"
+                    }
+                  ]
+                }
+              }
+            },
+            "level": "TOOL_CALL",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          }
+        },
+        {
+          "list_item": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.Harmfulness",
+            "evaluatorId": "Builtin.Harmfulness",
+            "evaluatorName": "Builtin.Harmfulness",
+            "description": "Safety Metric. Evaluates whether the response contains harmful content",
+            "evaluatorType": "Builtin",
+            "level": "TRACE",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          },
+          "detail": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.Harmfulness",
+            "evaluatorId": "Builtin.Harmfulness",
+            "evaluatorName": "Builtin.Harmfulness",
+            "description": "Safety Metric. Evaluates whether the response contains harmful content",
+            "evaluatorConfig": {
+              "llmAsAJudge": {
+                "ratingScale": {
+                  "numerical": [
+                    {
+                      "value": 0.0,
+                      "label": "Harmful"
+                    },
+                    {
+                      "value": 1.0,
+                      "label": "Not Harmful"
+                    }
+                  ]
+                }
+              }
+            },
+            "level": "TRACE",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          }
+        },
+        {
+          "list_item": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.Stereotyping",
+            "evaluatorId": "Builtin.Stereotyping",
+            "evaluatorName": "Builtin.Stereotyping",
+            "description": "Safety Metric. Detects content that makes generalizations about individuals or groups",
+            "evaluatorType": "Builtin",
+            "level": "TRACE",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          },
+          "detail": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.Stereotyping",
+            "evaluatorId": "Builtin.Stereotyping",
+            "evaluatorName": "Builtin.Stereotyping",
+            "description": "Safety Metric. Detects content that makes generalizations about individuals or groups",
+            "evaluatorConfig": {
+              "llmAsAJudge": {
+                "ratingScale": {
+                  "numerical": [
+                    {
+                      "value": 0.0,
+                      "label": "Stereotyping"
+                    },
+                    {
+                      "value": 1.0,
+                      "label": "Not Stereotyping"
+                    }
+                  ]
+                }
+              }
+            },
+            "level": "TRACE",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          }
+        },
+        {
+          "list_item": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.TrajectoryExactOrderMatch",
+            "evaluatorId": "Builtin.TrajectoryExactOrderMatch",
+            "evaluatorName": "Builtin.TrajectoryExactOrderMatch",
+            "description": "Trajectory Metric. Exact sequence match - validates that actual tools match expected tools in exact order with no extras",
+            "evaluatorType": "Builtin",
+            "level": "SESSION",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          },
+          "detail": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.TrajectoryExactOrderMatch",
+            "evaluatorId": "Builtin.TrajectoryExactOrderMatch",
+            "evaluatorName": "Builtin.TrajectoryExactOrderMatch",
+            "description": "Trajectory Metric. Exact sequence match - validates that actual tools match expected tools in exact order with no extras",
+            "evaluatorConfig": {
+              "llmAsAJudge": {
+                "ratingScale": {
+                  "numerical": [
+                    {
+                      "value": 0.0,
+                      "label": "No"
+                    },
+                    {
+                      "value": 1.0,
+                      "label": "Yes"
+                    }
+                  ]
+                }
+              }
+            },
+            "level": "SESSION",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          }
+        },
+        {
+          "list_item": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.TrajectoryInOrderMatch",
+            "evaluatorId": "Builtin.TrajectoryInOrderMatch",
+            "evaluatorName": "Builtin.TrajectoryInOrderMatch",
+            "description": "Trajectory Metric. In-order match - validates that expected tools appear in order within actual trajectory, extras allowed between",
+            "evaluatorType": "Builtin",
+            "level": "SESSION",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          },
+          "detail": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.TrajectoryInOrderMatch",
+            "evaluatorId": "Builtin.TrajectoryInOrderMatch",
+            "evaluatorName": "Builtin.TrajectoryInOrderMatch",
+            "description": "Trajectory Metric. In-order match - validates that expected tools appear in order within actual trajectory, extras allowed between",
+            "evaluatorConfig": {
+              "llmAsAJudge": {
+                "ratingScale": {
+                  "numerical": [
+                    {
+                      "value": 0.0,
+                      "label": "No"
+                    },
+                    {
+                      "value": 1.0,
+                      "label": "Yes"
+                    }
+                  ]
+                }
+              }
+            },
+            "level": "SESSION",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          }
+        },
+        {
+          "list_item": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.TrajectoryAnyOrderMatch",
+            "evaluatorId": "Builtin.TrajectoryAnyOrderMatch",
+            "evaluatorName": "Builtin.TrajectoryAnyOrderMatch",
+            "description": "Trajectory Metric. Any-order match - validates that all expected tools are present regardless of order",
+            "evaluatorType": "Builtin",
+            "level": "SESSION",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          },
+          "detail": {
+            "evaluatorArn": "arn:aws:bedrock-agentcore:::evaluator/Builtin.TrajectoryAnyOrderMatch",
+            "evaluatorId": "Builtin.TrajectoryAnyOrderMatch",
+            "evaluatorName": "Builtin.TrajectoryAnyOrderMatch",
+            "description": "Trajectory Metric. Any-order match - validates that all expected tools are present regardless of order",
+            "evaluatorConfig": {
+              "llmAsAJudge": {
+                "ratingScale": {
+                  "numerical": [
+                    {
+                      "value": 0.0,
+                      "label": "No"
+                    },
+                    {
+                      "value": 1.0,
+                      "label": "Yes"
+                    }
+                  ]
+                }
+              }
+            },
+            "level": "SESSION",
+            "status": "ACTIVE",
+            "createdAt": "2024-10-21 17:00:00-07:00",
+            "updatedAt": "2024-10-21 17:00:00-07:00",
+            "lockedForModification": true
+          }
+        }
+      ]
+    },
+    "api_key_credential_providers": {
+      "count": 0,
+      "items": []
+    },
+    "oauth2_credential_providers": {
+      "count": 0,
+      "items": []
+    },
+    "payment_credential_providers": {
+      "count": 0,
+      "items": []
+    },
+    "payment_managers": {
+      "count": 0,
+      "items": []
+    },
+    "cloudformation_stacks": {
+      "count": 2,
+      "items": [
+        {
+          "name": "l27agentcore-AgentCoreStack",
+          "status": "CREATE_COMPLETE",
+          "created": "2025-12-16 04:02:54.377000+00:00"
+        },
+        {
+          "name": "l27agentcore-DockerImageStack",
+          "status": "CREATE_COMPLETE",
+          "created": "2025-12-16 04:02:38.605000+00:00"
+        }
+      ]
+    }
+  }
+}

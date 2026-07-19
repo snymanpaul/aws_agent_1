@@ -1,0 +1,4 @@
+{"seq": 0, "ms": 199, "evt": "invoke.start", "agent": "Strands Agents"}
+{"seq": 1, "ms": 2714, "evt": "tool.start", "agent": "Strands Agents", "tool": "researcher", "input": {"input": "Acme Corp"}}
+{"seq": 2, "ms": 10826, "evt": "tool.end", "agent": "Strands Agents", "tool": "researcher", "result": "[success] **Analyst's Full Reply:**\n\n**RISK LEVEL: HIGH**\n\n**Reason:** Insufficient data prevents proper assessment.\n\nRA-7731\n\n---\n\n**Summary:** Without concret"}
+{"seq": 3, "ms": 12607, "evt": "invoke.end", "agent": "Strands Agents"}

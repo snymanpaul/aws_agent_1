@@ -1,0 +1,14 @@
+{"seq": 0, "ms": 110, "evt": "invoke.start", "agent": "Strands Agents"}
+{"seq": 1, "ms": 3896, "evt": "tool.start", "agent": "Strands Agents", "tool": "issue_refund", "input": {"amount": 49.99}}
+{"seq": 2, "ms": 3896, "evt": "invoke.end", "agent": "Strands Agents"}
+{"seq": 3, "ms": 3898, "evt": "invoke.start", "agent": "Strands Agents"}
+{"seq": 4, "ms": 3898, "evt": "tool.start", "agent": "Strands Agents", "tool": "issue_refund", "input": {"amount": 49.99}}
+{"seq": 5, "ms": 3899, "evt": "tool.end", "agent": "Strands Agents", "tool": "issue_refund", "result": "[success] Refund of $49.99 issued."}
+{"seq": 6, "ms": 6650, "evt": "invoke.end", "agent": "Strands Agents"}
+{"seq": 7, "ms": 6760, "evt": "invoke.start", "agent": "Strands Agents"}
+{"seq": 8, "ms": 9937, "evt": "tool.start", "agent": "Strands Agents", "tool": "issue_refund", "input": {"amount": 49.99}}
+{"seq": 9, "ms": 9938, "evt": "invoke.end", "agent": "Strands Agents"}
+{"seq": 10, "ms": 9939, "evt": "invoke.start", "agent": "Strands Agents"}
+{"seq": 11, "ms": 9939, "evt": "tool.start", "agent": "Strands Agents", "tool": "issue_refund", "input": {"amount": 49.99}}
+{"seq": 12, "ms": 9939, "evt": "tool.end", "agent": "Strands Agents", "tool": "issue_refund", "result": "[error] human denied the refund"}
+{"seq": 13, "ms": 11648, "evt": "invoke.end", "agent": "Strands Agents"}

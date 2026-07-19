@@ -62,6 +62,6 @@ AWS's is arguably broader: skills sit alongside MCP servers and A2A agents in on
 ## Follow-up — DONE as L71
 
 The candidate level proposed here was built as **L71** (`15_agentcore_registry/agent_registry.py`,
-[docs/levels/L71-agentcore-agent-registry.md](docs/levels/L71-agentcore-agent-registry.md)): registry
+[docs/levels/L71-agentcore-agent-registry.md](../../../levels/L71-agentcore-agent-registry.md)): registry
 created, `AGENT_SKILLS` record published, approval gate verified (`SearchRegistryRecords` returns only
 `APPROVED` records), discovery confirmed. The L30 local-vs-cloud-registry contrast is recorded there.

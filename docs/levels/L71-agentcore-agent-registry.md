@@ -8,7 +8,7 @@
 **Empirical findings (live-validated):**
 - The Registry is a unified governed catalog: `DescriptorType` ∈ `MCP | A2A | CUSTOM | AGENT_SKILLS`;
   control plane `bedrock-agentcore-control`, data plane `bedrock-agentcore` (`SearchRegistryRecords`).
-  Realizes the 2026-05-19 registry note (`NOTE_2026-05-19_agentcore_agent_registry.md`).
+  Realizes the [2026-05-19 registry note](../work/research/reports/2026-05-19_agentcore-agent-registry.md).
 - **Approval gates discovery**: `SearchRegistryRecords` returns ONLY `APPROVED` records — the same
   query is empty while the record is `DRAFT`, found once `APPROVED`.
 - `create_registry`/`delete_registry` are async (202; `CREATING`→`READY`→`DELETING`);

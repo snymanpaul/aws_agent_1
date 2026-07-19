@@ -9,16 +9,29 @@ Three ways to give an agent a command line, at very different cost/isolation:
   3. AgentCore Code Interpreter — managed cloud sandbox (L72, `16_agentcore_tools/code_interpreter.py`),
                         referenced as the cloud tier; not re-run here (spends AWS; already characterized).
 
-Claims are limited to what the readable source (`strands_shell/__init__.py`) guarantees and what is
-observable in this harness:
+Every claim below is grounded in the ACTUAL Rust source (cloned github.com/strands-agents/shell,
+`src/commands/curl.rs` + `src/vfs_kernel.rs`) AND empirically verified against the installed native
+extension:
   - latency (cold start, per-command) — measured;
-  - VFS isolation — a no-bind Shell has NO host filesystem access (source: in-process VFS; observed:
-    a no-bind shell cannot read /etc/passwd);
-  - secret non-exposure — a `Cred(token=...)` is held in the native layer and `ConfigCred` NEVER
-    reports the token (source lines 129-132, 383-385); observed absent from both `config` and `env`.
-The network URL-allowlist ENFORCEMENT lives in the native Rust extension and is NOT asserted here
-(it could not be exercised in this harness — the builtin curl produced no observable egress); the
-allowlist is only shown as CONFIGURED via `Shell.config.allowed_urls`.
+  - VFS isolation — a no-bind Shell has NO host filesystem access (in-process VFS);
+  - SSRF guard — the headline security property. `vfs_kernel::check_url_safe` + `is_ip_blocked` +
+    a DNS `SafeResolver` block loopback / private / link-local / IMDS (169.254.169.254, incl. the
+    IPv4-mapped `[::ffff:169.254.169.254]` bypass) / localhost, while permitting public hosts.
+    Observed: those return curl exit 1 "access denied: <host>"; https://example.com returns real
+    HTML (exit 0).
+  - allowlist = ADDITIVE TRUST, not deny-by-default. `check_url` allows a URL matching an allowlist
+    prefix, ELSE falls to `check_url_safe`. A public URL is reachable with or without the allowlist;
+    the allowlist PERMITS an otherwise-SSRF-blocked internal URL. GOTCHA (verified):
+    `url_matches_prefix` does segment-boundary PATH matching, so a host-wide entry must end in `/`;
+    the `/*` form is a LITERAL path that fails to match `/` and silently leaves the URL blocked.
+  - secret non-exposure — a `Cred(token=...)` is injected as `Authorization: Bearer <token>` on the
+    outbound request (vfs_kernel::resolve_credential), held natively; `ConfigCred` never reports the
+    token; observed absent from both `config` and `env`.
+
+Prior draft error (corrected): an earlier version guessed the allowlist was deny-by-default and,
+when a public URL was not blocked, wrongly concluded enforcement was "unobservable". The Rust source
+shows the allowlist is additive trust and the real guard is the default SSRF block — which IS
+observable and is now asserted.
 
 Run: LESSON_DOTENV=<dotenv> uv run python 16_agentcore_tools/sandbox_tiers.py   (needs podman + alpine)
 """
@@ -131,33 +144,58 @@ def main() -> None:
           f"per_cmd p50={pod_p50:.1f} p95={pod_p95:.1f} ms")
     print(f"  (L72 AgentCore Code Interpreter is the managed cloud tier — network round-trip per call)\n")
 
-    # --- isolation: the in-process VFS has NO host filesystem access (source: in-process VFS) ---
+    # --- isolation: the in-process VFS has NO host filesystem access ---
     nobind = ss.Shell()
-    passwd = nobind.run("cat /etc/passwd")          # host file: must not be readable
-    host_probe = nobind.run(f"cat {__file__}")       # this very source file on the host
+    passwd = nobind.run("cat /etc/passwd")
+    host_probe = nobind.run(f"cat {__file__}")
     print(f"  [VFS isolation] no-bind shell: cat /etc/passwd status={passwd.status} (nonzero=isolated); "
           f"cat <host file> status={host_probe.status}")
 
-    # --- secret non-exposure: Cred(token=...) is held natively; ConfigCred NEVER carries the token ---
+    # --- SSRF guard: default shell blocks loopback/private/link-local/IMDS/localhost, allows public ---
+    def curl(shell, url):
+        return shell.run(f"curl -s -S -w 'CODE=%{{http_code}}' {url}")
+
+    ssrf_targets = {
+        "IMDS 169.254.169.254": "http://169.254.169.254/latest/meta-data/",
+        "IPv4-mapped IMDS": "http://[::ffff:169.254.169.254]/",
+        "loopback 127.0.0.1": "http://127.0.0.1/",
+        "localhost": "http://localhost/",
+        "IPv6 loopback ::1": "http://[::1]/",
+        "private 10.0.0.1": "http://10.0.0.1/",
+    }
+    blocked = {name: curl(nobind, url) for name, url in ssrf_targets.items()}
+    for name, o in blocked.items():
+        print(f"  [SSRF] {name:22s} -> status={o.status} err={o.stderr.strip()[:44]!r}")
+    public = curl(nobind, "https://example.com/")
+    print(f"  [SSRF] public example.com     -> status={public.status} (reachable; not access-denied)")
+
+    # --- allowlist = additive trust; segment-boundary path match (host-wide entry needs trailing '/') ---
+    trailing = curl(ss.Shell(allowed_urls=["http://127.0.0.1:9/"]), "http://127.0.0.1:9/")   # bypasses SSRF -> conn error 6
+    star = curl(ss.Shell(allowed_urls=["http://127.0.0.1:9/*"]), "http://127.0.0.1:9/")       # '/*' literal -> still blocked (1)
+    print(f"  [allowlist] entry 'http://127.0.0.1:9/'  -> status={trailing.status} "
+          f"(6=conn error: SSRF bypassed); '/*' form -> status={star.status} (1=still blocked: '/*' gotcha)")
+
+    # --- secret non-exposure: Cred(token=...) -> Authorization: Bearer header, never in env/config ---
     secret = "sk-l98-" + "SEEKRIT"
-    cred_shell = ss.Shell(allowed_urls=["https://example.com/*"],
-                          credentials=[ss.Cred(url="https://example.com/*", token=secret)])
+    cred_shell = ss.Shell(credentials=[ss.Cred(url="https://example.com/", token=secret)])
     in_env = secret in cred_shell.run("env").stdout
-    in_config = secret in str(cred_shell.config)     # config is a @property (read from source)
-    allowlisted = list(cred_shell.config.allowed_urls)
-    print(f"  [secret non-exposure] token in `env`={in_env}  in `config`={in_config}  "
-          f"(allowlist CONFIGURED={allowlisted}; native enforcement not asserted here)\n")
+    in_config = secret in str(cred_shell.config)     # config is a @property (verified in source)
+    print(f"  [secret non-exposure] token in `env`={in_env}  in `config`={in_config} "
+          f"(injected as Authorization: Bearer, held natively)\n")
 
     battery_match = shell_out == pod_out
+    ssrf_all_blocked = all(o.status == 1 and "access denied" in o.stderr for o in blocked.values())
     checks = {
         "Strands Shell cold start is sub-millisecond-class (<10 ms)": shell_cold < 10,
         "Shell per-command is far faster than a container exec (p50)": shell_p50 < pod_p50,
         "both backends produce identical output on the command battery": battery_match,
         "VFS isolates the host FS: no-bind shell cannot read /etc/passwd": passwd.status != 0,
-        "VFS isolates the host FS: no-bind shell cannot read a host source file": host_probe.status != 0,
+        "SSRF guard blocks ALL of loopback/private/link-local/IMDS/localhost (access denied)": ssrf_all_blocked,
+        "SSRF positive control: a public host is reachable (not access-denied)": public.status == 0,
+        "allowlist ADDS trust: 'http://host/' bypasses SSRF (conn error, not access-denied)": trailing.status == 6,
+        "gotcha: the '/*' allowlist form does NOT match '/' -> stays SSRF-blocked": star.status == 1,
         "injected secret is absent from the config snapshot (source-guaranteed)": not in_config,
         "injected secret is absent from the shell environment": not in_env,
-        "allowlist is recorded in the config snapshot": allowlisted == ["https://example.com/*"],
     }
     for k, v in checks.items():
         print(f"  {'PASS' if v else 'FAIL'}  {k}")
@@ -166,9 +204,11 @@ def main() -> None:
     assert all(checks.values()), "L98 FAILED — a sandbox-tier check did not hold"
     print("\n[L98] PASS — Strands Shell is an in-process sandbox (sub-ms cold start, "
           f"~{pod_p50/max(shell_p50,0.001):.0f}x faster per command than a Podman exec) with a real VFS "
-          "boundary (no host FS access) and secrets held out of config/env; the container tier buys "
-          "OS-level isolation at container-startup cost. PodmanSandbox shows the Sandbox protocol is a "
-          "swappable seam. Network-allowlist enforcement is native and not asserted here.")
+          "boundary (no host FS access), a working SSRF guard (loopback/private/IMDS/localhost blocked, "
+          "public allowed), and secrets injected as Bearer headers never exposed in env/config. The "
+          "allowlist is additive trust (permits internal URLs), with a segment-boundary path-match "
+          "gotcha ('/*' != '/'). The container tier buys OS-level isolation at container-startup cost; "
+          "PodmanSandbox shows the Sandbox protocol is a swappable seam.")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-"""Tests for tools/no_sim_check.py, the tripwire this repo's evidence standard rests on.
+"""Tests for no_sim_check, the tripwire this repo's evidence standard rests on.
 
 A tripwire with no test proving it fires is an unevidenced claim. These tests apply
 the same positive/negative control discipline the evals track (L83 to L92) applies to
@@ -15,34 +15,14 @@ every evaluator:
 Fixture source is built line by line rather than as triple-quoted blocks so each
 physical line here that embeds trigger text can carry its own `nosim:ok`. Without that
 this file would trip the very checker it tests. Run
-`uv run python tools/no_sim_check.py tests/` to confirm it stays clean.
+`no-sim-check <path>` to confirm it stays clean.
 
     uv run pytest tests/test_no_sim_check.py -q
 """
 
-import importlib.util
-import pathlib
-
 import pytest
 
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
-CHECKER_PATH = REPO_ROOT / "tools" / "no_sim_check.py"
-
-
-def _load_checker():
-    """Import the checker by path, bypassing tools/__init__.py.
-
-    tools/__init__.py imports models.py, which imports strands and loads dotenv at
-    module scope. The checker is a standalone string scanner with no such needs, so
-    the unit under test is loaded directly and these tests stay hermetic and fast.
-    """
-    spec = importlib.util.spec_from_file_location("_no_sim_check_uut", CHECKER_PATH)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
-nsc = _load_checker()
+from agent_build_gates import no_sim_check as nsc
 
 
 def write_py(tmp_path, lines, name="lesson.py"):

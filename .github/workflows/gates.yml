@@ -33,15 +33,18 @@ jobs:
       - name: Sync dependencies
         run: uv sync --frozen
 
+      # Both gates ship in the agent-build-gates workspace package and are invoked
+      # through its console scripts, the same way an external consumer would.
+
       # Account ids, SSO profile strings and account-bearing ARNs must never reach a
       # tracked file. This is the one gate that was already enforced locally.
       - name: No AWS account identifiers in tracked files
-        run: uv run python tools/check_no_aws_ids.py $(git ls-files '*.md' '*.py')
+        run: uv run check-no-aws-ids $(git ls-files '*.md' '*.py')
 
       # Paths are passed explicitly. Pointing this at "." would sweep .venv, which is
-      # pinned as a known limitation in tests/test_no_sim_check.py.
+      # pinned as a known limitation in the package's test suite.
       - name: No substituted integrations
-        run: uv run python tools/no_sim_check.py $(git ls-files '*.py')
+        run: uv run no-sim-check $(git ls-files '*.py')
 
       - name: Tests
         run: uv run pytest -q

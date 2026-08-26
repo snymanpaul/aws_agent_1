@@ -1,4 +1,4 @@
-"""Tests for tools/eval_harness.py, the harness every eval claim in this repo rests on.
+"""Tests for eval_harness, the harness every eval claim in this repo rests on.
 
 The harness decides what counts as a passing run: quality thresholds, cost ceilings, and
 whether a drop against a baseline is significant. Until now none of that was tested, so
@@ -11,25 +11,11 @@ so a scripted local function exercises the whole path. `perm_test` seeds its own
     uv run pytest tests/test_eval_harness.py -q
 """
 
-import importlib.util
 import json
-import pathlib
 
 import pytest
 
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
-HARNESS_PATH = REPO_ROOT / "tools" / "eval_harness.py"
-
-
-def _load_harness():
-    """Import by path, bypassing tools/__init__.py, which pulls in strands."""
-    spec = importlib.util.spec_from_file_location("_eval_harness_uut", HARNESS_PATH)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
-eh = _load_harness()
+from agent_build_gates import eval_harness as eh
 
 CORRECT = lambda out, case: 1.0 if case.expected in out else 0.0
 

@@ -15,7 +15,7 @@ flowchart TD
     Plan[Draft the learning plan for a topic] --> Run[Execute the level against live services]
     Run --> Log[Append every observation to observations.jsonl]
     Log --> Reflect[Write a per-level reflection: what broke and why]
-    Reflect --> Gates{Quality gates in tools/}
+    Reflect --> Gates{Quality gates: agent-build-gates}
     Gates -->|no_sim_check| G1[No substituted integrations]
     Gates -->|eval_harness| G2[Confidence intervals and significance]
     Gates -->|ship_gate| G3[One GO or NO-GO over real paid runs]
@@ -62,8 +62,8 @@ Each lesson has to be un-fakeable by construction:
   a checkpoint. A printed `[Simulated crash]` is not a crash.
 - **Paired positive and negative controls.** Every evaluator gets an input it must flag and
   an input it must pass. An evaluator that only ever sees passing input is untested.
-- **A script that says no.** `tools/no_sim_check.py` scans for substituted integrations and
-  fails the build. `tools/check_no_aws_ids.py` blocks account identifiers from tracked files.
+- **A script that says no.** `agent_build_gates.no_sim_check` scans for substituted integrations and
+  fails the build. `agent_build_gates.check_no_aws_ids` blocks account identifiers from tracked files.
   Both run in CI on every push and in the pre-commit hook over staged files.
 
 The discriminator that took the longest to articulate, and which now does most of the work:
@@ -93,9 +93,9 @@ against the framework.
 
 ## 4. One run is an anecdote
 
-Every quality claim goes through `tools/eval_harness.py`: at least five runs, Wilson
+Every quality claim goes through `agent_build_gates.eval_harness`: at least five runs, Wilson
 confidence intervals on the rate, and a permutation test against a frozen baseline before any
-regression is called. `tools/ship_gate.py` composes that into a single GO or NO-GO verdict
+regression is called. `agent_build_gates.ship_gate` composes that into a single GO or NO-GO verdict
 over real paid runs, and writes the verdict plus the underlying runs to a JSON artifact so the
 decision can be re-examined later.
 
@@ -121,7 +121,7 @@ things the agent was willing to claim.
 The clearest illustration of the method is the time it caught itself, and it is worth stating
 plainly because it went unnoticed for months.
 
-`no_sim_check.py` is the tripwire the entire anti-simulation standard rests on. It had no
+`no_sim_check` is the tripwire the entire anti-simulation standard rests on. It had no
 tests. A tripwire with no test proving it fires is exactly the unevidenced claim this repo
 bans everywhere else, and it sat that way while enforcing standards on 101 lessons.
 
@@ -178,6 +178,6 @@ the demonstration that a capability was checked rather than assumed.
 | Raw append-only observation log, roughly 900 entries | `.claude/learnings/observations.jsonl` |
 | Per-level write-ups, including what went wrong | `.claude/learnings/reflections/` |
 | Probes and one-off scripts, kept so the technique survives | `_sandbox/` |
-| The gates, and their tests | `tools/`, `tests/` |
+| The gates, installable, with their tests | `packages/agent-build-gates/` |
 | Enforcement on every push | `.github/workflows/gates.yml` |
 | An outside audit of this repo against its own claims | `MISSION_ASSESSMENT_2026-08-26.md` |

@@ -45,7 +45,7 @@ from strands.memory.extraction.triggers import IntervalTrigger, InvocationTrigge
 from strands.models.openai import OpenAIModel
 from strands.vended_memory_stores.test_memory_store import TestMemoryStore
 
-from tools.eval_harness import perm_test, wilson
+from agent_build_gates.eval_harness import perm_test, wilson
 
 N = 8
 PREF = "store_credit"

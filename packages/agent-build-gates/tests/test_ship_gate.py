@@ -1,4 +1,4 @@
-"""Tests for tools/ship_gate.py, the single GO/NO-GO verdict over a candidate.
+"""Tests for ship_gate, the single GO/NO-GO verdict over a candidate.
 
 This is the last thing consulted before something ships, so a wrong GO is the most
 expensive failure in the repo. Its verdict logic went untested because the only way to
@@ -13,24 +13,17 @@ No model, no network, no credentials, no spend.
     uv run pytest tests/test_ship_gate.py -q
 """
 
-import importlib.util
 import json
 import pathlib
 
 import pytest
 
-REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
-SHIP_GATE_PATH = REPO_ROOT / "tools" / "ship_gate.py"
-
-
-def _load_ship_gate():
-    spec = importlib.util.spec_from_file_location("_ship_gate_uut", SHIP_GATE_PATH)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
-sg = _load_ship_gate()
+# Needs the [strands] extra. Skip rather than fail if the optional dependency is absent,
+# so the three stdlib gates stay testable on a bare install.
+sg = pytest.importorskip(
+    "agent_build_gates.ship_gate",
+    reason="ship_gate needs the [strands] extra: pip install 'agent-build-gates[strands]'",
+)
 
 CASES = [sg.Case("a", "positive"), sg.Case("b", "negative")]
 EVALUATORS = {"correct": sg.CORRECT}

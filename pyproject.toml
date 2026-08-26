@@ -45,4 +45,15 @@ dev = [
     "ipython>=8.0",
     "moto[dynamodb]>=5.0.0",
     "httpx>=0.27.0",
+    "agent-build-gates",
 ]
+
+# The gates live in their own package so they can be installed elsewhere. This root
+# project stays virtual on purpose: it has no [build-system], so uv never builds or
+# installs it, and the 138 files that put the repo root on sys.path keep working
+# exactly as before.
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.uv.sources]
+agent-build-gates = { workspace = true }

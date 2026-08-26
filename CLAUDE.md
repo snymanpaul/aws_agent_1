@@ -12,9 +12,9 @@ red-team, context management. Per-level docs: `docs/levels/` (one file per lesso
 `LEARNING_PLAN_agentic_memory_evals.md`, `LEARNING_PLAN_v148_impact.md`, `NEXT_STEPS_PLAN.md`,
 `MISSION_ASSESSMENT_2026-08-26.md`, and `.claude/learnings/reflections/`.
 
-**Gate status (2026-08-26)**: `no_sim_check` reports **0 hits over 272 tracked `.py` files**,
+**Gate status (2026-08-26)**: `no_sim_check` reports **0 hits over 275 tracked `.py` files**,
 and CI enforces it on every push (`.github/workflows/gates.yml`) alongside `check_no_aws_ids`
-and `uv run pytest` (111 tests). The pre-commit hook runs both tripwires over staged files.
+and `uv run pytest` (129 tests). The pre-commit hook runs both tripwires over staged files.
 Keep it at zero: any file you touch must come out clean, and a justified exception takes a
 trailing `# nosim:ok <reason>`, never a quiet reword of working code.
 
@@ -58,7 +58,8 @@ uv run pytest
 19_agentcore_agui/      # L76: AG-UI native (serve_ag_ui)
 artifacts/          # L77 ADK patterns + review-gate architecture (verified on Gemini + Bedrock)
 docs/levels/        # One doc per lesson, L01-L100 + L97b (linked from LEARNING_PLAN.md tables)
-tools/              # get_model + quality gates: no_sim_check, eval_harness, ship_gate
+tools/              # get_model (repo-specific model aliases) + install_hooks.sh
+packages/agent-build-gates/  # the quality gates, extracted as an installable package
 ```
 
 ## Model Helper
@@ -86,10 +87,10 @@ Claude aliases route via the LiteLLM proxy at `localhost:4000`; `gemini*` goes d
 
 - `no_sim_check.py`: tripwire for substituted integrations. Flags substitute-object vocabulary
   (mock/stub/fake/dummy/hardcoded), fake-success returns, "in production this would" deferrals, and
-  `return True` straight out of an `except`. Run on new lessons: `uv run python tools/no_sim_check.py <path>`;
+  `return True` straight out of an `except`. Run on new lessons: `uv run no-sim-check <path>`;
   repo-wide use `$(git ls-files '*.py')`, because pointing it at `.` also sweeps `.venv`.
   Two scoping rules, both learned from classifying every hit in the repo and both pinned by
-  `tests/test_no_sim_check.py` (56 tests): boundaries break on underscores and CamelCase humps, so
+  `packages/agent-build-gates/tests/` (56 tests): boundaries break on underscores and CamelCase humps, so
   `MockSQSQueue` / `mock_client` / `_simulate_human_response` are caught; and the two vocabulary
   rules do not fire on comments or docstrings, because prose cannot fake an integration. Escape a
   justified line with a trailing `# nosim:ok <reason>`.
@@ -98,7 +99,7 @@ Claude aliases route via the LiteLLM proxy at `localhost:4000`; `gemini*` goes d
 - `ship_gate.py`: one auditable GO/NO-GO verdict over real runs (the "paid, audit-reproducible gate").
 - `check_no_aws_ids.py`: **BINDING RULE: never put AWS account info (12-digit account ids, `AWSAdministratorAccess-*` / SSO profile strings, account-bearing ARNs) in ANY `.md` or `.py` file.** This tripwire blocks it; install the pre-commit hook once per clone with `sh tools/install_hooks.sh`. Account ids belong only in local, gitignored config (`~/.aws`, `.claude/settings.local.json`), never in tracked files.
 
-**Anti-simulation is non-negotiable** (enforced by `tools/no_sim_check.py`): every lesson is
+**Anti-simulation is non-negotiable** (enforced by `agent_build_gates.no_sim_check`): every lesson is
 structurally un-fakeable (runtime sentinels, real services, real crashes, positive/negative controls)
 and must pass `no_sim_check`. The repo is at zero and CI keeps it there, so **a new hit is a
 regression, not a backlog item.** When classifying one, open the flagged function rather than
@@ -107,7 +108,7 @@ available and skipped. A helper that genuinely raises is fault injection and leg
 that fabricates a success is not.
 
 **`ship_gate.py` is a manual release step**, not part of CI, because it spends money. Run it
-against a candidate before shipping: `podman start litellm-proxy && uv run python tools/ship_gate.py`.
+against a candidate before shipping: `podman start litellm-proxy && uv run ship-gate`.
 
 ## Critical Non-Obvious Rules
 

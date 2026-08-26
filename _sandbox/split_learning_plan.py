@@ -56,7 +56,7 @@ CODE = {
     80: "14_agentcore_platform/ltm_filtered_retrieval.py", 81: "06_memory/long_horizon_memory.py",
     82: "13_state_persistence/durable_multiagent_resume.py", 83: "13_quality/trajectory_eval.py",
     84: "13_quality/goal_success_eval.py", 85: "13_quality/eval_significance.py",
-    86: "tools/eval_harness.py", 87: "06_memory/memory_value_capstone.py",
+    86: "packages/agent-build-gates/src/agent_build_gates/eval_harness.py", 87: "06_memory/memory_value_capstone.py",
 }
 
 REFL_EXCEPTIONS = {  # level -> reflection filename (naming varies)

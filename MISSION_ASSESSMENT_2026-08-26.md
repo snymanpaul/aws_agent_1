@@ -133,6 +133,15 @@ requirement, which is not currently in that file.
 
 ### R2. Extract `tools/` as a versioned, installable package (serves P1, closes 3.2)
 
+> **Done, 2026-08-26.** `packages/agent-build-gates` v0.1.0: the four gates with their own
+> version, tests and console scripts (`no-sim-check`, `check-no-aws-ids`, `ship-gate`), wired
+> into the root as a uv workspace member. Zero third-party dependencies; `ship_gate` sits
+> behind a `[strands]` extra. Proven by building the wheel and running both gates from a
+> clean venv outside the repo, which is what forced the one real code change: the
+> account-id tripwire used to resolve paths against its own location, correct at `tools/`
+> and wrong from site-packages. It now resolves against the caller's working directory,
+> and has 18 tests it never had before.
+
 Publish the harness, the gate and the tripwires as a small library with its own version and
 tests, consumable by other repos without vendoring. The lesson tree becomes the worked
 example that exercises it, rather than its container.

@@ -26,7 +26,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from strands import Agent, tool
 from strands.models.openai import OpenAIModel
 
-from tools.eval_harness import perm_test   # reuse the unified harness (L86)
+from agent_build_gates.eval_harness import perm_test   # reuse the unified harness (L86)
 
 N = 12
 PREF = "store_credit"

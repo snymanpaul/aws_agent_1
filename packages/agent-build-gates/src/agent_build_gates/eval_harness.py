@@ -18,7 +18,7 @@ Reusable API:
 
 Self-test:
   podman start litellm-proxy
-  uv run python tools/eval_harness.py
+  uv run python -m agent_build_gates.eval_harness
 """
 
 import json

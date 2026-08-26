@@ -26,7 +26,7 @@ hits (see tests/test_no_sim_check.py):
      comments, because a deferral comment marks a call that was never made.
 
 Usage:
-    uv run python tools/no_sim_check.py <path> [<path> ...]
+    no-sim-check <path> [<path> ...]
     # exit 0 = clean, exit 1 = smell found
 """
 
@@ -154,7 +154,7 @@ def iter_py(paths):
 
 def main(argv):
     if not argv:
-        print("usage: no_sim_check.py <path> [<path> ...]")
+        print("usage: no-sim-check <path> [<path> ...]")
         return 2
     total, scanned = 0, 0
     for f in iter_py(argv):
@@ -166,5 +166,9 @@ def main(argv):
     return 1 if total else 0
 
 
-if __name__ == "__main__":
+def cli() -> None:
     sys.exit(main(sys.argv[1:]))
+
+
+if __name__ == "__main__":
+    cli()

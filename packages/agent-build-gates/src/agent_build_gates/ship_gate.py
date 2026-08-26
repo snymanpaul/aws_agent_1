@@ -12,19 +12,23 @@ Anti-simulation design (no fakes/stubs):
 
 Run:
   podman start litellm-proxy
-  uv run python tools/ship_gate.py
+  ship-gate
 """
 
 import json
 import os
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from .eval_harness import Case, run_suite, gate, quality
 
-from strands import Agent
-from strands.models.openai import OpenAIModel
-
-from tools.eval_harness import Case, run_suite, gate, quality
+try:
+    from strands import Agent
+    from strands.models.openai import OpenAIModel
+except ImportError as exc:  # pragma: no cover - exercised by the install-hint test
+    raise ImportError(
+        "ship_gate drives real agent runs and needs the optional framework dependency. "
+        "Install it with: pip install 'agent-build-gates[strands]'"
+    ) from exc
 
 
 def _model():
@@ -100,5 +104,9 @@ def verify():
     print("[L92] PASS — one reproducible, auditable GO/NO-GO ship-gate over real agent runs")
 
 
-if __name__ == "__main__":
+def cli() -> None:
     verify()
+
+
+if __name__ == "__main__":
+    cli()

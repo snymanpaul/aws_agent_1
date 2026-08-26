@@ -2,6 +2,12 @@ version = 1
 revision = 3
 requires-python = ">=3.13"
 
+[manifest]
+members = [
+    "agent-build-gates",
+    "aws-agent-learning",
+]
+
 [[package]]
 name = "a2a-sdk"
 version = "0.3.25"
@@ -48,6 +54,20 @@ sdist = { url = "https://files.pythonhosted.org/packages/36/f1/dff0c1412372a006d
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d3/d7/36107cbce3e7242864791d6708fa68b57de1df08e9f07e7ece0e01f41f15/ag_ui_strands-0.1.1-py3-none-any.whl", hash = "sha256:c2b9922258c5dfa7e53a537bac1a49d188b495aa00edba10ac9168ffca7c25b8", size = 13015, upload-time = "2026-02-06T18:15:17.825Z" },
 ]
+
+[[package]]
+name = "agent-build-gates"
+version = "0.1.0"
+source = { editable = "packages/agent-build-gates" }
+
+[package.optional-dependencies]
+strands = [
+    { name = "strands-agents" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "strands-agents", marker = "extra == 'strands'", specifier = ">=1.48" }]
+provides-extras = ["strands"]
 
 [[package]]
 name = "aiohappyeyeballs"
@@ -292,6 +312,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "agent-build-gates" },
     { name = "httpx" },
     { name = "ipython" },
     { name = "moto", extra = ["dynamodb"] },
@@ -336,6 +357,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "agent-build-gates", editable = "packages/agent-build-gates" },
     { name = "httpx", specifier = ">=0.27.0" },
     { name = "ipython", specifier = ">=8.0" },
     { name = "moto", extras = ["dynamodb"], specifier = ">=5.0.0" },

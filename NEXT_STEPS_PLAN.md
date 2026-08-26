@@ -1,8 +1,9 @@
 # Next Steps
 
 **Status (2026-08-26):** L1 to L100 plus L97b complete, cross-model validated, repo published publicly
-with the README as the front door. The repo does not currently pass its own `no_sim_check` gate:
-56 hits over 271 tracked `.py` files.
+with the README as the front door. The repo passes its own gates: 0 `no_sim_check` hits over 275
+tracked `.py` files, 129 tests, all enforced in CI on every push. The gates now ship as
+`packages/agent-build-gates`, installable into other projects.
 
 **Status (2026-07-18):** L1 to L93 complete, cross-model validated, repo published publicly with the
 README as the front door. Prior plan items (cross-model validation, doc fixes, public README, push to
@@ -21,7 +22,7 @@ Gemini's 1M window). Session-wide learnings: `.claude/learnings/reflections/SESS
 **New (2026-08-26):** outside assessment against the repo's stated mission, plus the first pass on
 standing item 4. Assessment: `MISSION_ASSESSMENT_2026-08-26.md`. Done:
 
-- `tests/test_no_sim_check.py` (56 tests): the gate now has the positive/negative controls it demands
+- `test_no_sim_check.py` (56 tests, now in the package): the gate now has the positive/negative controls it demands
   of everything else, plus characterization tests for its own gaps.
 - `no_sim_check` repaired on the evidence those tests exposed: identifier-aware boundaries
   (`MockSQSQueue`, `mock_client`, `_simulate_human_response` were all invisible before), the two
@@ -33,8 +34,22 @@ standing item 4. Assessment: `MISSION_ASSESSMENT_2026-08-26.md`. Done:
   LiteLLM proxy). Verified on live runs including a real 404-then-success fallback. Detail in
   `docs/levels/L23-error-recovery.md`.
 
-Still open from that assessment: CI (nothing in `.github/` yet), packaging `tools/` for external
-reuse, and the `simulate_failure` naming that accounts for six of L23's seven remaining hits.
+Then the rest of the assessment landed the same day:
+
+- **R1 complete.** Triaged all 56 remaining `no_sim_check` hits to zero across 22 files, surfacing
+  nine real substituted integrations. Worst was a Bedrock guardrail falling back to a five-keyword
+  blocklist whenever the client was missing or the API errored, so a safety control answered ALLOW
+  on an outage. `.github/workflows/gates.yml` runs both tripwires and the suite on every push; the
+  pre-commit hook runs both over staged files. `eval_harness` and `ship_gate` gained 34 tests.
+- **R3** stale L43 link, **R4** `METHOD.md`, **R5** README leads with the method, **R7** the
+  analytics watch feed (see standing item 4b).
+- **R2 complete.** `packages/agent-build-gates` v0.1.0, a uv workspace member with its own version,
+  tests and console scripts. Zero dependencies; `ship_gate` behind a `[strands]` extra. Proven by
+  running the built wheel from a clean venv outside the repo.
+
+Still open: the `failing_after` fault injector accounts for six of L23's seven historical hits (now
+resolved by renaming, but worth watching if the rule tightens), and the 18 files using
+`sys.path.insert(0, ".")`, which break when run from anywhere but the repo root.
 
 ## Tier 22 follow-ons (deferred by choice: each a clean next session)
 
@@ -56,11 +71,12 @@ reuse, and the `simulate_failure` naming that accounts for six of L23's seven re
 
 ## Standing items
 
-4. **Operationalize the quality gates.** Wire `tools/no_sim_check.py` and `uv run pytest` into
-   pre-commit and CI (GitHub Actions) so the anti-simulation bar is enforced on every push, not run
-   by hand. Precedent exists: `tools/install_hooks.sh` already installs the `check_no_aws_ids`
-   pre-commit hook; extend that hook to run `no_sim_check` + `pytest`. `ship_gate.py` stays manual
-   (it spends money) but should be a documented release step.
+4. ~~**Operationalize the quality gates.**~~ **DONE 2026-08-26.** `.github/workflows/gates.yml`
+   runs `check-no-aws-ids`, `no-sim-check` and `uv run pytest` on every push and pull request.
+   `tools/install_hooks.sh` installs a pre-commit hook running both tripwires over staged files,
+   verified by staging a violation and confirming the commit was rejected. `ship-gate` stays
+   manual because it spends money, and is documented as a release step in README and CLAUDE.md.
+   CI deliberately excludes the lessons: they need credentials, a proxy and AWS access.
 
 4b. **Keep the second watch feed running.** The Strands/AgentCore delta is SDK-shaped and
    says so, which is why AWS Context and Harness GA were logged as names and never analysed.
@@ -80,7 +96,6 @@ reuse, and the `simulate_failure` naming that accounts for six of L23's seven re
 ## On demand
 
 - Cloud ADOT online-eval (extends L34/F2 to continuous production sampling).
-- Package the eval harness for external use.
 
 ## Data hygiene
 

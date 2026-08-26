@@ -55,7 +55,7 @@ flowchart LR
 
 - **strands-evals default judge is now Claude Sonnet 4.6** and reports are always flattened.
   Any *absolute* scores recorded by L35/L52/L91-adjacent runs are not comparable to fresh runs
-  without pinning the judge model. Our own `tools/eval_harness.py` is unaffected (custom, judge
+  without pinning the judge model. Our own `eval_harness` is unaffected (custom, judge
   pinned per lesson), which is itself a vindication of building it.
 - **strands-agents-tools behavior changes** (0.8.x): `http_request` default timeout, `load_tool`
   confirmation gate, calculator sympify rejection, env-var precedence. Lessons that shell into

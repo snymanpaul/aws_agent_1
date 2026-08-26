@@ -1,6 +1,6 @@
 # L86: Unified, reusable eval harness (in `tools/`)
 
-**Code:** `tools/eval_harness.py`
+**Code:** `packages/agent-build-gates/src/agent_build_gates/eval_harness.py`
 **Reflection:** [`level-78-87-reflection.md`](../../.claude/learnings/reflections/level-78-87-reflection.md)
 
 ### L86 — Unified, reusable eval harness (in `tools/`)

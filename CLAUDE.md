@@ -12,9 +12,9 @@ red-team, context management. Per-level docs: `docs/levels/` (one file per lesso
 `LEARNING_PLAN_agentic_memory_evals.md`, `LEARNING_PLAN_v148_impact.md`, `NEXT_STEPS_PLAN.md`,
 and `.claude/learnings/reflections/`.
 
-**Gate status (2026-08-26)**: `no_sim_check` reports **0 hits over 275 tracked `.py` files**,
+**Gate status (2026-08-26)**: `no_sim_check` reports **0 hits over 277 tracked `.py` files**,
 and CI enforces it on every push (`.github/workflows/gates.yml`) alongside `check_no_aws_ids`
-and `uv run pytest` (129 tests). The pre-commit hook runs both tripwires over staged files.
+and `uv run pytest` (132 tests). The pre-commit hook runs both tripwires over staged files.
 Keep it at zero: any file you touch must come out clean, and a justified exception takes a
 trailing `# nosim:ok <reason>`, never a quiet reword of working code.
 
@@ -83,21 +83,27 @@ agent = Agent(model=model, tools=[...])
 
 Claude aliases route via the LiteLLM proxy at `localhost:4000`; `gemini*` goes direct to Google AI (needs `GEMINI_API_KEY`).
 
-## Quality Gates / Tooling (`tools/`)
+## Quality Gates (`packages/agent-build-gates/`)
 
-- `no_sim_check.py`: tripwire for substituted integrations. Flags substitute-object vocabulary
+The four gates live in a workspace package with their own version and 111 tests, installable
+elsewhere (`pip install agent-build-gates`, zero dependencies). Invoke them by console script,
+not by path. `tools/` now keeps only `models.py` (this repo's model aliases) and `install_hooks.sh`.
+
+- `no-sim-check`: tripwire for substituted integrations. Flags substitute-object vocabulary
   (mock/stub/fake/dummy/hardcoded), fake-success returns, "in production this would" deferrals, and
   `return True` straight out of an `except`. Run on new lessons: `uv run no-sim-check <path>`;
   repo-wide use `$(git ls-files '*.py')`, because pointing it at `.` also sweeps `.venv`.
-  Two scoping rules, both learned from classifying every hit in the repo and both pinned by
-  `packages/agent-build-gates/tests/` (56 tests): boundaries break on underscores and CamelCase humps, so
+  Two scoping rules, both learned from classifying every hit in the repo and both pinned by tests:
+  boundaries break on underscores and CamelCase humps, so
   `MockSQSQueue` / `mock_client` / `_simulate_human_response` are caught; and the two vocabulary
   rules do not fire on comments or docstrings, because prose cannot fake an integration. Escape a
   justified line with a trailing `# nosim:ok <reason>`.
-- `eval_harness.py`: composable evals: datasets + evaluators + multi-run + Wilson/bootstrap CIs +
-  permutation significance + token/latency cost gate + regression baseline.
-- `ship_gate.py`: one auditable GO/NO-GO verdict over real runs (the "paid, audit-reproducible gate").
-- `check_no_aws_ids.py`: **BINDING RULE: never put AWS account info (12-digit account ids, `AWSAdministratorAccess-*` / SSO profile strings, account-bearing ARNs) in ANY `.md` or `.py` file.** This tripwire blocks it; install the pre-commit hook once per clone with `sh tools/install_hooks.sh`. Account ids belong only in local, gitignored config (`~/.aws`, `.claude/settings.local.json`), never in tracked files.
+- `eval_harness`: composable evals: datasets + evaluators + multi-run + Wilson/bootstrap CIs +
+  permutation significance + token/latency cost gate + regression baseline. `run_suite` takes an
+  injectable `run_fn`, so it never assumes a framework.
+- `ship-gate`: one auditable GO/NO-GO verdict over real runs (the "paid, audit-reproducible gate").
+  Needs the `[strands]` extra; `run_fn` is injectable so the verdict logic is testable unpaid.
+- `check-no-aws-ids`: **BINDING RULE: never put AWS account info (12-digit account ids, `AWSAdministratorAccess-*` / SSO profile strings, account-bearing ARNs) in ANY `.md` or `.py` file.** This tripwire blocks it; install the pre-commit hook once per clone with `sh tools/install_hooks.sh`. Account ids belong only in local, gitignored config (`~/.aws`, `.claude/settings.local.json`), never in tracked files. A line that must legitimately carry an account-shaped string (this gate's own tests, docs describing the patterns) takes `noaws:ok` anywhere on it, which works as `# noaws:ok reason` in Python and `<!-- noaws:ok reason -->` in Markdown, and covers only that line.
 
 **Anti-simulation is non-negotiable** (enforced by `agent_build_gates.no_sim_check`): every lesson is
 structurally un-fakeable (runtime sentinels, real services, real crashes, positive/negative controls)

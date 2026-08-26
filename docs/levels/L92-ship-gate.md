@@ -1,6 +1,6 @@
 # L92: Ship Gate — One Auditable GO/NO-GO
 
-**Code:** `tools/ship_gate.py`
+**Code:** `packages/agent-build-gates/src/agent_build_gates/ship_gate.py`
 **Reflection:** [`level-78-87-reflection.md`](../../.claude/learnings/reflections/level-78-87-reflection.md) (Extension section)
 
 **Status:** Done — the synthesis of the whole evals arc.

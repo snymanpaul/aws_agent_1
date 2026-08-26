@@ -4,7 +4,7 @@ A worked example of directing an AI agent through a months-long engineering prog
 
 **The method is written up in [`METHOD.md`](METHOD.md).** That is the part that transfers, and it does not depend on Strands, on AWS, or on which model you use. The rest of this file is the ladder that produced it.
 
-Every lesson runs live against real services, with no substituted integrations and no hardcoded success paths. `agent_build_gates.no_sim_check` is the gate for that, and the repo now clears it: 0 hits across the 275 Python files it scans, down from 133 when the gate was first tested. CI runs that gate, the AWS-account tripwire and the 129-test suite on every push, so the standard holds for every clone rather than on my machine. Findings that depend on model behaviour were re-run on a second provider before I recorded them as findings.
+Every lesson runs live against real services, with no substituted integrations and no hardcoded success paths. `agent_build_gates.no_sim_check` is the gate for that, and the repo now clears it: 0 hits across the 277 Python files it scans, down from 133 when the gate was first tested. CI runs that gate, the AWS-account tripwire and the 132-test suite on every push, so the standard holds for every clone rather than on my machine. Findings that depend on model behaviour were re-run on a second provider before I recorded them as findings.
 
 ## How this was built
 
@@ -39,7 +39,7 @@ The repo therefore serves two purposes: a reference implementation of Strands pa
 
 **Anti-simulation enforcement.** `no-sim-check` flags substitute-object vocabulary, fake-success returns, deferral comments, and a `return True` straight out of an `except`. The tests themselves are built so they cannot pass by accident: runtime sentinels that only the real service can produce, real process crashes for the durability lessons, and paired positive and negative controls on every evaluator.
 
-The gate itself went untested for most of its life, and so were `eval_harness` and `ship_gate`, which decide what counts as a passing run. When I finally gave all three the positive and negative controls they demand of every lesson (129 tests), the anti-simulation gate turned out to be wrong in both directions. It fired on comments describing deliberate fault injection, and it missed `class MockSQSQueue` and `mock_client` completely, because `\b` does not match before a capital or an underscore.
+The gate itself went untested for most of its life, and so were `eval_harness` and `ship_gate`, which decide what counts as a passing run. When I finally gave all three the positive and negative controls they demand of every lesson (132 tests), the anti-simulation gate turned out to be wrong in both directions. It fired on comments describing deliberate fault injection, and it missed `class MockSQSQueue` and `mock_client` completely, because `\b` does not match before a capital or an underscore.
 
 Repairing it dropped repo-wide hits from 133 to 56. Triaging the survivors one function at a time took it to zero and turned up nine real substituted integrations that had been invisible the whole time. The worst was a Bedrock guardrail that silently fell back to a five-keyword blocklist whenever the client was missing or the API errored, so a safety check answered ALLOW when the service was simply unreachable. The discriminator that separated the nine from the noise: was a real call available and skipped? A helper that genuinely raises is fault injection. Code that fabricates a success is not.
 

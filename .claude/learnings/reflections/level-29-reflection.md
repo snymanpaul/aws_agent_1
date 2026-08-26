@@ -154,14 +154,14 @@ classDiagram
 ```mermaid
 graph LR
     subgraph Severity
-        high["HIGH\nL22 Safety"]
-        mid["MID\nL29 Steering"]
-        low["LOW\nL28 Hooks"]
+        high["HIGH<br/>L22 Safety"]
+        mid["MID<br/>L29 Steering"]
+        low["LOW<br/>L28 Hooks"]
     end
 
-    high -->|"raises exception\nagent halts"| crash["Hard Block"]
-    mid -->|"cancels + feedback\nagent re-reasons"| redirect["Soft Redirect"]
-    low -->|"records event\nno flow change"| observe["Passive Observe"]
+    high -->|"raises exception<br/>agent halts"| crash["Hard Block"]
+    mid -->|"cancels + feedback<br/>agent re-reasons"| redirect["Soft Redirect"]
+    low -->|"records event<br/>no flow change"| observe["Passive Observe"]
 ```
 
 ### Decision Log

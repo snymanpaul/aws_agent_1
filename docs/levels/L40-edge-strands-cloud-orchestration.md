@@ -14,11 +14,11 @@ GA December 3, 2025.
 ```mermaid
 flowchart TD
     subgraph Edge["Edge Device (Jetson / local)"]
-        Sensor[Sensor / Mic] --> EdgeAgent[Strands Agent\nLlamaCppModel]
+        Sensor[Sensor / Mic] --> EdgeAgent[Strands Agent<br/>LlamaCppModel]
         EdgeAgent -->|fast local inference| Actuator[Motor / Speaker]
     end
     subgraph Cloud["Cloud"]
-        AgentCore[AgentCore\nClaude / Bedrock]
+        AgentCore[AgentCore<br/>Claude / Bedrock]
     end
     EdgeAgent -->|complex reasoning needed| AgentCore
     AgentCore -->|plan / decision| EdgeAgent

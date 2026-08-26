@@ -121,7 +121,7 @@ This pattern (embed enriched, store raw) is the first thing to add to any RAG pi
 
 ```mermaid
 flowchart TD
-    RAW["Raw document\n{doc, sections: [{section, text}]}"]
+    RAW["Raw document<br/>{doc, sections: [{section, text}]}"]
 
     subgraph "Strategy A (Naive)"
         A1["split_fixed(200 chars)"]
@@ -140,8 +140,8 @@ flowchart TD
     end
 
     subgraph "Strategy D (Hierarchical)"
-        D1["Parent: embed(enriched full section)\nkey: sec:doc:section"]
-        D2["Child: embed(enriched sentence)\nkey: chunk:doc:section:i\nmetadata: parent_key"]
+        D1["Parent: embed(enriched full section)<br/>key: sec:doc:section"]
+        D2["Child: embed(enriched sentence)<br/>key: chunk:doc:section:i<br/>metadata: parent_key"]
     end
 
     RAW --> A1
@@ -151,7 +151,7 @@ flowchart TD
 
     subgraph "Query"
         Q1["embed(question)"]
-        Q2["query_vectors(topK=1)\nfilter: level=child (D only)"]
+        Q2["query_vectors(topK=1)<br/>filter: level=child (D only)"]
         Q3["follow parent_key (D only)"]
     end
 

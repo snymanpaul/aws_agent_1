@@ -15,9 +15,9 @@ L11 = one critique pass in a prompt chain. Reflexion = structured loop with obje
 ```mermaid
 flowchart TD
     Task --> Generate[Generate candidate answer]
-    Generate --> Evaluate[Evaluate against criteria\nscore 0.0–1.0]
-    Evaluate --> Check{score >= threshold\nor budget exhausted?}
-    Check -->|No| Reflect[Reflect: what failed?\ngenerate improvement prompt]
+    Generate --> Evaluate[Evaluate against criteria<br/>score 0.0–1.0]
+    Evaluate --> Check{score >= threshold<br/>or budget exhausted?}
+    Check -->|No| Reflect[Reflect: what failed?<br/>generate improvement prompt]
     Reflect --> Generate
     Check -->|Yes| Output[Return best answer + score]
 ```

@@ -73,11 +73,11 @@ The `@tool` decorator is not just a way to give an agent a capability — it is 
 
 ```mermaid
 flowchart TD
-    REQ["User Request\n(natural language)"]
+    REQ["User Request<br/>(natural language)"]
 
     subgraph "LLM Layer (Agent)"
-        ROUTER["Router Agent\nsonnet model\ncallback_handler=None"]
-        DIRECT["Direct answer\n(no tool call)"]
+        ROUTER["Router Agent<br/>sonnet model<br/>callback_handler=None"]
+        DIRECT["Direct answer<br/>(no tool call)"]
     end
 
     subgraph "Boundary"
@@ -99,7 +99,7 @@ flowchart TD
     end
 
     subgraph "_run_workflow() helper"
-        LC["create → start → status → delete\nFresh Agent per call"]
+        LC["create → start → status → delete<br/>Fresh Agent per call"]
     end
 
     REQ --> ROUTER

@@ -105,12 +105,12 @@ are needed; neither replaces the other.
 ```mermaid
 flowchart TD
     Corpus["Corpus (10 docs)"]
-    Cache["Inference Cache\n1 LLM call per doc"]
-    EB["Example-based\n0 extra calls\npure fns"]
-    AE["Auto-evaluator\nN extra calls\nLLM-as-judge"]
-    ADV["Adversarial\n5 inference calls\n0 check calls"]
-    R6["Prompt Refactoring\nbaseline comparison\nred-green-refactor"]
-    Report["Eval Report\npass/fail + scores"]
+    Cache["Inference Cache<br/>1 LLM call per doc"]
+    EB["Example-based<br/>0 extra calls<br/>pure fns"]
+    AE["Auto-evaluator<br/>N extra calls<br/>LLM-as-judge"]
+    ADV["Adversarial<br/>5 inference calls<br/>0 check calls"]
+    R6["Prompt Refactoring<br/>baseline comparison<br/>red-green-refactor"]
+    Report["Eval Report<br/>pass/fail + scores"]
 
     Corpus --> Cache
     Cache --> EB

@@ -92,16 +92,16 @@ actionable rather than decorative.
 ```mermaid
 flowchart TD
     Change["Model / prompt / config change"]
-    Harness["Evals Harness\nL49"]
-    Cache1["clf_cache\n10 classify calls"]
-    Cache2["req_cache\n6 pipeline calls"]
-    Cache3["plan_cache\n4 plan calls"]
-    M1["parse_rate\nL46b contract 1"]
-    M2["ece\nL46b contract 2"]
-    M3["override_rate\nL46d contract 3"]
-    M4["repair_rate\nL46c contract 4"]
-    Gate{"All gates\npass?"}
-    Baseline["eval_baseline.json\nregression check"]
+    Harness["Evals Harness<br/>L49"]
+    Cache1["clf_cache<br/>10 classify calls"]
+    Cache2["req_cache<br/>6 pipeline calls"]
+    Cache3["plan_cache<br/>4 plan calls"]
+    M1["parse_rate<br/>L46b contract 1"]
+    M2["ece<br/>L46b contract 2"]
+    M3["override_rate<br/>L46d contract 3"]
+    M4["repair_rate<br/>L46c contract 4"]
+    Gate{"All gates<br/>pass?"}
+    Baseline["eval_baseline.json<br/>regression check"]
     Deploy["Deploy ✓"]
     Block["Block ✗"]
 

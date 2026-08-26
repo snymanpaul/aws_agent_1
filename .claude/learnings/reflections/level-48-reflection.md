@@ -100,13 +100,13 @@ flowchart TD
     Q --> B["Multi-step? Non-idempotent? AWS?"]
     Q --> C["Entity-level retry? Saga? Cross-runtime?"]
 
-    A --> SM["Strands FileSessionManager\nRestores: conversation messages\nDoes NOT restore: tool call progress"]
-    B --> SFN["Step Functions Standard\nRestores: state outputs exactly-once\nDuration: up to 1 year"]
-    C --> TMP["Temporal\nRestores: activity event history\nZero wasted work on retry"]
+    A --> SM["Strands FileSessionManager<br/>Restores: conversation messages<br/>Does NOT restore: tool call progress"]
+    B --> SFN["Step Functions Standard<br/>Restores: state outputs exactly-once<br/>Duration: up to 1 year"]
+    C --> TMP["Temporal<br/>Restores: activity event history<br/>Zero wasted work on retry"]
 
-    SM --> SM2["crash → re-run ALL tools\nfrom current agent call"]
-    SFN --> SFN2["crash → re-run only FAILED state\nsuccessful states skipped"]
-    TMP --> TMP2["crash → replay event history\nretry only failed activity"]
+    SM --> SM2["crash → re-run ALL tools<br/>from current agent call"]
+    SFN --> SFN2["crash → re-run only FAILED state<br/>successful states skipped"]
+    TMP --> TMP2["crash → replay event history<br/>retry only failed activity"]
 ```
 
 ```

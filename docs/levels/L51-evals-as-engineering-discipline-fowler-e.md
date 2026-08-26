@@ -28,15 +28,15 @@ L35 = how to run evals using the Strands SDK. L49 = testing hybrid system bounda
 
 ```mermaid
 flowchart TD
-    Suite[Eval Suite] --> EB[Example-Based\ngolden set: input→expected]
-    Suite --> AE[Auto-Evaluator\na type of property-based test\nLLM-as-judge]
-    Suite --> ADV[Adversarial\nfailure mode inputs\nOWASP Top 10]
+    Suite[Eval Suite] --> EB[Example-Based<br/>golden set: input→expected]
+    Suite --> AE[Auto-Evaluator<br/>a type of property-based test<br/>LLM-as-judge]
+    Suite --> ADV[Adversarial<br/>failure mode inputs<br/>OWASP Top 10]
 
-    EB --> Cache[Inference Cache\nrun LLM once, test N times]
+    EB --> Cache[Inference Cache<br/>run LLM once, test N times]
     AE --> Cache
     ADV --> Cache
 
-    Cache --> Report[Eval Report\npass/fail + score distribution]
+    Cache --> Report[Eval Report<br/>pass/fail + score distribution]
 ```
 
 ```

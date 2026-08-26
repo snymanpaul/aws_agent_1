@@ -131,35 +131,35 @@ graph TD
 
     L13[L13: RAG] --> L45[L45: Agentic RAG + S3 Vectors]
 
-    L31[L31: Workflow] --> L46[L46: Hybrid LLM/Deterministic\n4 iterations]
+    L31[L31: Workflow] --> L46[L46: Hybrid LLM/Deterministic<br/>4 iterations]
     L8 --> L46
 
-    L23[L23: Error Recovery] --> L47[L47: Human-in-the-Loop\nCheckpoints and Handoffs]
+    L23[L23: Error Recovery] --> L47[L47: Human-in-the-Loop<br/>Checkpoints and Handoffs]
     L22 --> L47
 
     L5[L5: Sessions] --> L48[L48: Durable Execution]
     L23 --> L48
 
-    L46 --> L49[L49: Evals Harness\nCI/CD for LLM Systems]
+    L46 --> L49[L49: Evals Harness<br/>CI/CD for LLM Systems]
     L35[L35: Evals SDK] --> L49
 
-    L46 --> L50[L50: Toxic Flow Analysis\nMulti-Turn Adversarial Defence]
+    L46 --> L50[L50: Toxic Flow Analysis<br/>Multi-Turn Adversarial Defence]
     L22 --> L50
 
-    L35 --> L51[L51: Evals Methodology\nFowler Eval Framework]
+    L35 --> L51[L51: Evals Methodology<br/>Fowler Eval Framework]
     L49 --> L51
 
-    L51 --> L52[L52: Auto-Evaluator Reliability\nBiases, Calibration, Jury]
+    L51 --> L52[L52: Auto-Evaluator Reliability<br/>Biases, Calibration, Jury]
 
     L15[L15: Context Mgmt] --> L53[L53: Context Engineering]
     L30[L30: Skills] --> L53
 
-    L51 --> L54[L54: Prompt Management\nPrompts as Code]
+    L51 --> L54[L54: Prompt Management<br/>Prompts as Code]
 
     L28[L28: SDK Advances] --> L55[L55: SLM Routing]
     L46 --> L55
 
-    L9 --> L56[L56: Secure MCP\nArchitecture]
+    L9 --> L56[L56: Secure MCP<br/>Architecture]
     L22 --> L56
 ```
 

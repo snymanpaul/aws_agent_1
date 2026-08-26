@@ -21,12 +21,12 @@ From Fowler's gen-ai-patterns: the Evals pattern includes "running regular evalu
 
 ```mermaid
 flowchart TD
-    Tests[Eval Test Suite\nfrom L51] --> Refactor[Prompt Refactoring\nred-green-refactor cycle]
-    Refactor --> Verify[Run evals against\nrefactored prompt]
+    Tests[Eval Test Suite<br/>from L51] --> Refactor[Prompt Refactoring<br/>red-green-refactor cycle]
+    Refactor --> Verify[Run evals against<br/>refactored prompt]
     Verify --> Pass{tests pass?}
     Pass -->|Yes| Deploy[Deploy refactored prompt]
-    Pass -->|No| Fix[Fix regression\nrevert or iterate]
-    Deploy --> Monitor[Production evals\ndetect performance decline]
+    Pass -->|No| Fix[Fix regression<br/>revert or iterate]
+    Deploy --> Monitor[Production evals<br/>detect performance decline]
 ```
 
 ```

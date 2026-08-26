@@ -15,9 +15,9 @@ GA March 12, 2026.
 flowchart LR
     Agent -->|write memory| LTM[AgentCore LTM]
     LTM -->|CREATED / MODIFIED event| Kinesis[Kinesis Data Stream]
-    Kinesis --> Lambda1[Lambda: personalization\nupdate user profile in real-time]
-    Kinesis --> Lambda2[Lambda: audit log\nwrite to S3 / compliance store]
-    Kinesis --> Lambda3[Lambda: sync\npush to other agents' memory]
+    Kinesis --> Lambda1[Lambda: personalization<br/>update user profile in real-time]
+    Kinesis --> Lambda2[Lambda: audit log<br/>write to S3 / compliance store]
+    Kinesis --> Lambda3[Lambda: sync<br/>push to other agents' memory]
 ```
 
 ```

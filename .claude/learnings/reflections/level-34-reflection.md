@@ -100,20 +100,20 @@ any of that, but online sampling does not.
 ```mermaid
 flowchart TD
     subgraph Evaluators
-        B13[13 Built-in Evaluators\nno creation needed]
-        CE[Custom LLM-as-judge\ncreate_evaluator → poll ACTIVE]
+        B13[13 Built-in Evaluators<br/>no creation needed]
+        CE[Custom LLM-as-judge<br/>create_evaluator → poll ACTIVE]
     end
 
     subgraph OnlineEval [Online Evaluation - requires ADOT]
-        ADOT[Agent + ADOT SDK] -->|OTel spans| SPANS[/aws/spans]
+        ADOT[Agent + ADOT SDK] -->|OTel spans| SPANS["/aws/spans"]
         APPSIG[Application Signals] -->|auto-creates| TLG[Custom Trace Log Group]
         TLG -->|registered| OELC[create_online_evaluation_config]
-        OELC --> ENABLED[executionStatus=ENABLED\nsamples live traffic]
+        OELC --> ENABLED[executionStatus=ENABLED<br/>samples live traffic]
         ENABLED -->|quality scores| CW[CloudWatch Metrics]
     end
 
     subgraph OnDemand [On-demand - requires OTel spans]
-        SPANS2[OTel span data\ntrace_id+span_id+scope+times] -->|runtime.evaluate| SCORE[score + reasoning]
+        SPANS2[OTel span data<br/>trace_id+span_id+scope+times] -->|runtime.evaluate| SCORE[score + reasoning]
     end
 
     Evaluators -->|evaluators list| OELC

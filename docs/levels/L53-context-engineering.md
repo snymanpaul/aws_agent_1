@@ -24,9 +24,9 @@ L15 = managing the token budget (compression, summarization). L53 = deciding *wh
 
 ```mermaid
 flowchart TD
-    CE[Context Engineering] --> CS[Context Setup\nminimal system prompts\nfew-shot examples\ntoken-efficient tools]
-    CE --> CM[Context Management\nfor long-horizon tasks\nsummarization\nstructured note-taking\nsub-agent architectures]
-    CE --> DR[Dynamic Information Retrieval\nagents load external data\nonly when immediately relevant]
+    CE[Context Engineering] --> CS[Context Setup<br/>minimal system prompts<br/>few-shot examples<br/>token-efficient tools]
+    CE --> CM[Context Management<br/>for long-horizon tasks<br/>summarization<br/>structured note-taking<br/>sub-agent architectures]
+    CE --> DR[Dynamic Information Retrieval<br/>agents load external data<br/>only when immediately relevant]
 
     CS --> Window[Context Window]
     CM --> Window

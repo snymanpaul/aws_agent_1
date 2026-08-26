@@ -48,3 +48,37 @@ jobs:
 
       - name: Tests
         run: uv run pytest -q
+
+  diagrams:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    # Split from `gates` on purpose. This job needs Node and a headless browser, which
+    # is a heavier failure surface than the rest of the suite, so a flake here stays
+    # legible as a flake here rather than turning the evidence gates red.
+    #
+    # Added after the first time anything actually rendered these: 110 tracked markdown
+    # files carry diagrams, 5 of them did not parse and rendered as an error box for
+    # readers, and 225 labels used `\n`, which mermaid prints literally rather than
+    # treating as a line break. Both classes were invisible without this job.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install mermaid-cli
+        run: npm install -g @mermaid-js/mermaid-cli@11
+
+      # mmdc drives Chromium through puppeteer and takes its settings as a FILE
+      # (-p/--puppeteerConfigFile), not an environment variable. GitHub runners cannot
+      # use the Chromium sandbox, so it is disabled here and only here: this container
+      # renders repository markdown already in the tree, nothing user-supplied.
+      - name: Configure puppeteer for the runner
+        run: |
+          echo '{"args": ["--no-sandbox", "--disable-setuid-sandbox"]}' > "$RUNNER_TEMP/puppeteer.json"
+          echo "PUPPETEER_CONFIG=$RUNNER_TEMP/puppeteer.json" >> "$GITHUB_ENV"
+
+      - name: Render every mermaid diagram
+        run: sh tools/check_mermaid.sh

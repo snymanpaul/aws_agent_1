@@ -13,12 +13,12 @@ Preview (not GA in all regions).
 
 ```mermaid
 flowchart TD
-    Traffic[Live Agent Traffic] -->|sampling| Online[Online Evaluator\ncontinuous, no test set]
-    Sessions[Captured Sessions] -->|replay| OnDemand[On-Demand Evaluator\nrun against history]
-    Online --> CW[CloudWatch\nquality metrics + alerts]
+    Traffic[Live Agent Traffic] -->|sampling| Online[Online Evaluator<br/>continuous, no test set]
+    Sessions[Captured Sessions] -->|replay| OnDemand[On-Demand Evaluator<br/>run against history]
+    Online --> CW[CloudWatch<br/>quality metrics + alerts]
     OnDemand --> CW
     CW -->|quality drop >10%| Alert[PagerDuty / SNS alert]
-    CW --> OTel[OTel traces\ncross-agent distributed tracing]
+    CW --> OTel[OTel traces<br/>cross-agent distributed tracing]
 ```
 
 ```

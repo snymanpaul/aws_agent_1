@@ -11,8 +11,8 @@
 
 ```mermaid
 sequenceDiagram
-    participant React as React Frontend\n(CopilotKit / custom)
-    participant AGUI as AG-UI Adapter\n(ag_ui_strands)
+    participant React as React Frontend<br/>(CopilotKit / custom)
+    participant AGUI as AG-UI Adapter<br/>(ag_ui_strands)
     participant Agent as Strands Agent
 
     React->>AGUI: user message (HTTP / SSE)

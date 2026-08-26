@@ -101,15 +101,15 @@ know the TypeScript SDK — you just need to know where to look for the differen
 ```mermaid
 graph TD
     subgraph SDK["@strands-agents/sdk"]
-        Agent["Agent\n(invoke / stream)"]
-        tool["tool() factory\n(ZodTool)"]
+        Agent["Agent<br/>(invoke / stream)"]
+        tool["tool() factory<br/>(ZodTool)"]
         Agent --> tool
     end
 
     subgraph Models["Sub-path model imports"]
-        OAI["@strands-agents/sdk/openai\nOpenAIModel"]
-        ANT["@strands-agents/sdk/anthropic\nAnthropicModel"]
-        BED["@strands-agents/sdk/bedrock\nBedrockModel"]
+        OAI["@strands-agents/sdk/openai<br/>OpenAIModel"]
+        ANT["@strands-agents/sdk/anthropic<br/>AnthropicModel"]
+        BED["@strands-agents/sdk/bedrock<br/>BedrockModel"]
     end
 
     Agent --> OAI

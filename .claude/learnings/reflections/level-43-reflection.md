@@ -52,11 +52,11 @@ SOPs are human-readable Reflexion exit criteria. L42 used a numeric threshold (`
 
 ```mermaid
 flowchart LR
-    SOP["Code Review SOP\n(markdown)"]
-    Agent["Agent\n(haiku)"]
-    Output["Review Output\n[SECURITY],[BUG],Verdict"]
-    Compliance["check_compliance()\n(pure Python regex)"]
-    Report["ComplianceReport\n(Pydantic)"]
+    SOP["Code Review SOP<br/>(markdown)"]
+    Agent["Agent<br/>(haiku)"]
+    Output["Review Output<br/>[SECURITY],[BUG],Verdict"]
+    Compliance["check_compliance()<br/>(pure Python regex)"]
+    Report["ComplianceReport<br/>(Pydantic)"]
 
     SOP -->|system_prompt| Agent
     Agent -->|reviews code| Output

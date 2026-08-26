@@ -103,18 +103,18 @@ time.
 
 ```mermaid
 flowchart TD
-    Eval[Eval Suite\nfrom L51\nPRECONDITION]
-    Base[Baseline prompt\n143w / 100% pass]
-    S[Structural refactor\n64w]
-    P[Pruned refactor\n32w]
+    Eval[Eval Suite<br/>from L51<br/>PRECONDITION]
+    Base[Baseline prompt<br/>143w / 100% pass]
+    S[Structural refactor<br/>64w]
+    P[Pruned refactor<br/>32w]
     D[Degraded prompt]
     R[Restored prompt]
-    Port[Portability test\n2 models]
-    SR[REGRESSION\ndoc-06 sentiment]
-    PR[SAFE\n77.6% token saving]
+    Port[Portability test<br/>2 models]
+    SR[REGRESSION<br/>doc-06 sentiment]
+    PR[SAFE<br/>77.6% token saving]
     DR[RED: 6/6 fail]
     RR[GREEN: ≤1 fail]
-    Risk[RISK\ngpt-5-nano 83%\nvs gemini 100%]
+    Risk[RISK<br/>gpt-5-nano 83%<br/>vs gemini 100%]
 
     Eval --> Base
     Base --> S --> SR

@@ -19,9 +19,9 @@ This is **architecture-level analysis** of agent graphs — not session-level co
 
 ```mermaid
 flowchart TD
-    PD[Private data\neg. customer records, secrets] --> Agent
-    UC[Untrusted content\neg. web pages, user uploads, MCP responses] --> Agent
-    Agent --> EXT[External channel\neg. outbound HTTP, email, storage write]
+    PD[Private data<br/>eg. customer records, secrets] --> Agent
+    UC[Untrusted content<br/>eg. web pages, user uploads, MCP responses] --> Agent
+    Agent --> EXT[External channel<br/>eg. outbound HTTP, email, storage write]
     style PD fill:#fee
     style UC fill:#fee
     style EXT fill:#fee

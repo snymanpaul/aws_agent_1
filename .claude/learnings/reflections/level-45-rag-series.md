@@ -146,23 +146,23 @@ Every layer has a failure mode. Fix one layer, another becomes the bottleneck.
 
 ```mermaid
 flowchart TD
-    DOC["Source Documents\n{key, section, text}"]
+    DOC["Source Documents<br/>{key, section, text}"]
 
     subgraph "Ingestion (L45a/c)"
-        SPLIT["sentence split\n+ min length filter"]
-        DEDUP["content_hash dedup\nSHA256[:16]"]
-        ENRICH["embed_text =\n'Document: X | Section: Y | sentence'"]
-        S3V["S3 Vectors\n{key, float32[1024], metadata}"]
+        SPLIT["sentence split<br/>+ min length filter"]
+        DEDUP["content_hash dedup<br/>SHA256[:16]"]
+        ENRICH["embed_text =<br/>'Document: X | Section: Y | sentence'"]
+        S3V["S3 Vectors<br/>{key, float32[1024], metadata}"]
         DOC --> SPLIT --> DEDUP --> ENRICH --> S3V
     end
 
     subgraph "Query (L45d/e/g)"
         Q["Question"]
-        HYDE["HyDE: generate hypothetical answer\nembed that instead of question"]
-        SEM["vector_retrieve(topK=8)\ncosine similarity"]
-        KW["BM25 keyword_retrieve(topK=5)\nterm frequency × IDF"]
-        RRF["RRF merge\nscore = Σ 1/(60+rank_i)"]
-        RERANK["LLM re-rank\nbatch score 0-10\none haiku call"]
+        HYDE["HyDE: generate hypothetical answer<br/>embed that instead of question"]
+        SEM["vector_retrieve(topK=8)<br/>cosine similarity"]
+        KW["BM25 keyword_retrieve(topK=5)<br/>term frequency × IDF"]
+        RRF["RRF merge<br/>score = Σ 1/(60+rank_i)"]
+        RERANK["LLM re-rank<br/>batch score 0-10<br/>one haiku call"]
         Q --> HYDE --> SEM
         Q --> SEM
         Q --> KW
@@ -173,7 +173,7 @@ flowchart TD
 
     subgraph "Agentic Loop (L45b)"
         AGENT["Strands Agent"]
-        EVAL["evaluate_context\n{sufficient, missing, suggested}"]
+        EVAL["evaluate_context<br/>{sufficient, missing, suggested}"]
         ANS["Answer with citations"]
         RERANK --> AGENT
         AGENT --> EVAL
@@ -182,16 +182,16 @@ flowchart TD
     end
 
     subgraph "Evaluation (L45f)"
-        CP["Context Precision\nrelevant chunks / retrieved"]
-        CR["Context Recall\nrelevant sections found / expected"]
-        F["Faithfulness\nsupported claims / total claims"]
-        AR["Answer Relevance\n0-10 score / 10"]
+        CP["Context Precision<br/>relevant chunks / retrieved"]
+        CR["Context Recall<br/>relevant sections found / expected"]
+        F["Faithfulness<br/>supported claims / total claims"]
+        AR["Answer Relevance<br/>0-10 score / 10"]
     end
 
     subgraph "Lifecycle (L45h)"
         HASH["content_hash in metadata"]
         DIFF["list_vectors → hash diff"]
-        UPD["NEW: embed+put\nCHANGED: delete+embed+put\nUNCHANGED: skip\nORPHANED: delete"]
+        UPD["NEW: embed+put<br/>CHANGED: delete+embed+put<br/>UNCHANGED: skip<br/>ORPHANED: delete"]
         HASH --> DIFF --> UPD
     end
 ```

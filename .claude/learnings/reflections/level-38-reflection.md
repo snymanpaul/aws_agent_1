@@ -123,12 +123,12 @@ contracts between LLM-powered steps.
 ```mermaid
 flowchart TD
     subgraph Decorator["@ai_function decorator"]
-        D1["1. Render prompt\n{param} → value"]
-        D2["2. Create Agent\nmodel + structured_output_type"]
+        D1["1. Render prompt<br/>{param} → value"]
+        D2["2. Create Agent<br/>model + structured_output_type"]
         D3["3. agent(prompt)"]
         D4["4. post_conditions(result)"]
         D5a["return result"]
-        D5b["append error to messages\ngoto 2"]
+        D5b["append error to messages<br/>goto 2"]
     end
 
     Call["my_func(arg1, arg2)"] --> D1
@@ -138,14 +138,14 @@ flowchart TD
     D5b -->|attempt < max_attempts| D2
 
     subgraph Modes["Execution Modes"]
-        DISABLED["DISABLED\nstructured_output_model\nany JSON-serializable type"]
-        LOCAL["LOCAL\nsmolagents AST executor\nPydantic return required\ninitial_state = bound_args"]
+        DISABLED["DISABLED<br/>structured_output_model<br/>any JSON-serializable type"]
+        LOCAL["LOCAL<br/>smolagents AST executor<br/>Pydantic return required<br/>initial_state = bound_args"]
     end
 
     D2 --> Modes
 
     subgraph ToolProvider["As ToolProvider"]
-        TP["Agent(tools=[my_ai_func])\ntool spec auto-derived\nfrom name + docstring + annotations"]
+        TP["Agent(tools=[my_ai_func])<br/>tool spec auto-derived<br/>from name + docstring + annotations"]
     end
 
     D5a --> TP

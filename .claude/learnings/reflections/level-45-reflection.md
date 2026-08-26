@@ -110,11 +110,11 @@ where the operational burden lives. For production agents, that gap is everythin
 
 ```mermaid
 flowchart TD
-    Docs["Documents\n{key, text, topic, source}"]
-    Titan["Bedrock Titan v2\n1024-dim float32\nnormalized"]
-    S3V["S3 Vectors\nBucket: strands-kb-l45\nIndex: docs-index\ncosine distance"]
-    Agent["Strands Agent\nclaude-sonnet-4"]
-    T1["query_knowledge_base(question, topic_filter)\n→ embed(question) → query_vectors(topK=3)"]
+    Docs["Documents<br/>{key, text, topic, source}"]
+    Titan["Bedrock Titan v2<br/>1024-dim float32<br/>normalized"]
+    S3V["S3 Vectors<br/>Bucket: strands-kb-l45<br/>Index: docs-index<br/>cosine distance"]
+    Agent["Strands Agent<br/>claude-sonnet-4"]
+    T1["query_knowledge_base(question, topic_filter)<br/>→ embed(question) → query_vectors(topK=3)"]
     T2["list_topics()"]
 
     Docs -->|embed| Titan -->|put_vectors| S3V
@@ -124,8 +124,8 @@ flowchart TD
 
     subgraph "Idempotent Setup"
         B1["get_vector_bucket → NotFoundException?"] -->|yes| B2["create_vector_bucket"]
-        I1["get_index → NotFoundException?"] -->|yes| I2["create_index\n(set nonFilterableMetadataKeys now — immutable)"]
-        D1["get_vectors(all_keys)"] -->|missing keys| D2["embed + put_vectors\n(skip existing)"]
+        I1["get_index → NotFoundException?"] -->|yes| I2["create_index<br/>(set nonFilterableMetadataKeys now — immutable)"]
+        D1["get_vectors(all_keys)"] -->|missing keys| D2["embed + put_vectors<br/>(skip existing)"]
     end
 ```
 

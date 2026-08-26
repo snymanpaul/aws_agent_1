@@ -20,7 +20,7 @@ sequenceDiagram
     participant Synthesizer as LLM (Synthesis phase)
 
     User->>Planner: task
-    Planner->>Planner: produce full tool-call script\nwith dependency placeholders
+    Planner->>Planner: produce full tool-call script<br/>with dependency placeholders
     loop For each step in plan
         Planner->>Executor: call tool with resolved args
         Executor-->>Planner: result → fills placeholder

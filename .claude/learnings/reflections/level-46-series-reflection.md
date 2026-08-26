@@ -212,17 +212,17 @@ flowchart TD
         ROUTER["Router Agent (LLM)"]
         T1["@tool run_ingest"]
         T2["@tool run_analysis"]
-        WF1["Workflow DAG\nval→ext→idx"]
-        WF2["Workflow DAG\nresearch∥assess→synth"]
+        WF1["Workflow DAG<br/>val→ext→idx"]
+        WF2["Workflow DAG<br/>research∥assess→synth"]
         ROUTER --> T1 --> WF1
         ROUTER --> T2 --> WF2
     end
 
     subgraph "L46b: Typed output + confidence gate"
         TXT["input text"]
-        CLF["classify_document()\n→ Classification"]
+        CLF["classify_document()<br/>→ Classification"]
         CGATE{confidence >= 0.60}
-        QA["assess_quality()\n→ QualityAssessment"]
+        QA["assess_quality()<br/>→ QualityAssessment"]
         RESULT["PipelineResult"]
         TXT --> CLF --> CGATE
         CGATE -- YES --> QA --> RESULT
@@ -231,18 +231,18 @@ flowchart TD
 
     subgraph "L46c: Constrained vocabulary"
         LLMPLAN["LLM generates JSON plan"]
-        REPAIR["parse + repair\n(fuzzy match, enum fix)"]
-        VALIDATE["validate\n(empty/excess/missing)"]
-        EXEC["deterministic executor\n+ step audit"]
+        REPAIR["parse + repair<br/>(fuzzy match, enum fix)"]
+        VALIDATE["validate<br/>(empty/excess/missing)"]
+        EXEC["deterministic executor<br/>+ step audit"]
         LLMPLAN --> REPAIR --> VALIDATE --> EXEC
     end
 
     subgraph "L46d: Trust zones"
         RAW["Raw request"]
-        G1["Layer 1: input guardrail\nZone 1 → sanitized"]
-        LLMR["LLM risk + recommend\n(Zone 1 only)"]
-        G3["Layer 3: hard gates\nfraud/compliance/frozen/large"]
-        G4["Layer 4: fitness fns\nbudget_cap / approval_cap"]
+        G1["Layer 1: input guardrail<br/>Zone 1 → sanitized"]
+        LLMR["LLM risk + recommend<br/>(Zone 1 only)"]
+        G3["Layer 3: hard gates<br/>fraud/compliance/frozen/large"]
+        G4["Layer 4: fitness fns<br/>budget_cap / approval_cap"]
         DELTA["decision delta log"]
         RAW --> G1 --> LLMR --> G3 --> G4 --> DELTA
     end

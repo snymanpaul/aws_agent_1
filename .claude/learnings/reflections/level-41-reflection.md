@@ -49,9 +49,9 @@ ReWOO is not "add reflection to an agent" — it's a fundamentally different exe
 ```mermaid
 sequenceDiagram
     participant User
-    participant Planner as Planner Agent\n(haiku, structured output)
-    participant Executor as ReWOO Executor\n(pure Python)
-    participant Synthesizer as Synthesizer Agent\n(sonnet, no tools)
+    participant Planner as Planner Agent<br/>(haiku, structured output)
+    participant Executor as ReWOO Executor<br/>(pure Python)
+    participant Synthesizer as Synthesizer Agent<br/>(sonnet, no tools)
 
     User->>Planner: task + available tool signatures
     Planner-->>Executor: ExecutionPlan(steps=[E1..E4])

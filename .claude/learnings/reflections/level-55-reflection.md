@@ -132,13 +132,13 @@ gap. Benchmark on your actual prompts with your actual deployment stack. LLaMA 3
 ```mermaid
 flowchart TD
     Request[Request]
-    Router["SLM Router\nLLaMA 3.2 3B\n1 cheap call\nclassify complexity"]
+    Router["SLM Router<br/>LLaMA 3.2 3B<br/>1 cheap call<br/>classify complexity"]
     Narrow{"narrow?"}
-    SLM["SLM tier\nLLaMA 3.2 3B\n1x cost\nH1: 3.67/5 narrow"]
-    Frontier["Frontier LLM\ngemini-2.5-pro\n5x cost\nH2: 5.0/5 complex"]
+    SLM["SLM tier<br/>LLaMA 3.2 3B<br/>1x cost<br/>H1: 3.67/5 narrow"]
+    Frontier["Frontier LLM<br/>gemini-2.5-pro<br/>5x cost<br/>H2: 5.0/5 complex"]
     Result[Result]
-    Judge["Cross-model judge\ngemini-flash\navoids self-preference"]
-    Overhead["+ router overhead\non complex tasks\n+1 unit = 6 total"]
+    Judge["Cross-model judge<br/>gemini-flash<br/>avoids self-preference"]
+    Overhead["+ router overhead<br/>on complex tasks<br/>+1 unit = 6 total"]
 
     Request --> Router
     Router --> Narrow

@@ -124,15 +124,15 @@ flowchart TD
     subgraph "Naive RAG"
         NE["embed(Q)"]
         NR["query_vectors(topK=3)"]
-        NA["LLM answer\n(single context window)"]
+        NA["LLM answer<br/>(single context window)"]
         Q --> NE --> NR --> NA
     end
 
     subgraph "Agentic RAG"
-        AG["Agent\n(claude-sonnet-4)"]
-        SD["search_docs(aspect, topic, top_k)\n→ S3 Vectors"]
-        EC["evaluate_context(Q, accumulated)\n→ {sufficient, missing, suggested_queries}\n(haiku — cheap)"]
-        ANS["Final Answer\nwith [topic, sim=X] citations"]
+        AG["Agent<br/>(claude-sonnet-4)"]
+        SD["search_docs(aspect, topic, top_k)<br/>→ S3 Vectors"]
+        EC["evaluate_context(Q, accumulated)<br/>→ {sufficient, missing, suggested_queries}<br/>(haiku — cheap)"]
+        ANS["Final Answer<br/>with [topic, sim=X] citations"]
 
         Q --> AG
         AG -->|search aspect 1| SD

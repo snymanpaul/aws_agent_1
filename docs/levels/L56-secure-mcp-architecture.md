@@ -15,12 +15,12 @@
 
 ```mermaid
 flowchart TD
-    NaiveConvert[Naive API-to-MCP\nconvert all endpoints directly] --> T[Excessive token usage]
+    NaiveConvert[Naive API-to-MCP<br/>convert all endpoints directly] --> T[Excessive token usage]
     NaiveConvert --> C[Context pollution]
     NaiveConvert --> P[Poor agent performance]
-    NaiveConvert --> S[No deterministic way to\nprevent misuse of endpoints]
+    NaiveConvert --> S[No deterministic way to<br/>prevent misuse of endpoints]
 
-    Dedicated[Dedicated MCP server\ntailored for agentic workflows\nbuilt on top of existing APIs] --> Safe[Appropriate scope\nfor agentic use]
+    Dedicated[Dedicated MCP server<br/>tailored for agentic workflows<br/>built on top of existing APIs] --> Safe[Appropriate scope<br/>for agentic use]
 ```
 
 ```

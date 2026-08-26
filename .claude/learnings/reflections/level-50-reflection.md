@@ -97,16 +97,16 @@ overridden by sufficiently crafted injected content.
 
 ```mermaid
 flowchart TD
-    T1["web_fetch\nUNTRUSTED"]
-    T2["customer_db\nPRIVATE"]
-    T3["send_email\nEXFIL"]
-    T4["summarize\n(safe)"]
-    Classifier["Tool Classifier\nassign trifecta tags"]
-    AgentSpec["AgentSpec\ncollect tool tag union"]
-    Single["Single-agent check\nall 3 in union?"]
-    DFS["Multi-agent DFS\naccumulate tags on paths"]
-    ToxicPath["Toxic Flow\npath covers U+P+E"]
-    VulnAgent["VULNERABLE\n(remove one leg)"]
+    T1["web_fetch<br/>UNTRUSTED"]
+    T2["customer_db<br/>PRIVATE"]
+    T3["send_email<br/>EXFIL"]
+    T4["summarize<br/>(safe)"]
+    Classifier["Tool Classifier<br/>assign trifecta tags"]
+    AgentSpec["AgentSpec<br/>collect tool tag union"]
+    Single["Single-agent check<br/>all 3 in union?"]
+    DFS["Multi-agent DFS<br/>accumulate tags on paths"]
+    ToxicPath["Toxic Flow<br/>path covers U+P+E"]
+    VulnAgent["VULNERABLE<br/>(remove one leg)"]
     CleanAgent["CLEAN"]
 
     T1 --> Classifier

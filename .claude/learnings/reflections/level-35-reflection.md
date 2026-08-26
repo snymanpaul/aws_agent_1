@@ -125,18 +125,18 @@ flowchart TD
     TaskFn --> Reports
 
     subgraph TaskFnTypes["Task Function Split"]
-        RunAgent["run_agent(case)\n→ {output: str}\nfor OutputEvaluator"]
-        RunAgentTraj["run_agent_with_trajectory(case)\n→ {output: str, trajectory: list[str]}\nfor ToolCalled, TrajectoryEvaluator"]
+        RunAgent["run_agent(case)<br/>→ {output: str}<br/>for OutputEvaluator"]
+        RunAgentTraj["run_agent_with_trajectory(case)<br/>→ {output: str, trajectory: list[str]}<br/>for ToolCalled, TrajectoryEvaluator"]
     end
 
     subgraph EvalTypes["Evaluator Types"]
-        TraceLevel["TRACE_LEVEL\nHelpfulnessEvaluator\nFaithfulnessEvaluator\nGoalSuccessRate\n→ needs OTel Session\n→ L34 only"]
-        LocalRubric["Local Rubric\nOutputEvaluator(rubric, model=)\nTrajectoryEvaluator(rubric, model=)\n→ works with plain dict\n→ model=OpenAIModel bypasses Bedrock"]
-        Deterministic["Deterministic\nContains, Equals, ToolCalled\n→ no LLM needed\n→ ToolCalled: list OR Session"]
+        TraceLevel["TRACE_LEVEL<br/>HelpfulnessEvaluator<br/>FaithfulnessEvaluator<br/>GoalSuccessRate<br/>→ needs OTel Session<br/>→ L34 only"]
+        LocalRubric["Local Rubric<br/>OutputEvaluator(rubric, model=)<br/>TrajectoryEvaluator(rubric, model=)<br/>→ works with plain dict<br/>→ model=OpenAIModel bypasses Bedrock"]
+        Deterministic["Deterministic<br/>Contains, Equals, ToolCalled<br/>→ no LLM needed<br/>→ ToolCalled: list OR Session"]
     end
 
     TaskFn --> EvalTypes
-    Reports -- "one per evaluator\nparallel arrays: cases/scores/test_passes/reasons" --> EvalReport["EvaluationReport\noverall_score\nto_file/from_file"]
+    Reports -- "one per evaluator<br/>parallel arrays: cases/scores/test_passes/reasons" --> EvalReport["EvaluationReport<br/>overall_score<br/>to_file/from_file"]
 ```
 
 ### Decision Log

@@ -50,10 +50,10 @@ flowchart LR
         C3[agentcore 1.18.1]
         C4[evals 1.0.2 GA]
     end
-    B1 -->|"6 minors: interventions, memory,\nsandbox, storage, live checkpoint"| C1
-    B2 -->|"0 new tools,\n5 security-hardening releases"| C2
-    B3 -->|"tool-search, runtime shell,\nextraction_mode, LangGraph payments"| C3
-    B4 -->|"red-team + chaos + RCA + CLI,\nno API break"| C4
+    B1 -->|"6 minors: interventions, memory,<br/>sandbox, storage, live checkpoint"| C1
+    B2 -->|"0 new tools,<br/>5 security-hardening releases"| C2
+    B3 -->|"tool-search, runtime shell,<br/>extraction_mode, LangGraph payments"| C3
+    B4 -->|"red-team + chaos + RCA + CLI,<br/>no API break"| C4
 ```
 
 ## The shape of the change

@@ -25,10 +25,10 @@ The four LLM/deterministic boundaries from L46 each produce a measurable contrac
 ```mermaid
 flowchart TD
     Change[Model / prompt / config change] --> Harness[Evals Harness]
-    Harness --> J1[JSON parse rate\nL46b boundary contract]
-    Harness --> J2[Confidence calibration\nL46b confidence gate]
-    Harness --> J3[Override rate delta\nL46d hard gates]
-    Harness --> J4[Plan repair rate\nL46c constrained vocab]
+    Harness --> J1[JSON parse rate<br/>L46b boundary contract]
+    Harness --> J2[Confidence calibration<br/>L46b confidence gate]
+    Harness --> J3[Override rate delta<br/>L46d hard gates]
+    Harness --> J4[Plan repair rate<br/>L46c constrained vocab]
     J1 --> Gate{All gates pass?}
     J2 --> Gate
     J3 --> Gate

@@ -52,24 +52,24 @@ The Reflexion loop cannot improve what it cannot measure correctly. The Evaluato
 
 ```mermaid
 sequenceDiagram
-    participant Loop as Reflexion Loop
-    participant Actor as Actor Agent<br/>(sonnet)
+    participant RL as Reflexion Loop
+    participant Act as Actor Agent<br/>(sonnet)
     participant Eval as Evaluator<br/>(pure Python)
     participant Ref as Reflector Agent<br/>(haiku, structured output)
 
     loop Until score >= threshold OR budget exhausted
-        Loop->>Actor: task + accumulated reflection_context
-        Actor-->>Loop: ```python code block
-        Loop->>Eval: exec(code, restricted_ns) + run TEST_CASES
-        Eval-->>Loop: score (0.0–1.0), failures[], passes[]
+        RL->>Act: task + accumulated reflection_context
+        Act-->>RL: fenced python code block
+        RL->>Eval: exec(code, restricted_ns) + run TEST_CASES
+        Eval-->>RL: score (0.0-1.0), failures[], passes[]
         alt score >= threshold
-            Loop-->>Loop: return ReflexionResult(converged=True)
+            RL-->>RL: return ReflexionResult(converged=True)
         else budget exhausted
-            Loop-->>Loop: return ReflexionResult(converged=False, best=best_so_far)
+            RL-->>RL: return ReflexionResult(converged=False, best=best_so_far)
         else continue
-            Loop->>Ref: failures + passes + score
-            Ref-->>Loop: ReflectionOutput(improvement_advice)
-            Loop->>Loop: append critique to reflection_context
+            RL->>Ref: failures + passes + score
+            Ref-->>RL: ReflectionOutput(improvement_advice)
+            RL->>RL: append critique to reflection_context
         end
     end
 ```

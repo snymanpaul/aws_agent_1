@@ -62,7 +62,7 @@ flowchart TD
     F["AG-UI frontend"] -->|POST /invocations RunAgentInput| A["AGUIApp (Starlette)"]
     A --> E["entrypoint(run_input) async-gen"]
     E --> S["agent.stream_async"]
-    S -->|event['data']| TC["TextMessageContentEvent(delta)"]
+    S -->|"event['data']"| TC["TextMessageContentEvent(delta)"]
     E --> EV["RunStarted / TextMessageStart / End / RunFinished"]
     TC --> SSE["SSE text/event-stream"]
     EV --> SSE

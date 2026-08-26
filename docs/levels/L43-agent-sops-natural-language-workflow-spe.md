@@ -14,7 +14,7 @@ Model-driven reasoning is unpredictable at production scale. Agent SOPs use `MUS
 
 ```mermaid
 flowchart LR
-    SOP["SOP Markdown\n(RFC 2119 constraints)"] -->|loaded via MCP| Agent
+    SOP["SOP Markdown<br/>(RFC 2119 constraints)"] -->|loaded via MCP| Agent
     Agent -->|MUST steps| Deterministic[Guaranteed steps]
     Agent -->|SHOULD steps| Recommended[Preferred steps]
     Agent -->|MAY steps| Optional[Context-dependent steps]

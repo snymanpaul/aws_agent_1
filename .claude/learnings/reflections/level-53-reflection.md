@@ -132,16 +132,16 @@ it works on your specific failure mode."
 ```mermaid
 flowchart TD
     CE["Context Engineering"]
-    S["1. Setup\nconstruction time"]
-    LH["2. Long-horizon\nexecution time"]
-    DR["3. Dynamic Retrieval\nquery time"]
+    S["1. Setup<br/>construction time"]
+    LH["2. Long-horizon<br/>execution time"]
+    DR["3. Dynamic Retrieval<br/>query time"]
     S1["verbose 196w → 5.0/5"]
     S2["minimal 27w → 4.5/5"]
     LH1["raw history 436w → 5/5"]
     LH2["notes 123w → 5/5"]
     DR1["always-load 246w → 4.67/5"]
     DR2["JIT 153w → 4.67/5"]
-    R["Rule: load only what\nthis query needs"]
+    R["Rule: load only what<br/>this query needs"]
 
     CE --> S
     CE --> LH

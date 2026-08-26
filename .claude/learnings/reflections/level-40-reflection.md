@@ -99,7 +99,7 @@ asyncio rule that applies to any async HTTP client used across multiple event lo
 flowchart TD
     subgraph Edge["Edge Device (Ollama / llama.cpp)"]
         Input[Sensor / User Input]
-        EdgeAgent["Edge Agent\nLlamaCppModel\nllama3.2:3b"]
+        EdgeAgent["Edge Agent<br/>LlamaCppModel<br/>llama3.2:3b"]
         S1["read_sensor()"]
         S2["actuate()"]
         S3["consult_cloud() — async"]
@@ -110,14 +110,14 @@ flowchart TD
     end
 
     subgraph Cloud["Cloud (LiteLLM -> Claude)"]
-        CloudAgent["Cloud Agent\nOpenAIModel\nclaude-sonnet-4"]
+        CloudAgent["Cloud Agent<br/>OpenAIModel<br/>claude-sonnet-4"]
     end
 
     S3 -->|await invoke_async| CloudAgent
     CloudAgent -->|answer| S3
 
     subgraph Loop["Single asyncio event loop"]
-        LoopNote["asyncio.run(main())\n+ invoke_async() everywhere\nKeeps httpx client alive"]
+        LoopNote["asyncio.run(main())<br/>+ invoke_async() everywhere<br/>Keeps httpx client alive"]
     end
 ```
 

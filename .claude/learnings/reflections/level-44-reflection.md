@@ -105,14 +105,14 @@ context. The fix is always: `return f"{user_message}\n\n{your_context}"`.
 
 ```mermaid
 flowchart TD
-    FE["Frontend\n{thread_id, messages, state}"]
-    SCB["state_context_builder\n(input_data, user_message) → str\nReplaces user message\nMust include original + context"]
-    SA["Strands Agent\nstream_async(modified_message)"]
+    FE["Frontend<br/>{thread_id, messages, state}"]
+    SCB["state_context_builder<br/>(input_data, user_message) → str<br/>Replaces user message<br/>Must include original + context"]
+    SA["Strands Agent<br/>stream_async(modified_message)"]
     T1["search_papers()"]
     T2["fetch_abstract()"]
-    SFA["state_from_args\nOptimistic: 'Searching...'"]
-    SFR["state_from_result\nActual: 'Found N sources'"]
-    SSE["SSE Stream\nRUN_STARTED\nSTATE_SNAPSHOT × 3\nTOOL_CALL_* × 2\nTEXT_MESSAGE_*\nMESSAGES_SNAPSHOT\nRUN_FINISHED"]
+    SFA["state_from_args<br/>Optimistic: 'Searching...'"]
+    SFR["state_from_result<br/>Actual: 'Found N sources'"]
+    SSE["SSE Stream<br/>RUN_STARTED<br/>STATE_SNAPSHOT × 3<br/>TOOL_CALL_* × 2<br/>TEXT_MESSAGE_*<br/>MESSAGES_SNAPSHOT<br/>RUN_FINISHED"]
 
     FE -->|POST /invocations| SCB
     SCB --> SA
@@ -123,8 +123,8 @@ flowchart TD
     SA --> SSE
 
     subgraph "Multi-turn"
-        MS["MESSAGES_SNAPSHOT\n(full history)"]
-        NextTurn["Turn N+1 payload\nmessages = history + new msg\nstate = last STATE_SNAPSHOT"]
+        MS["MESSAGES_SNAPSHOT<br/>(full history)"]
+        NextTurn["Turn N+1 payload<br/>messages = history + new msg<br/>state = last STATE_SNAPSHOT"]
     end
     SSE -->|client captures| MS --> NextTurn
 ```

@@ -15,9 +15,9 @@
 
 ```mermaid
 flowchart TD
-    Request[Incoming request] --> Assess{narrow and repetitive?\nno advanced reasoning needed?}
-    Assess -->|Yes| SLM[SLM\n3.5B-10B params\nlower cost + latency]
-    Assess -->|No| LLM[Frontier LLM\nadvanced reasoning\ncomplex multi-step]
+    Request[Incoming request] --> Assess{narrow and repetitive?<br/>no advanced reasoning needed?}
+    Assess -->|Yes| SLM[SLM<br/>3.5B-10B params<br/>lower cost + latency]
+    Assess -->|No| LLM[Frontier LLM<br/>advanced reasoning<br/>complex multi-step]
     SLM --> Result[Result]
     LLM --> Result
 ```

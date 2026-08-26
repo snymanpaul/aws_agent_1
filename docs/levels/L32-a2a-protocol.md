@@ -15,7 +15,7 @@ flowchart LR
         SA[Strands Agent] --> A2AS[A2AServer :9000]
     end
     subgraph Client["Local Process"]
-        A2AC[A2AAgent\nendpoint=http://...] -->|A2A protocol| A2AS
+        A2AC[A2AAgent<br/>endpoint=http://...] -->|A2A protocol| A2AS
         LocalAgent[Local Agent] --> A2AC
     end
     A2AC -.->|"get_agent_card() → name/description"| A2AS

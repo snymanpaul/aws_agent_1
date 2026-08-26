@@ -51,8 +51,8 @@ def invoke(payload):
 ### 2. Required Endpoints
 ```mermaid
 graph LR
-    C[Client] -->|POST| I[/invocations]
-    C -->|GET| P[/ping]
+    C[Client] -->|POST| I["/invocations"]
+    C -->|GET| P["/ping"]
 
     I --> A[Agent Response]
     P --> H[Health Status]

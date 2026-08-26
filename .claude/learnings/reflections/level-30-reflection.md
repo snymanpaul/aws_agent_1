@@ -103,9 +103,9 @@ sequenceDiagram
 ```mermaid
 graph TD
     subgraph Plugin["AgentSkills Plugin"]
-        disc["@hook: inject XML menu\n(BeforeInvocationEvent)"]
-        act["@tool: skills(skill_name)\n→ returns full instructions"]
-        state["agent.state: tracks\nactivated skills"]
+        disc["@hook: inject XML menu<br/>(BeforeInvocationEvent)"]
+        act["@tool: skills(skill_name)<br/>→ returns full instructions"]
+        state["agent.state: tracks<br/>activated skills"]
     end
 
     subgraph Agent["Agent"]
@@ -125,11 +125,11 @@ graph TD
 ```mermaid
 graph LR
     subgraph Without_Skills["Without Skills (L15 approach)"]
-        sp1["System prompt:\n  PDF instructions (300t)\n  Data instructions (300t)\n  Code instructions (300t)\n  Excel instructions (300t)\n  = 1200 tokens ALWAYS"]
+        sp1["System prompt:<br/>  PDF instructions (300t)<br/>  Data instructions (300t)<br/>  Code instructions (300t)<br/>  Excel instructions (300t)<br/>  = 1200 tokens ALWAYS"]
     end
 
     subgraph With_Skills["With Skills (L30)"]
-        sp2["System prompt:\n  XML menu (60t)\n  + activated skill (300t)\n  = 360 tokens MAX"]
+        sp2["System prompt:<br/>  XML menu (60t)<br/>  + activated skill (300t)<br/>  = 360 tokens MAX"]
     end
 
     Without_Skills -->|"4 domains"| cost1["1200 tokens/call"]

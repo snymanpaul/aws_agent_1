@@ -158,13 +158,13 @@ Neither should your agent's MCP server.
 
 ```mermaid
 flowchart TD
-    API["Internal API\n(CRUD, human-designed)"]
-    Naive["Naive MCP\n10 tools, 2876 schema chars"]
-    Dedicated["Dedicated MCP\n4 tools, 1566 schema chars"]
+    API["Internal API<br/>(CRUD, human-designed)"]
+    Naive["Naive MCP<br/>10 tools, 2876 schema chars"]
+    Dedicated["Dedicated MCP<br/>4 tools, 1566 schema chars"]
     Agent1["Agent + Naive MCP"]
     Agent2["Agent + Dedicated MCP"]
-    Bad["apply_discount !\nupdate_order_status ×2 !\nget_customer PII !"]
-    Good["get_order_status ✓\nflag_delivery_concern ✓"]
+    Bad["apply_discount !<br/>update_order_status ×2 !<br/>get_customer PII !"]
+    Good["get_order_status ✓<br/>flag_delivery_concern ✓"]
 
     API -->|"1:1 convert"| Naive
     API -->|"purpose-built on top of"| Dedicated

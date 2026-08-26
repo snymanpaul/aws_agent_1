@@ -170,7 +170,7 @@ graph TD
         A -->|to_thread| T2[Tool B]
         A -->|to_thread| T3[Tool C]
         T1 & T2 & T3 --> M[merged results]
-        CE[ConcurrentToolExecutor] -.->|same pattern\ninside agent loop| A
+        CE[ConcurrentToolExecutor] -.->|same pattern<br/>inside agent loop| A
     end
 
     subgraph "Iteration 2: Hook System"

@@ -103,15 +103,15 @@ decisions that cross a threshold, require human verification.
 ```mermaid
 flowchart TD
     Doc["Reference Document"]
-    VB["Iter 1: Verbosity Bias\nshort vs medium vs long\nsame facts, different lengths"]
-    SP["Iter 2: Self-Preference\nhaiku gen + gemini gen\nboth judged by both models"]
-    CAL["Iter 3: Calibration\n5-tier quality ladder\nSpearman rho vs ground truth"]
-    JURY["Iter 4: Jury\n2 judges × 5 tiers\nvariance of individual vs consensus"]
-    R1["No monotonic bias\nlong penalised vs medium"]
-    R2["Ceiling effect\nall outputs 5/5\nbias undetectable"]
-    R3["rho=1.0\nperfect calibration\non clear tiers"]
-    R4["Judges agreed\nidentical scores\nzero variance reduction"]
-    ZONE["Risk zone:\nambiguous quality middle"]
+    VB["Iter 1: Verbosity Bias<br/>short vs medium vs long<br/>same facts, different lengths"]
+    SP["Iter 2: Self-Preference<br/>haiku gen + gemini gen<br/>both judged by both models"]
+    CAL["Iter 3: Calibration<br/>5-tier quality ladder<br/>Spearman rho vs ground truth"]
+    JURY["Iter 4: Jury<br/>2 judges × 5 tiers<br/>variance of individual vs consensus"]
+    R1["No monotonic bias<br/>long penalised vs medium"]
+    R2["Ceiling effect<br/>all outputs 5/5<br/>bias undetectable"]
+    R3["rho=1.0<br/>perfect calibration<br/>on clear tiers"]
+    R4["Judges agreed<br/>identical scores<br/>zero variance reduction"]
+    ZONE["Risk zone:<br/>ambiguous quality middle"]
 
     Doc --> VB --> R1 --> ZONE
     Doc --> SP --> R2 --> ZONE

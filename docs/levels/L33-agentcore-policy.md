@@ -13,9 +13,9 @@ GA March 3, 2026.
 
 ```mermaid
 flowchart TD
-    NL["Plain English Policy\n'Allow refund-agent to process refunds when amount < $500'"]
-    NL -->|NL2Cedar| Cedar["Cedar Rule\npermit(principal, action=RefundTool__process_refund)\nwhen amount < 500"]
-    Cedar --> Gateway["AgentCore Gateway\n<1ms enforcement"]
+    NL["Plain English Policy<br/>'Allow refund-agent to process refunds when amount < $500'"]
+    NL -->|NL2Cedar| Cedar["Cedar Rule<br/>permit(principal, action=RefundTool__process_refund)<br/>when amount < 500"]
+    Cedar --> Gateway["AgentCore Gateway<br/><1ms enforcement"]
     Gateway -->|permit| Tool["Lambda / Salesforce / Slack tool"]
     Gateway -->|forbid| Block["Request blocked — no code change needed"]
 ```

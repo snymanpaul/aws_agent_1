@@ -21,7 +21,7 @@
 
 ```mermaid
 flowchart LR
-    Docs[Documents\nImages / Video / Text] -->|embed| S3V[S3 Vectors\nbucket + index]
+    Docs[Documents<br/>Images / Video / Text] -->|embed| S3V[S3 Vectors<br/>bucket + index]
     Query --> S3V
     S3V -->|top-k results| Agent[Strands Agent]
     Agent -->|answer with citations| User

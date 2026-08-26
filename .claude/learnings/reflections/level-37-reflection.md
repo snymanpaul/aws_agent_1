@@ -112,20 +112,20 @@ conditional requirements is to call the API and read the error message. Probe li
 ```mermaid
 flowchart TD
     subgraph ControlPlane["bedrock-agentcore-control"]
-        CM[CreateMemory\nstreamDeliveryResources\nmemoryExecutionRoleArn*]
+        CM[CreateMemory<br/>streamDeliveryResources<br/>memoryExecutionRoleArn*]
         GM[GetMemory]
         UM[UpdateMemory]
     end
 
     subgraph RuntimePlane["bedrock-agentcore runtime"]
-        CE[CreateEvent\nraw conversation turns]
-        BCR[BatchCreateMemoryRecords\ndirect injection]
-        RMR[RetrieveMemoryRecords\nsemantic search]
+        CE[CreateEvent<br/>raw conversation turns]
+        BCR[BatchCreateMemoryRecords<br/>direct injection]
+        RMR[RetrieveMemoryRecords<br/>semantic search]
     end
 
     subgraph KinesisConfig["KinesisResource"]
         KD[dataStreamArn: str*]
-        CC["contentConfigurations:\n  type: MEMORY_RECORDS\n  level: FULL_CONTENT\n       | METADATA_ONLY"]
+        CC["contentConfigurations:<br/>  type: MEMORY_RECORDS<br/>  level: FULL_CONTENT<br/>       | METADATA_ONLY"]
     end
 
     subgraph Pipeline["Async Extraction"]

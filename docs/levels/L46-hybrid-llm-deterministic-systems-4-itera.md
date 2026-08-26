@@ -23,7 +23,7 @@
 ```mermaid
 flowchart TD
     subgraph "L46a: Routing direction"
-        R[Router LLM] -->|@tool boundary| W1[Workflow DAG]
+        R[Router LLM] -->|"@tool boundary"| W1[Workflow DAG]
         R --> W2[Workflow DAG]
     end
     subgraph "L46b: Embedding direction"

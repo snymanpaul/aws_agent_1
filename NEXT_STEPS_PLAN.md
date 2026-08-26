@@ -98,6 +98,12 @@ Deferred deliberately until enforcement and the analytics feed were in place. Bo
 this is the next tier if lesson work resumes. Three levels, not a full tier of seven, chosen
 because each closes a gap the repo can name rather than a topic that merely looks next.
 
+The analysis behind these three, including the coverage counts and why Gateway ranks first, is
+[`docs/work/research/reports/2026-08-26_repo-coverage-vs-aws-data-plane.md`](docs/work/research/reports/2026-08-26_repo-coverage-vs-aws-data-plane.md).
+Headline: two genuine data-plane touches in 101 levels (L45 S3 Vectors, L37 Kinesis), zero tracked
+Python mentioning Athena, Glue, Redshift, S3 Tables, Iceberg or Lake Formation, and three AgentCore
+services with no level at all.
+
 7. **AgentCore Gateway.** The one platform primitive never built here. L33 depends on it
    conceptually and L75 touched a Gateway ARN, but no level ever created one. It converts APIs and
    Lambda functions into MCP tools, and it is where Cedar policy intercepts every tool call, so it
@@ -118,6 +124,13 @@ because each closes a gap the repo can name rather than a topic that merely look
 ## On demand
 
 - Cloud ADOT online-eval (extends L34/F2 to continuous production sampling).
+- **Bytes-scanned budget in `ship_gate`.** Athena and Glue meter on data scanned, not tokens. The
+  gate already has a token and latency cost gate, and the AWS analytics skills report cost and data
+  scanned per query, so the signal is there. Needed before any data-plane level can be gated on cost.
+- **Re-scope Tier 22 follow-on 1 before spending on it.** The `BedrockKnowledgeBaseStore` arm is
+  billable and partly overtaken: AWS Context and Glue business context are the organisation-scale
+  version of the same question, and S3 Annotations plus S3 Metadata test grounded retrieval against
+  real object context without provisioning anything.
 
 ## Data hygiene
 

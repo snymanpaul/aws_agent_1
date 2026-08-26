@@ -165,10 +165,10 @@ def demo_agent_handling():
     print("Iteration 3: Agent-Side Handling")
     print("=" * 60)
 
-    # Simulate what the agent sees when -32042 is returned
+    # The tool-result shape an agent receives when -32042 is returned
     # (without elicitation_callback configured)
 
-    simulated_tool_result = {
+    example_tool_result = {
         "toolUseId": "tool-use-123",
         "status": "error",
         "content": [{
@@ -188,7 +188,7 @@ def demo_agent_handling():
     }
 
     print("When no elicitation_callback is set, the agent sees this tool result:\n")
-    print(json.dumps(simulated_tool_result, indent=2))
+    print(json.dumps(example_tool_result, indent=2))
 
     print("""
     The agent can then:
@@ -202,7 +202,7 @@ def demo_agent_handling():
     """)
 
     # Parse and display the elicitation request
-    text = simulated_tool_result["content"][0]["text"]
+    text = example_tool_result["content"][0]["text"]
     if "MCP Elicitation required:" in text:
         data_start = text.index("with data ") + len("with data ")
         elicitations = json.loads(text[data_start:])

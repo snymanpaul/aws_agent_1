@@ -282,8 +282,8 @@ def demo_repository_checkpoint() -> None:
     print(f"  [Process A] steps executed: {execution_log}")
     print()
 
-    # --- Simulate crash and resume ---
-    print("  [Simulated crash]")
+    # --- Process A ends and Process B resumes. No crash is performed here. ---
+    print("  [Process A ends. No crash here: L82 and L95 do a real SIGKILL resume.]")
     print()
 
     # --- Run 2: Process B resumes from checkpoint ---

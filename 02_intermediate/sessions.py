@@ -73,17 +73,17 @@ agent_with_memory("What's my name and what programming languages do I work with?
 print()
 
 # =============================================================================
-# Example 2: Session Restoration (Simulating Restart)
+# Example 2: Session Restoration (new Agent, same session_id)
 # =============================================================================
 
-print("Example 2: Session Restoration (Simulating Restart)")
+print("Example 2: Session Restoration (new Agent, same session_id)")
 print("-" * 50)
 print()
 
 # Create a NEW agent instance with the SAME session_id
 # This simulates what happens when you restart your application
 print("Creating new agent instance with same session_id...")
-print("(This simulates restarting your application)")
+print("(A new Agent with the same session_id, as a restarted app would create)")
 print()
 
 restored_agent = Agent(

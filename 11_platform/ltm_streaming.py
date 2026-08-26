@@ -436,11 +436,11 @@ To fan-out to multiple consumers, use Kinesis Enhanced Fan-Out or
 route through EventBridge Pipes.
 """)
 
-print("--- Lambda consumer demo (local simulation) ---")
+print("--- Lambda consumer logic, run locally against real stream records ---")
 
 
-def simulate_lambda_consumer(kinesis_records: list[dict]) -> None:
-    """Simulate what a Lambda function would do with Kinesis records."""
+def lambda_consumer_logic(kinesis_records: list[dict]) -> None:
+    """The processing a Lambda would perform on Kinesis records, run in-process."""
     for payload in kinesis_records:
         event_type = payload.get("eventType", "UNKNOWN")
         record_id  = payload.get("recordId", "?")
@@ -464,7 +464,7 @@ if stream_arn:
     try:
         records = read_kinesis_records(STREAM_NAME, wait_secs=5)
         if records:
-            simulate_lambda_consumer(records)
+            lambda_consumer_logic(records)
         else:
             print("  No records in stream yet — simulating with synthetic payloads:")
             synthetic = [
@@ -483,7 +483,7 @@ if stream_arn:
                     "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                 },
             ]
-            simulate_lambda_consumer(synthetic)
+            lambda_consumer_logic(synthetic)
     except Exception as e:
         print(f"  ERROR: {e}")
 else:

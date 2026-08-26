@@ -1,0 +1,15 @@
+{
+  "message": {
+    "role": "user",
+    "content": [
+      {
+        "text": "Check your current context budget and tell me about your context management capabilities."
+      }
+    ],
+    "tracking_id": "314e10bc-720f-49cf-987a-ea97a112cbfd"
+  },
+  "message_id": 4,
+  "redact_message": null,
+  "created_at": "2026-08-26T20:27:03.977369+00:00",
+  "updated_at": "2026-08-26T20:27:03.977371+00:00"
+}

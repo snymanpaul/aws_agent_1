@@ -1,0 +1,23 @@
+{
+  "message": {
+    "role": "user",
+    "content": [
+      {
+        "toolResult": {
+          "toolUseId": "toolu_01H5mnLem2Pw5cHTmwSBX5dm",
+          "status": "success",
+          "content": [
+            {
+              "text": "Context Budget Status:\n- Tokens: 18 / 200,000\n- Utilization: 0.01%\n- Target: <40.0%\n- Zone: OPTIMAL\n- Recommendation: Context is healthy. No action needed."
+            }
+          ]
+        }
+      }
+    ],
+    "tracking_id": "f6875ed9-26c7-41d5-94f5-44847e9c385b"
+  },
+  "message_id": 2,
+  "redact_message": null,
+  "created_at": "2026-08-26T20:25:54.327796+00:00",
+  "updated_at": "2026-08-26T20:25:54.327805+00:00"
+}

@@ -2387,7 +2387,7 @@ class ResearchGuardrails:
 
     # Known unreliable domains
     UNRELIABLE_DOMAINS = [
-        "fake-news.com",
+        "fake-news.com",  # nosim:ok example domain in an unreliable-source blocklist
         "conspiracy-theories.net",
         "misinformation.org"
     ]

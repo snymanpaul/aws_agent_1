@@ -1103,7 +1103,7 @@ def demo_iteration_6():
     response = agent_a("I'm Bob, a Rust developer. I'm building a CLI tool for DevOps.")
     print(f"Agent A: {response}")
 
-    print("\n[...simulating application restart...]")
+    print("\n[...new Agent, same session_id: what a restart produces...]")
     print("(New agent instance, different session ID, but SAME memory storage)")
 
     print("\n[SESSION B: Returning user (different session)]")

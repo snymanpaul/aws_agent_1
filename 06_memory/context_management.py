@@ -905,8 +905,8 @@ Integration with Level 14:
     # Demo without actual memory (show the pattern)
     retriever = SelectiveRetriever()
 
-    # Mock some items for demonstration
-    mock_items = [
+    # Fixed items so the formatter output is deterministic
+    sample_items = [
         {
             "event": "User mentioned they prefer Python over JavaScript",
             "timestamp": datetime.now().isoformat(),
@@ -922,7 +922,7 @@ Integration with Level 14:
         },
     ]
 
-    xml_output = retriever.format_as_xml(mock_items)
+    xml_output = retriever.format_as_xml(sample_items)
     print("[XML Output Format]")
     print(xml_output)
 

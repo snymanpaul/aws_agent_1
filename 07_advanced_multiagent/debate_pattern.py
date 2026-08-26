@@ -524,8 +524,8 @@ def graphiti_roundtrip_demo():
     print(f"\nTopic: {topic}")
     print("\n[Step 1: Search for related past debates]")
 
-    # Simulate what we'd retrieve from Graphiti
-    # In production, this would come from mcp__graphiti-memory__search_memory_facts
+    # A fixed corpus of prior debates, so this demo is reproducible.
+    # Retrieving these from Graphiti for real is L17 (graph memory deep dive).
     past_debates = """
 PAST DEBATE 1: TypeScript vs JavaScript
 - Recommendation: Adopt TypeScript for larger projects with training

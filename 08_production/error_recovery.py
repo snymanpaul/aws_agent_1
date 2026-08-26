@@ -787,8 +787,8 @@ class PolicyBasedRetryExecutor:
 print("\nDemo: Retry Policies")
 print("-" * 40)
 
-# Simulate different failure scenarios
-def simulate_failure(failure_type: str, succeed_after: int = 3) -> Callable:
+# Build functions that fail with specific error types
+def failing_after(failure_type: str, succeed_after: int = 3) -> Callable:
     """Create a function that fails with specific error types."""
     call_count = 0
 
@@ -814,21 +814,21 @@ config = RetryConfig(max_retries=4, base_delay=0.1, jitter=0.0)
 print("\nTest 1: AlwaysRetry with authentication failure")
 print("  (Will waste retries on non-recoverable error)")
 executor = PolicyBasedRetryExecutor(config, AlwaysRetryPolicy())
-result = executor.execute(simulate_failure("auth", succeed_after=10))
+result = executor.execute(failing_after("auth", succeed_after=10))
 print(f"  Result: {result.success}, Attempts: {result.attempts}")
 
 # Test 2: TransientOnly with auth failure (fails fast)
 print("\nTest 2: TransientOnly with authentication failure")
 print("  (Should fail immediately)")
 executor = PolicyBasedRetryExecutor(config, TransientOnlyPolicy())
-result = executor.execute(simulate_failure("auth", succeed_after=10))
+result = executor.execute(failing_after("auth", succeed_after=10))
 print(f"  Result: {result.success}, Attempts: {result.attempts}")
 
 # Test 3: TransientOnly with transient failure (retries and succeeds)
 print("\nTest 3: TransientOnly with transient failure")
 print("  (Should retry and succeed)")
 executor = PolicyBasedRetryExecutor(config, TransientOnlyPolicy())
-result = executor.execute(simulate_failure("transient", succeed_after=3))
+result = executor.execute(failing_after("transient", succeed_after=3))
 print(f"  Result: {result.success}, Attempts: {result.attempts}")
 
 # Test 4: BudgetAware stops when cost exceeded
@@ -836,7 +836,7 @@ print("\nTest 4: BudgetAware with limited budget")
 print("  (Should stop when budget exhausted)")
 budget_policy = BudgetAwarePolicy(max_cost=0.025, cost_per_attempt=0.01)
 executor = PolicyBasedRetryExecutor(config, budget_policy)
-result = executor.execute(simulate_failure("transient", succeed_after=10))
+result = executor.execute(failing_after("transient", succeed_after=10))
 print(f"  Result: {result.success}, Attempts: {result.attempts}")
 print(f"  Spent: ${budget_policy.spent:.3f}")
 
@@ -854,7 +854,7 @@ def tracking_sleep(duration):
     # Don't actually sleep in demo
 time.sleep = tracking_sleep
 
-result = executor.execute(simulate_failure("rate_limit", succeed_after=10))
+result = executor.execute(failing_after("rate_limit", succeed_after=10))
 time.sleep = original_sleep
 
 print(f"  Delays: {[f'{d:.2f}s' for d in delays]}")
@@ -3530,8 +3530,8 @@ if STRANDS_AVAILABLE:
     except Exception as e:
         print(f"  Error: {e}")
 
-    # Test 3: Simulated failure with fallback
-    print("\nTest 3: Simulated model failure (force fallback)")
+    # Test 3: real failure from an invalid primary model, then fallback
+    print("\nTest 3: Real model failure on an invalid model id (forces fallback)")
 
     # Create agent with a non-existent primary model to force fallback
     fallback_agent = ResilientAgentV2(

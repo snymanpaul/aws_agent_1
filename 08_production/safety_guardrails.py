@@ -20,6 +20,7 @@ Production safety layer for Strands Agents with:
 8. Unified SafetyStack
 """
 
+import os
 import re
 import time
 import uuid
@@ -30,6 +31,7 @@ from enum import Enum
 from functools import wraps
 from typing import Any, Callable, Literal
 
+import requests
 from pydantic import BaseModel
 
 # ============================================================================
@@ -101,10 +103,10 @@ class PromptInjectionDetector:
 
         # MEDIUM - Structural manipulation
         InjectionPattern(
-            name="fake_system_tag",
+            name="forged_system_tag",
             pattern=r"<\s*/?system\s*>",
             severity="MEDIUM",
-            description="Fake system tag injection"
+            description="Forged system tag injection"
         ),
         InjectionPattern(
             name="model_tokens",
@@ -116,13 +118,13 @@ class PromptInjectionDetector:
             name="prompt_delimiter",
             pattern=r"```\s*(system|instruction|prompt)\s*\n",
             severity="MEDIUM",
-            description="Fake prompt delimiter"
+            description="Forged prompt delimiter"
         ),
         InjectionPattern(
             name="end_prompt",
             pattern=r"(end|stop)\s+(of\s+)?(system\s+)?(prompt|instructions?)",
             severity="MEDIUM",
-            description="Fake end-of-prompt marker"
+            description="Forged end-of-prompt marker"
         ),
 
         # LOW - Suspicious patterns (may be legitimate)
@@ -1315,26 +1317,29 @@ class BedrockGuardrailValidator:
         """
         Validate text against Bedrock guardrail.
 
+        Raises rather than degrading. A guardrail that answers ALLOW because the
+        service was unreachable is worse than one that fails: the caller cannot
+        tell an approval from an outage, and every downstream check inherits a
+        verdict nothing produced.
+
         Args:
             text: The text to validate
             source: Whether this is user INPUT or model OUTPUT
         """
         client = self._get_client()
         if client is None:
-            # Fallback to mock response for demo
-            return self._mock_validate(text, source)
-
-        try:
-            response = client.apply_guardrail(
-                guardrailIdentifier=self.guardrail_id,
-                guardrailVersion=self.guardrail_version,
-                source=source,
-                content=[{"text": {"text": text}}]
+            raise RuntimeError(
+                "No Bedrock client, so the guardrail cannot be applied. Configure AWS "
+                "credentials and point BEDROCK_GUARDRAIL_ID at a provisioned guardrail."
             )
-            return self._parse_response(response)
-        except Exception as e:
-            print(f"Bedrock API error: {e}")
-            return self._mock_validate(text, source)
+
+        response = client.apply_guardrail(
+            guardrailIdentifier=self.guardrail_id,
+            guardrailVersion=self.guardrail_version,
+            source=source,
+            content=[{"text": {"text": text}}]
+        )
+        return self._parse_response(response)
 
     def _parse_response(self, response: dict) -> BedrockGuardrailResult:
         """Parse Bedrock API response."""
@@ -1359,25 +1364,6 @@ class BedrockGuardrailValidator:
             trace_id=response.get("guardrailTrace", {}).get("traceId"),
         )
 
-    def _mock_validate(self, text: str, source: str) -> BedrockGuardrailResult:
-        """Mock validation for demo when Bedrock is unavailable."""
-        # Simple keyword-based mock
-        blocked_keywords = ["bomb", "hack", "illegal", "ssn", "credit card"]
-        text_lower = text.lower()
-
-        for keyword in blocked_keywords:
-            if keyword in text_lower:
-                return BedrockGuardrailResult(
-                    action="BLOCK",
-                    output=f"[Content blocked by guardrail: {keyword}]",
-                    assessments=[{"type": "KEYWORD_BLOCK", "keyword": keyword}],
-                )
-
-        return BedrockGuardrailResult(
-            action="ALLOW",
-            output=text,
-            assessments=[],
-        )
 
     def validate_input(self, text: str) -> BedrockGuardrailResult:
         """Convenience method for input validation."""
@@ -1391,11 +1377,9 @@ class BedrockGuardrailValidator:
 # Demo Iteration 7
 print("\nDemo: Bedrock ApplyGuardrail API")
 print("-" * 40)
-print("(Using mock validator - set AWS credentials for real Bedrock)")
-
 bedrock_validator = BedrockGuardrailValidator(
-    guardrail_id="demo-guardrail",
-    guardrail_version="1",
+    guardrail_id=os.environ.get("BEDROCK_GUARDRAIL_ID", "demo-guardrail"),
+    guardrail_version=os.environ.get("BEDROCK_GUARDRAIL_VERSION", "1"),
 )
 
 test_texts = [
@@ -1405,12 +1389,17 @@ test_texts = [
     ("Here's a Python function", "OUTPUT"),
 ]
 
-for text, source in test_texts:
-    result = bedrock_validator.validate(text, source)
-    print(f"\n{source}: {text[:40]}...")
-    print(f"  Action: {result.action}")
-    if result.action == "BLOCK":
-        print(f"  Blocked: {result.output}")
+try:
+    for text, source in test_texts:
+        result = bedrock_validator.validate(text, source)
+        print(f"\n{source}: {text[:40]}...")
+        print(f"  Action: {result.action}")
+        if result.action == "BLOCK":
+            print(f"  Blocked: {result.output}")
+except Exception as e:
+    print(f"\n  Guardrail NOT exercised: {type(e).__name__}: {str(e)[:120]}")
+    print("  Nothing above was validated. Set AWS credentials and point")
+    print("  BEDROCK_GUARDRAIL_ID at a provisioned guardrail to run this for real.")
 
 
 # ============================================================================
@@ -1571,8 +1560,19 @@ class SafetyStack:
 
         # 4. Bedrock input validation (if configured)
         if self.bedrock_validator:
-            bedrock_result = self.bedrock_validator.validate_input(processed_input)
-            if bedrock_result.action == "BLOCK":
+            try:
+                bedrock_result = self.bedrock_validator.validate_input(processed_input)
+            except Exception as e:
+                # An unreachable guardrail is recorded as its own violation, never
+                # as an approval. The request does not get to inherit a verdict
+                # that no guardrail produced.
+                violations.append(Violation(
+                    type="bedrock_unavailable",
+                    severity="HIGH",
+                    details=f"Guardrail not applied: {type(e).__name__}",
+                ))
+                bedrock_result = None
+            if bedrock_result is not None and bedrock_result.action == "BLOCK":
                 violations.append(Violation(
                     type="bedrock_input_block",
                     severity="HIGH",
@@ -1619,8 +1619,16 @@ class SafetyStack:
 
         # 2. Bedrock output validation (if configured)
         if self.bedrock_validator:
-            bedrock_result = self.bedrock_validator.validate_output(processed_output)
-            if bedrock_result.action == "BLOCK":
+            try:
+                bedrock_result = self.bedrock_validator.validate_output(processed_output)
+            except Exception as e:
+                violations.append(Violation(
+                    type="bedrock_unavailable",
+                    severity="HIGH",
+                    details=f"Guardrail not applied: {type(e).__name__}",
+                ))
+                bedrock_result = None
+            if bedrock_result is not None and bedrock_result.action == "BLOCK":
                 violations.append(Violation(
                     type="bedrock_output_block",
                     severity="HIGH",
@@ -1671,11 +1679,37 @@ class SafetyStack:
 print("\nDemo: Unified SafetyStack")
 print("-" * 40)
 
-# Create safety stack with moderate limits
+LITELLM_BASE_URL = os.environ.get("LITELLM_BASE_URL", "http://localhost:4000")
+
+
+def call_model_via_proxy(model_id: str, prompt: str) -> str:
+    """Call one model through the OpenAI-compatible LiteLLM proxy.
+
+    Raises on transport failure or any non-2xx response, so a missing proxy
+    surfaces as a skipped stage rather than a fabricated agent response.
+    """
+    response = requests.post(
+        f"{LITELLM_BASE_URL}/chat/completions",
+        json={
+            "model": model_id,
+            "messages": [{"role": "user", "content": prompt}],
+            "max_tokens": 64,
+        },
+        headers={"Authorization": "Bearer sk-local"},
+        timeout=20,
+    )
+    if not (200 <= response.status_code < 300):
+        raise RuntimeError(f"HTTP {response.status_code}: {response.text[:80]}")
+    return response.json()["choices"][0]["message"]["content"]
+
+
+# Create safety stack with moderate limits. The guardrail id points at a real
+# provisioned guardrail when BEDROCK_GUARDRAIL_ID is set; otherwise the stack
+# records "bedrock_unavailable" as a violation rather than assuming ALLOW.
 safety = SafetyStack(SafetyConfig(
     tokens_per_minute=500,
     max_cost_per_request=0.05,
-    bedrock_guardrail_id="demo-guardrail",  # Mock
+    bedrock_guardrail_id=os.environ.get("BEDROCK_GUARDRAIL_ID", "demo-guardrail"),
 ))
 
 user_id = "user_demo"
@@ -1713,12 +1747,19 @@ for prompt, model, tokens in test_cases:
     if input_result.input_processed != prompt:
         print(f"  Modified: {input_result.input_processed[:40]}...")
 
-    # Simulate agent response
-    mock_response = f"Here's the answer to your question about {prompt[:20]}..."
+    # Real agent response through the LiteLLM proxy. A canned string here would
+    # make the output half of this demo vacuous: it would never carry PII or
+    # harmful content, so the output guardrails would always report ALLOW.
+    try:
+        agent_output = call_model_via_proxy(model, input_result.input_processed)
+    except Exception as e:
+        print(f"  OUTPUT STAGE SKIPPED: no model response ({type(e).__name__})")
+        print("  Start the LiteLLM proxy to exercise the output guardrails.")
+        continue
 
     # Process output
     output_result = safety.process_output(
-        agent_output=mock_response,
+        agent_output=agent_output,
         session_id=session_id,
         model=model,
         actual_tokens=tokens,
@@ -3065,13 +3106,13 @@ print(f"  real math still evaluates: 2 + 3 * 4 = {parse_expression('2 + 3 * 4')}
 
 # 13B. use_aws — secret redaction + sensitive-operation consent gating.
 print("\n13B. use_aws secret redaction + sensitive-op consent")
-fake_response = {
+sample_aws_response = {
     "AccessKeyId": "AKIAIOSFODNN7EXAMPLE",
     "SecretAccessKey": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
     "Credentials": {"SessionToken": "FwoGZXIvYXdz...", "Expiration": "2026-06-01"},
     "UserName": "not-secret",
 }
-redacted = redact_sensitive_values(fake_response)
+redacted = redact_sensitive_values(sample_aws_response)
 print(f"  SecretAccessKey      -> {redacted['SecretAccessKey']}")
 print(f"  nested SessionToken  -> {redacted['Credentials']['SessionToken']}")
 print(f"  non-secret preserved -> UserName={redacted['UserName']!r}")

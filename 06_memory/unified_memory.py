@@ -812,7 +812,7 @@ class UnifiedMemoryV4(UnifiedMemoryV3):
         compressed, stats = self.compressor.compress(messages)
 
         # Extract key facts from compressed content
-        # (In production, this would use NLP to extract entities/facts)
+        # Entity and fact extraction is not implemented here, so facts_extracted stays 0.
         self._compression_count += 1
 
         stats["compression_number"] = self._compression_count
@@ -1123,7 +1123,7 @@ def demo_cross_session():
     response_a = agent_a("Hi! My name is Alice and I'm a machine learning engineer. I work with Python and PyTorch mostly. Please remember this about me.")
     print(f"Agent A response:\n{response_a}")
 
-    print("\n[...simulating application restart...]")
+    print("\n[...new Agent, same session_id: what a restart produces...]")
     print("(New session ID, but same memory storage)")
 
     print("\n[SESSION B: Returning user (different session)]")

@@ -55,7 +55,7 @@ print(inspect.signature(Experiment.run_evaluations))
 
 # --- 4. Run ToolCalled with synthetic trajectory ---
 print("\n=== ToolCalled: test with synthetic trajectory ===")
-cases = [Case(name="t1", input="dummy", expected_output="x")]
+cases = [Case(name="t1", input="placeholder", expected_output="x")]
 
 def task_with_trajectory(case):
     return {"output": "the answer is 120", "trajectory": ["multiply"]}

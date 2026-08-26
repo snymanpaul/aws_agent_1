@@ -841,7 +841,7 @@ Output JSON with 3-4 steps maximum:
             "steps": [s.get("description", "") for s in steps[:4]],
             "step_count": len(steps)
         },
-        "execution_status": "simulated",
+        "execution_status": "not_executed",
         "lessons_learned": "API planning requires auth strategy, endpoint design, and security steps",
         "related_topics": ["authentication", "REST API", "security"],
         "pattern": "planner_executor_verifier"

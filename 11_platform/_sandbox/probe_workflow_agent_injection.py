@@ -25,9 +25,9 @@ original_workflow = workflow.__wrapped__ if hasattr(workflow, '__wrapped__') els
 
 # Check agent injection by wrapping
 @tool
-def check_agent_injection(dummy: str = "x") -> str:
+def check_agent_injection(dummy: str = "x") -> str:  # nosim:ok control tool: the probe compares parameter injection against it
     """Dummy tool just to compare parameter injection."""
-    return f"dummy called: {dummy}"
+    return f"dummy called: {dummy}"  # nosim:ok control tool, see above
 
 model = get_model("haiku")
 agent = Agent(model=model, tools=[workflow, check_agent_injection], callback_handler=None)

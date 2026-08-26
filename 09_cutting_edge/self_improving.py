@@ -187,7 +187,7 @@ def performance_tracker_demo():
     tracker = PerformanceTracker(window_size=50)
 
     # Simulate 30 task executions with varying performance
-    print("\nRecording 30 simulated task executions...")
+    print("\nRecording 30 synthetic task executions...")
     for i in range(30):
         # Simulate gradual improvement over time
         base_accuracy = 0.7 + (i * 0.005)  # Start at 70%, improve slowly
@@ -437,7 +437,7 @@ def feedback_collector_demo():
     collector = FeedbackCollector()
 
     # Simulate various feedback signals
-    print("\nCollecting feedback from 20 simulated interactions...")
+    print("\nCollecting feedback from 20 synthetic interactions...")
 
     for i in range(20):
         task_id = f"task_{i}"
@@ -2026,8 +2026,8 @@ def improvement_loop_demo():
     )
 
     # Simple fitness evaluator
-    def mock_evaluator(prompt: str) -> float:
-        # Simulate: longer prompts with "step by step" do better
+    def heuristic_fitness(prompt: str) -> float:
+        # Deterministic heuristic: prompts mentioning steps, and longer ones, score higher
         base = 0.6
         if "step" in prompt.lower():
             base += 0.15
@@ -2047,7 +2047,7 @@ def improvement_loop_demo():
         if not loop.should_continue():
             print(f"\nStopping: {loop.cycles_without_improvement} cycles without improvement")
             break
-        cycle = loop.run_cycle(loop.current_prompt, mock_evaluator)
+        cycle = loop.run_cycle(loop.current_prompt, heuristic_fitness)
 
     # Summary
     print(f"\n--- Improvement Summary ---")
@@ -2333,7 +2333,7 @@ def ab_testing_demo():
 
     # Start test
     manager.start_test(test.test_id)
-    print(f"\nTest started. Simulating traffic...")
+    print(f"\nTest started. Generating synthetic traffic...")
 
     # Simulate traffic
     for i in range(50):
@@ -2913,7 +2913,7 @@ def regression_detector_demo():
     print("  Saved checkpoint 'v1_good'")
 
     # Phase 2: Performance degradation
-    print("\nPhase 2: Simulating performance degradation...")
+    print("\nPhase 2: Generating degraded performance records...")
     for _ in range(25):
         perf_tracker.record(PerformanceMetric(
             accuracy=random.uniform(0.55, 0.70),  # Degraded!

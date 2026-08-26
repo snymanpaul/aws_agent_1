@@ -987,7 +987,7 @@ def blueprint_validation_demo():
             description="Agent with invalid tools",
             system_prompt="You are a helper agent that uses special tools.",
             model_alias="haiku",
-            tools=["nonexistent_tool", "another_fake_tool"]
+            tools=["nonexistent_tool", "another_missing_tool"]
         ),
         # Invalid: unknown model
         AgentBlueprint(

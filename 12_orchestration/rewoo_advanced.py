@@ -441,7 +441,7 @@ async def demo_blocked(policy_config: dict) -> None:
 
 def show_timing_comparison(plan: ExecutionPlan) -> None:
     print("\n" + "═" * 64)
-    print("TIMING: sequential vs parallel (simulated 1s/tool)")
+    print("TIMING: sequential vs parallel (1s sleep per tool)")
     print("═" * 64)
     waves = plan_waves(plan.steps)
     seq_time = len(plan.steps) * 1.0

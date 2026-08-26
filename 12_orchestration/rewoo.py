@@ -28,7 +28,7 @@ fast_model = get_model("haiku")
 # Plain Python functions used directly by the ReWOO executor (no agent loop)
 
 def search_flights_fn(origin: str, destination: str, date: str) -> dict:
-    # Simulated — in production this would call a flights API
+    # Fixed leg data. No flights API is wired up, so the plan stays reproducible.
     return {"price": 450, "airline": "United", "flight": "UA342",
             "duration": "5h30m", "departs": "08:00"}
 

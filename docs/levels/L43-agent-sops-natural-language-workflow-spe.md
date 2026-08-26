@@ -50,6 +50,6 @@ sop:
 **Sources:**
 - [Introducing Strands Agent SOPs](https://aws.amazon.com/blogs/opensource/introducing-strands-agent-sops-natural-language-workflows-for-ai-agents/) ✓
 - [strands-agents/agent-sop](https://github.com/strands-agents/agent-sop) ✓
-- [AWS MCP Server — Deployment SOPs](https://docs.aws.amazon.com/aws-mcp/latest/userguide/agent-sops.html) ✓
+- [Agent Toolkit for AWS: Skills](https://docs.aws.amazon.com/agent-toolkit/latest/userguide/skills.html) ✓ (verified 2026-08-26. Replaces the former "AWS MCP Server: Deployment SOPs" page: that doc set was rebranded to Agent Toolkit for AWS in May 2026, `agent-sops.html` no longer resolves, and the equivalent material is now under Skills, "curated packages of instructions, code scripts, and reference materials".)
 
 ---

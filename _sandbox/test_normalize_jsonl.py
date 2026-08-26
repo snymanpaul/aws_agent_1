@@ -272,7 +272,7 @@ def test_file_raises_if_entry_count_would_change(monkeypatch):
     call_count = [0]
     original = lib._parse_all_entries
 
-    def fake_parse(lines):
+    def raising_parse(lines):
         call_count[0] += 1
         result = original(lines)
         # Second call (lines_out) returns one fewer entry
@@ -283,7 +283,7 @@ def test_file_raises_if_entry_count_would_change(monkeypatch):
     content = '{"cat":"question","topic":"a","ts":"t1"}\n'
     tmp = _write_tmp(content)
     try:
-        monkeypatch.setattr(lib, "_parse_all_entries", fake_parse)
+        monkeypatch.setattr(lib, "_parse_all_entries", raising_parse)
         with pytest.raises(ValueError, match="Entry count changed"):
             normalize_file(tmp)
         # File must not have been written

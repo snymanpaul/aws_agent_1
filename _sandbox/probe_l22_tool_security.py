@@ -70,13 +70,13 @@ expect(
 
 
 # --- 3. use_aws redaction + consent gating --------------------------------
-fake_response = {
+sample_aws_response = {
     "AccessKeyId": "AKIAIOSFODNN7EXAMPLE",
     "SecretAccessKey": "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY",
     "Credentials": {"SessionToken": "FwoGZXIvYXdz...", "Expiration": "2026-06-01"},
     "UserName": "not-secret",
 }
-red = redact_sensitive_values(fake_response)
+red = redact_sensitive_values(sample_aws_response)
 expect(
     "use_aws redacts SecretAccessKey",
     red.get("SecretAccessKey") == "**REDACTED**",

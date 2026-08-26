@@ -2718,7 +2718,7 @@ print("=" * 70)
 
 
 class ToolGraphStore:
-    """Persist synthesized tools to Graphiti graph memory.
+    """Local index of synthesized tools, and the shape a Graphiti store would take.
 
     Enables:
     - Cross-session tool reuse
@@ -2759,7 +2759,7 @@ Success Rate: {tool.metrics.success_rate:.1%}
         # MCP integration happens via @tool functions below (persist_tool_to_graphiti)
         # which are invoked by Strands agents with MCP tools available.
         # This class manages local cache; see persist_tool_to_graphiti for real MCP calls.
-        print(f"  [GRAPHITI] Saving tool '{tool.name}' to group '{self.group_id}'")
+        print(f"  [LOCAL INDEX] Recording tool '{tool.name}' to group '{self.group_id}'")
         self._local_cache[tool.tool_id] = tool
         return True
 
@@ -2779,7 +2779,7 @@ Success Rate: {tool.metrics.success_rate:.1%}
         """
         # MCP integration happens via @tool functions below (search_tools_in_graphiti)
         # which are invoked by Strands agents with MCP tools available.
-        print(f"  [GRAPHITI] Searching for tools like '{spec.name}'")
+        print(f"  [LOCAL INDEX] Searching recorded tools like '{spec.name}'")
 
         # Check local cache for demo
         matches = []
@@ -2825,8 +2825,8 @@ class ToolRecommender:
         return recommendations
 
 
-# Demo: Graphiti persistence (simulated)
-print("\nDemonstrating Graphiti persistence (simulated)...")
+# Demo: the local tool index. Real Graphiti writes go through persist_tool_to_graphiti.
+print("\nDemonstrating the local tool index (no Graphiti write happens here)...")
 
 import asyncio
 

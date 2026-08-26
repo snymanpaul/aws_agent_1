@@ -55,12 +55,12 @@ cloud_agent = Agent(
 def read_sensor(sensor_id: str) -> dict:
     """Read current value from a named edge sensor (temperature, humidity, motion)."""
     # Stub — on real hardware this would read GPIO / MQTT / I2C
-    stubs = {
+    stubs = {  # nosim:ok no GPIO/MQTT hardware exists on this machine to read
         "temperature": {"value": 23.4, "unit": "C"},
         "humidity":    {"value": 61.2, "unit": "%"},
         "motion":      {"detected": True, "confidence": 0.92},
     }
-    return stubs.get(sensor_id, {"error": f"unknown sensor: {sensor_id}"})
+    return stubs.get(sensor_id, {"error": f"unknown sensor: {sensor_id}"})  # nosim:ok see above
 
 
 @tool

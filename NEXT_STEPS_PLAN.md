@@ -62,6 +62,13 @@ reuse, and the `simulate_failure` naming that accounts for six of L23's seven re
    pre-commit hook; extend that hook to run `no_sim_check` + `pytest`. `ship_gate.py` stays manual
    (it spends money) but should be a documented release step.
 
+4b. **Keep the second watch feed running.** The Strands/AgentCore delta is SDK-shaped and
+   says so, which is why AWS Context and Harness GA were logged as names and never analysed.
+   The analytics feed covers that axis: `docs/work/research/reports/2026-08-26_aws-analytics-delta.md`
+   is the first entry. Sources to sweep: AWS Glue, Amazon Athena, Amazon S3 Tables, AWS Lake
+   Formation, and the dated SageMaker Unified Studio release-notes page. Refresh it before any
+   data-plane lesson, and carry the primary versus extraction markers across.
+
 5. **Meta-eval: judge reliability at the ambiguous boundary.** L52 showed judges are reliable on
    clear-cut cases; the ambiguous middle is its known weak spot. Build a graded-ambiguity dataset and
    measure where judge agreement collapses.

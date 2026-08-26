@@ -1,8 +1,8 @@
 # Next Steps
 
 **Status (2026-08-26):** L1 to L100 plus L97b complete, cross-model validated, repo published publicly
-with the README as the front door. The repo passes its own gates: 0 `no_sim_check` hits over 275
-tracked `.py` files, 129 tests, all enforced in CI on every push. The gates now ship as
+with the README as the front door. The repo passes its own gates: 0 `no_sim_check` hits over 277
+tracked `.py` files, 132 tests, all enforced in CI on every push. The gates now ship as
 `packages/agent-build-gates`, installable into other projects.
 
 **Status (2026-07-18):** L1 to L93 complete, cross-model validated, repo published publicly with the
@@ -33,22 +33,22 @@ Gemini's 1M window). Session-wide learnings: `.claude/learnings/reflections/SESS
   LiteLLM proxy). Verified on live runs including a real 404-then-success fallback. Detail in
   `docs/levels/L23-error-recovery.md`.
 
-Then the rest of the assessment landed the same day:
+Then the rest of that work landed the same day:
 
-- **R1 complete.** Triaged all 56 remaining `no_sim_check` hits to zero across 22 files, surfacing
-  nine real substituted integrations. Worst was a Bedrock guardrail falling back to a five-keyword
-  blocklist whenever the client was missing or the API errored, so a safety control answered ALLOW
-  on an outage. `.github/workflows/gates.yml` runs both tripwires and the suite on every push; the
-  pre-commit hook runs both over staged files. `eval_harness` and `ship_gate` gained 34 tests.
-- **R3** stale L43 link, **R4** `METHOD.md`, **R5** README leads with the method, **R7** the
-  analytics watch feed (see standing item 4b).
-- **R2 complete.** `packages/agent-build-gates` v0.1.0, a uv workspace member with its own version,
-  tests and console scripts. Zero dependencies; `ship_gate` behind a `[strands]` extra. Proven by
-  running the built wheel from a clean venv outside the repo.
+- **Enforcement is real.** Triaged all 56 remaining `no_sim_check` hits to zero across 22 files,
+  surfacing nine real substituted integrations. Worst was a Bedrock guardrail falling back to a
+  five-keyword blocklist whenever the client was missing or the API errored, so a safety control
+  answered ALLOW on an outage. `.github/workflows/gates.yml` runs both tripwires and the suite on
+  every push; the pre-commit hook runs both over staged files. `eval_harness` and `ship_gate`
+  gained 34 tests, and `check_no_aws_ids` gained 21 plus a `noaws:ok` per-line escape.
+- **The gates are installable.** `packages/agent-build-gates` v0.1.0, a uv workspace member with
+  its own version, tests and console scripts. Zero dependencies; `ship_gate` behind a `[strands]`
+  extra. Proven by running the built wheel from a clean venv outside the repo.
+- **Docs.** Stale L43 source link repaired, `METHOD.md` written, README reframed to lead with the
+  method, and the analytics watch feed started (standing item 4b).
 
-Still open: the `failing_after` fault injector accounts for six of L23's seven historical hits (now
-resolved by renaming, but worth watching if the rule tightens), and the 18 files using
-`sys.path.insert(0, ".")`, which break when run from anywhere but the repo root.
+Still open from that pass: the 18 files using `sys.path.insert(0, ".")`, which break when run from
+anywhere but the repo root. Everything else on that list is done.
 
 ## Tier 22 follow-ons (deferred by choice: each a clean next session)
 
@@ -91,6 +91,29 @@ resolved by renaming, but worth watching if the rule tightens), and the 18 files
 6. **Memory safety and privacy evals.** L89 + L99 covered tool-result and memory-record injection
    (L99 found the explicit-policy defense); still open: PII handling in extracted LTM records and
    tenant isolation across memory stores.
+
+## Tier 23 candidate: the data plane (L101+)
+
+Deferred deliberately until enforcement and the analytics feed were in place. Both now are, so
+this is the next tier if lesson work resumes. Three levels, not a full tier of seven, chosen
+because each closes a gap the repo can name rather than a topic that merely looks next.
+
+7. **AgentCore Gateway.** The one platform primitive never built here. L33 depends on it
+   conceptually and L75 touched a Gateway ARN, but no level ever created one. It converts APIs and
+   Lambda functions into MCP tools, and it is where Cedar policy intercepts every tool call, so it
+   extends the L33 versus L96 comparison directly rather than starting a new thread. Needs AWS
+   credentials, spends money, teardown-critical.
+
+8. **The managed AWS MCP Server**, run under the L56 secure-MCP lens and L50 toxic-flow analysis.
+   Worth noting the current state: `.mcp.json` declares one server (`graphiti-memory`, local), so
+   this repo has MCP theory and no AWS MCP practice. The Agent Toolkit for AWS went GA in May 2026
+   and ships an `aws-data-analytics` plugin; see the analytics delta report for the survey.
+
+9. **Trajectory evals against a data agent.** Highest value of the three. Port the L83 trajectory
+   evaluator so the trajectory is catalog chosen, table resolved, join path taken, and filters
+   applied before aggregation. Ground truth is a known-correct query and a checkable row count
+   rather than a judge's opinion, which is the property the agent-side evals never had.
+   Refresh item 4b first so the level is built against a current picture of the analytics surface.
 
 ## On demand
 

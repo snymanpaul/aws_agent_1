@@ -103,12 +103,6 @@ not by path. `tools/` now keeps only `models.py` (this repo's model aliases) and
   injectable `run_fn`, so it never assumes a framework.
 - `ship-gate`: one auditable GO/NO-GO verdict over real runs (the "paid, audit-reproducible gate").
   Needs the `[strands]` extra; `run_fn` is injectable so the verdict logic is testable unpaid.
-- `sh tools/check_doc_sync.sh`: two research reports under `docs/work/research/reports/` are
-  adapted from raw research in the sibling `aws_data_engineering/docs` directory, which is not
-  under version control. They are not byte-identical by design. This reports when a source has
-  changed and its report has not; reconcile, then `--update` to re-record. Run it before trusting
-  either report, and after editing one. It exits 0 when the sibling directory is absent, so CI is
-  unaffected. Override the location with `DATA_ENG_DOCS`.
 - `check-no-aws-ids`: **BINDING RULE: never put AWS account info (12-digit account ids, `AWSAdministratorAccess-*` / SSO profile strings, account-bearing ARNs) in ANY `.md` or `.py` file.** This tripwire blocks it; install the pre-commit hook once per clone with `sh tools/install_hooks.sh`. Account ids belong only in local, gitignored config (`~/.aws`, `.claude/settings.local.json`), never in tracked files. A line that must legitimately carry an account-shaped string (this gate's own tests, docs describing the patterns) takes `noaws:ok` anywhere on it, which works as `# noaws:ok reason` in Python and `<!-- noaws:ok reason -->` in Markdown, and covers only that line.
 
 **Anti-simulation is non-negotiable** (enforced by `agent_build_gates.no_sim_check`): every lesson is

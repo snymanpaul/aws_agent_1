@@ -79,7 +79,7 @@ anywhere but the repo root. Everything else on that list is done.
 
 4b. **Keep the second watch feed running.** The Strands/AgentCore delta is SDK-shaped and
    says so, which is why AWS Context and Harness GA were logged as names and never analysed.
-   The analytics feed covers that axis: `docs/work/research/reports/2026-08-26_aws-analytics-delta.md`
+   The analytics feed covers that axis: `docs/aws-data-engineering-landscape.md`
    is the first entry. Sources to sweep: AWS Glue, Amazon Athena, Amazon S3 Tables, AWS Lake
    Formation, and the dated SageMaker Unified Studio release-notes page. Refresh it before any
    data-plane lesson, and carry the primary versus extraction markers across.
@@ -99,7 +99,7 @@ this is the next tier if lesson work resumes. Three levels, not a full tier of s
 because each closes a gap the repo can name rather than a topic that merely looks next.
 
 The analysis behind these three, including the coverage counts and why Gateway ranks first, is
-[`docs/work/research/reports/2026-08-26_repo-coverage-vs-aws-data-plane.md`](docs/work/research/reports/2026-08-26_repo-coverage-vs-aws-data-plane.md).
+[`docs/assessment-aws-agent-1-cross-reference.md`](docs/assessment-aws-agent-1-cross-reference.md).
 Headline: two genuine data-plane touches in 101 levels (L45 S3 Vectors, L37 Kinesis), zero tracked
 Python mentioning Athena, Glue, Redshift, S3 Tables, Iceberg or Lake Formation, and three AgentCore
 services with no level at all.

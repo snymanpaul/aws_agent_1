@@ -1,28 +1,7 @@
-# AWS Analytics Delta: the data plane, and how agents now reach it (2026-08-26)
+# AWS Data Engineering: Grounded Landscape (as of 2026-08-25)
 
-> **Paired document.** Adapted from `aws-data-engineering-landscape.md` in the sibling
-> aws_data_engineering working directory, which holds the raw research. The two are not
-> byte-identical by design. `sh tools/check_doc_sync.sh` reports when the source has moved
-> and this has not.
-
-**Date:** 2026-08-26
-**Purpose:** first entry in a second watch feed, running alongside the Strands/AgentCore
-ecosystem delta. That feed is SDK-shaped and says so: its 2026-07-18 edition parked
-AgentCore Harness GA and AWS Context as "platform-level additions invisible at the SDK layer
-of this report". This report covers the axis that one is built to miss, so an analytics wave
-stops passing the repo unseen. Input to the L101+ decision on AgentCore Gateway, the managed
-AWS MCP Server, and trajectory evals against a data agent.
-
-**Sources to watch for the next edition:** AWS Glue, Amazon Athena, Amazon S3 Tables, AWS
-Lake Formation, and the dated SageMaker Unified Studio release-notes page, which is granular
-and machine-readable.
-
-## Method and sources
-
-Primary-source survey, 2026-08-25. Official AWS documentation, What's New posts and the
-`awslabs` and `aws` GitHub repositories were fetched as raw bytes and read. Search results
-were used only to locate candidate pages, never as evidence. Claims that only an extraction
-pass supports are quarantined in [Unverified](#unverified-claims) rather than mixed in.
+Reference map of the AWS data engineering stack and how it has been reshaped by
+API / MCP / A2A / agentic capabilities.
 
 **Provenance rule used throughout this document.** Every claim carries one of two
 markers:

@@ -1,8 +1,10 @@
 # AWS Strands Agents Learning Project
 
-A progressive learning path through the AWS Strands Agents SDK. 101 levels (L1 to L100, plus L97b), built December 2025 to July 2026, from a basic agent up through multi-agent orchestration, agentic memory, agentic evals, and the AWS AgentCore platform.
+A worked example of directing an AI agent through a months-long engineering programme, with evidence standards enforced by tooling rather than trust. The evidence is 101 levels on the AWS Strands Agents SDK (L1 to L100, plus L97b), built December 2025 to July 2026, from a basic agent up through multi-agent orchestration, agentic memory, agentic evals, and the AWS AgentCore platform.
 
-Every lesson runs live against real services, with no substituted integrations and no hardcoded success paths. `tools/no_sim_check.py` is the gate for that, and the repo now clears it: 0 hits across the 272 Python files it scans, down from 133 when the gate was first tested. CI runs that gate, the AWS-account tripwire and the 111-test suite on every push, so the standard holds for every clone rather than on my machine. Findings that depend on model behaviour were re-run on a second provider before I recorded them as findings.
+**The method is written up in [`METHOD.md`](METHOD.md).** That is the part that transfers, and it does not depend on Strands, on AWS, or on which model you use. The rest of this file is the ladder that produced it.
+
+Every lesson runs live against real services, with no substituted integrations and no hardcoded success paths. `tools/no_sim_check.py` is the gate for that, and the repo now clears it: 0 hits across the 274 Python files it scans, down from 133 when the gate was first tested. CI runs that gate, the AWS-account tripwire and the 111-test suite on every push, so the standard holds for every clone rather than on my machine. Findings that depend on model behaviour were re-run on a second provider before I recorded them as findings.
 
 ## How this was built
 
@@ -27,7 +29,7 @@ flowchart TD
     Second --> Label[Label framework-inherent or model-specific]
 ```
 
-The repo therefore serves two purposes: a reference implementation of Strands patterns I can reuse in future projects, and a worked example of directing an AI agent through a months-long engineering programme with evidence standards enforced by tooling rather than trust.
+The repo therefore serves two purposes: a reference implementation of Strands patterns I can reuse in future projects, and a worked example of directing an AI agent with evidence standards enforced by tooling rather than trust. [`METHOD.md`](METHOD.md) is the second one in full: the instruction set, what makes a lesson un-fakeable, the cross-model labelling rule, the statistical gate, and the time the method caught its own tooling.
 
 ## What came out of it
 
@@ -98,7 +100,7 @@ If you are working in this repo with an AI coding agent, `CLAUDE.md` carries the
 
 If you came for the Strands patterns, start at [`docs/levels/L01-hello-world-agent.md`](docs/levels/L01-hello-world-agent.md) and use the table above to jump to whichever track you need.
 
-If you came for the method rather than the framework, read `CLAUDE.md` for the instruction set that steers the agent, then `tools/` for the gates it has to pass, then any file in `.claude/learnings/reflections/` for what a level actually cost. `MISSION_ASSESSMENT_2026-08-26.md` is an outside audit of the repo against the two purposes stated above, including where it falls short.
+If you came for the method rather than the framework, start with [`METHOD.md`](METHOD.md), then `CLAUDE.md` for the instruction set itself, `tools/` and `tests/` for the gates and their tests, and any file in `.claude/learnings/reflections/` for what a level actually cost. `MISSION_ASSESSMENT_2026-08-26.md` is an outside audit of the repo against the two purposes stated above, including where it falls short.
 
 If you find a claim in here that the runs behind it do not support, open an issue. That is the failure mode I care about most.
 

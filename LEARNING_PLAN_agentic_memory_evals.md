@@ -16,7 +16,7 @@ integrations (L14/L16/L26 all required full rewrites after simulation was caught
 - **Agentic memory:** shared-across-agents memory had **zero usage** (grep `shared_context`/`GraphState`
   in multi-agent dirs = 0); multi-agent→persistent memory was **simulated stubs**
   (`debate_pattern.py:483-528`, `meta_agents.py:764-877`); the one real cross-session store was
-  **quarantined** (`_archive_hallucinated_l27/dynamodb_persistence.py`); AgentCore filtered LTM was
+  **quarantined** (`10_production/_archive_hallucinated_l27/dynamodb_persistence.py`); AgentCore filtered LTM was
   **extraction-gated** (`memory_async_ltm.py:16-23`). No consolidation/forgetting/conflict/long-horizon.
 - **Agentic evals:** trajectory captured as a **flat set of tool names** losing order+args
   (`evals_sdk.py:124`); tool-accuracy evaluators **imported but never run** (`evals_sdk.py:61`);

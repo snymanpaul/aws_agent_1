@@ -2,7 +2,7 @@
 
 **Status (2026-08-26):** L1 to L100 plus L97b complete, cross-model validated, repo published publicly
 with the README as the front door. The repo passes its own gates: 0 `no_sim_check` hits over 277
-tracked `.py` files, 132 tests, all enforced in CI on every push. The gates now ship as
+`.py` files scanned, 132 tests, all enforced in CI on every push. The gates now ship as
 `packages/agent-build-gates`, installable into other projects.
 
 **Status (2026-07-18):** L1 to L93 complete, cross-model validated, repo published publicly with the

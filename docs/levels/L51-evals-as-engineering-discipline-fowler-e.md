@@ -1,6 +1,6 @@
 # L51: Evals as Engineering Discipline — Fowler Eval Methodology
 
-**Code:** `13_quality/evals_methodology.py`
+**Code:** `12_orchestration/evals_methodology.py`
 **Reflection:** [`level-51-reflection.md`](../../.claude/learnings/reflections/level-51-reflection.md)
 
 ### Level 51: Evals as Engineering Discipline — Fowler Eval Methodology

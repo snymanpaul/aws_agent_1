@@ -12,7 +12,8 @@ red-team, context management. Per-level docs: `docs/levels/` (one file per lesso
 `LEARNING_PLAN_agentic_memory_evals.md`, `LEARNING_PLAN_v148_impact.md`, `NEXT_STEPS_PLAN.md`,
 and `.claude/learnings/reflections/`.
 
-**Gate status (2026-08-26)**: `no_sim_check` reports **0 hits over 277 tracked `.py` files**,
+**Gate status (2026-08-26)**: `no_sim_check` reports **0 hits over the 277 `.py` files it scans**
+(278 tracked, minus the checker itself),
 and CI enforces it on every push (`.github/workflows/gates.yml`) alongside `check_no_aws_ids`
 and `uv run pytest` (132 tests). The pre-commit hook runs both tripwires over staged files.
 Keep it at zero: any file you touch must come out clean, and a justified exception takes a

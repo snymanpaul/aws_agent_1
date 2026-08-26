@@ -1,5 +1,10 @@
 # Repo coverage versus the AWS data plane (2026-08-26)
 
+> **Paired document.** Adapted from `assessment-aws-agent-1-cross-reference.md` in the sibling
+> aws_data_engineering working directory, which holds the raw research. The two are not
+> byte-identical by design. `sh tools/check_doc_sync.sh` reports when the source has moved
+> and this has not.
+
 **Date:** 2026-08-26
 **Purpose:** the companion to [`2026-08-26_aws-analytics-delta.md`](2026-08-26_aws-analytics-delta.md).
 That report says what AWS shipped on the data axis. This one says where this repo stands against it:

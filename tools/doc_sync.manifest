@@ -1,0 +1,6 @@
+# Pairs of research documents kept in sync by tools/check_doc_sync.sh
+# Format: <sha256 of source at last reconcile>  <source basename>  <target in this repo>
+# Source directory: $DATA_ENG_DOCS, default ../aws_data_engineering/docs
+
+6d224dda143f14cb1e798360a8e9e2e453a9c854a4061ae3121ed05a6bc753cb  aws-data-engineering-landscape.md  docs/work/research/reports/2026-08-26_aws-analytics-delta.md
+dec0e59489311621797c0736744c7bc1d10b6d92e11281cdcb5398bcf35a2106  assessment-aws-agent-1-cross-reference.md  docs/work/research/reports/2026-08-26_repo-coverage-vs-aws-data-plane.md

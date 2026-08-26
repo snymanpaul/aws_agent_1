@@ -1,5 +1,10 @@
 # AWS Analytics Delta: the data plane, and how agents now reach it (2026-08-26)
 
+> **Paired document.** Adapted from `aws-data-engineering-landscape.md` in the sibling
+> aws_data_engineering working directory, which holds the raw research. The two are not
+> byte-identical by design. `sh tools/check_doc_sync.sh` reports when the source has moved
+> and this has not.
+
 **Date:** 2026-08-26
 **Purpose:** first entry in a second watch feed, running alongside the Strands/AgentCore
 ecosystem delta. That feed is SDK-shaped and says so: its 2026-07-18 edition parked

@@ -1,4 +1,4 @@
-# Track Overview — Agentic Memory & Agentic Evals (L78–L93)
+# Track Overview: Agentic Memory & Agentic Evals (L78–L93)
 
 **Status: COMPLETE.** All levels built, run live, gate-clean, and reflected. Capstone result (L87):
 memory-backed harness 1.00 goal-success vs 0.00 memoryless, p = 0.0003 by permutation test. All six
@@ -8,7 +8,7 @@ Per-level detail: the table below. This overview preserves the track's rationale
 The track closed the two gaps surfaced by the 2026-06-03 audit: the repo nailed **single-agent
 memory** and **single-shot eval methodology**, but the **agentic** layer of both was simulated,
 archived, or API-shape-only. Each lesson carried a **falsifiable empirical success criterion** and an
-**anti-simulation guardrail** — because the repo's recurring failure mode was mocking these exact
+**anti-simulation guardrail**, because the repo's recurring failure mode was mocking these exact
 integrations (L14/L16/L26 all required full rewrites after simulation was caught).
 
 ## The gaps the audit found (all since closed)
@@ -32,14 +32,14 @@ foundations F1 and F2 were therefore built first; their specs live in the L80 an
 
 ## Empirical guardrails (applied to every lesson; still the house rules)
 
-1. **Probe-first** — `_sandbox/probe_<level>_shapes.py` + `_state.py` before coding (CLAUDE.md rule).
-2. **No simulation** — no hardcoded memory strings, no mock MCP/boto. Prove with a **runtime-generated
+1. **Probe-first**: `_sandbox/probe_<level>_shapes.py` + `_state.py` before coding (CLAUDE.md rule).
+2. **No simulation**: no hardcoded memory strings, no mock MCP/boto. Prove with a **runtime-generated
    sentinel**, never a literal. A lesson that can pass with a stub is mis-designed.
-3. **No "assume-good" defaults** — fail loud. (Trap: `s3_vectors_eval.py:263` returns faithfulness=1.0
+3. **No "assume-good" defaults**: fail loud. (Trap: `s3_vectors_eval.py:263` returns faithfulness=1.0
    on parse failure.) Every metric must distinguish a deliberately-bad input from a good one.
-4. **Multi-run** — N≥5; report reproducibility + a noise floor. Single-run "findings" are inadmissible
+4. **Multi-run**: N≥5; report reproducibility + a noise floor. Single-run "findings" are inadmissible
    (the repo's own rule, `observations.jsonl` L50/L53).
-5. **Capture** — `/reflect` after each: observations.jsonl rows citing the actual run + a reflection.
+5. **Capture**: `/reflect` after each: observations.jsonl rows citing the actual run + a reflection.
 
 ## Curriculum map
 

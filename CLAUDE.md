@@ -87,8 +87,11 @@ Claude aliases route via the LiteLLM proxy at `localhost:4000`; `gemini*` goes d
 ## Quality Gates (`packages/agent-build-gates/`)
 
 The four gates live in a workspace package with their own version and 111 tests, installable
-elsewhere (`pip install agent-build-gates`, zero dependencies). Invoke them by console script,
-not by path. `tools/` now keeps only `models.py` (this repo's model aliases) and `install_hooks.sh`.
+elsewhere (zero dependencies). **Not on PyPI yet**, so elsewhere means a git install or the
+`git+` source in a consumer's `pyproject.toml`, which is how `aws_data_engineering` pulls it.
+`.github/workflows/release.yml` publishes it on an `agent-build-gates-v*` tag once the trusted
+publishers are registered. Invoke the gates by console script, not by path. `tools/` keeps
+`models.py` (this repo's model aliases), `install_hooks.sh` and `check_mermaid.sh`.
 
 - `no-sim-check`: tripwire for substituted integrations. Flags substitute-object vocabulary
   (mock/stub/fake/dummy/hardcoded), fake-success returns, "in production this would" deferrals, and

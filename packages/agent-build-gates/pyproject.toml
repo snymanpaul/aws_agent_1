@@ -4,12 +4,46 @@ version = "0.1.0"
 description = "Quality gates for agent-built code: an anti-simulation tripwire, an AWS-account tripwire, and an eval harness with confidence intervals and significance testing."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+
+# PEP 639: an SPDX expression as a bare string, not the deprecated {text = ...} table.
+# `license-files` is what actually puts the licence text into the wheel and sdist; the
+# expression alone ships an MIT claim with no MIT text, which is what this package did
+# until 2026-08-27.
+license = "MIT"
+license-files = ["LICENSE"]
+
 keywords = ["ai-agents", "code-quality", "evals", "static-analysis", "aws"]
+
+authors = [{ name = "Paul Snyman" }]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Testing",
+    # No "Typing :: Typed": PEP 561 requires a py.typed marker for a consumer to use
+    # the annotations, and this package ships none. Claiming it without the marker
+    # would be exactly the kind of unearned assertion no_sim_check exists to catch.
+]
 
 # Deliberately empty. The three core gates are pure standard library, which is the
 # main reason to install this rather than vendor it.
 dependencies = []
+
+# The PyPI page is the only thing most people read before installing, and without these
+# it has no link back to the source. Note the position: a [table] header ends the
+# preceding table, so this must come after every bare `[project]` key or it swallows
+# them.
+[project.urls]
+Homepage = "https://github.com/snymanpaul/aws_agent_1/tree/main/packages/agent-build-gates"
+Source = "https://github.com/snymanpaul/aws_agent_1"
+Issues = "https://github.com/snymanpaul/aws_agent_1/issues"
 
 [project.optional-dependencies]
 # ship_gate drives real agent runs, so it needs a framework and it costs money.

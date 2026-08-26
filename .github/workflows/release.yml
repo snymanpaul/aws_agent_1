@@ -1,0 +1,158 @@
+name: release
+
+# Publishes packages/agent-build-gates to PyPI using Trusted Publishing (OIDC).
+#
+# No API tokens. The PyPA guide is explicit that the token path is legacy: "If you
+# followed earlier versions of this guide, you have created the secrets PYPI_API_TOKEN
+# and TEST_PYPI_API_TOKEN for direct PyPI and TestPyPI access. These are obsolete now."
+# OIDC mints a short-lived credential scoped to one project, one repository, one
+# workflow file and one environment.
+#
+# NOT YET ACTIVE. Two things must exist on PyPI before a tag push does anything:
+#
+#   1. A pending publisher at https://pypi.org/manage/account/publishing/ with
+#      owner `snymanpaul`, repository `aws_agent_1`, workflow `release.yml`,
+#      environment `pypi`, project name `agent-build-gates`.
+#   2. The same again at https://test.pypi.org/manage/account/publishing/ with
+#      environment `testpypi`. TestPyPI is a separate account, not a mode of PyPI.
+#
+# A pending publisher does NOT reserve the name: PyPI's docs say it "does not create a
+# project or reserve a project's name until it is actually used to publish". Both
+# normalised forms of `agent-build-gates` returned 404 on 2026-08-27, so the name was
+# free then, and that is not a guarantee it stays free.
+#
+# Also required, in the repository's Settings -> Environments: a `pypi` environment
+# with a required reviewer. The PyPA guide states this as an obligation, not advice:
+# "For security reasons, you must require manual approval on each run for the pypi
+# environment."
+
+on:
+  push:
+    tags:
+      # Scoped to this package, because the repo is 101 lessons and only one small
+      # subdirectory is publishable. A bare v* tag would be ambiguous here.
+      - "agent-build-gates-v[0-9]+.[0-9]+.[0-9]+"
+      - "agent-build-gates-v[0-9]+.[0-9]+.[0-9]+rc[0-9]+"
+  workflow_dispatch:
+
+# Nothing at workflow level. `id-token: write` is granted per job, to the publish jobs
+# only, so the build job never sees a credential it could leak.
+permissions: {}
+
+env:
+  PACKAGE_DIR: packages/agent-build-gates
+
+jobs:
+  build:
+    name: Build distributions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # The build step has no business with a git credential.
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: false
+
+      - name: Build wheel and sdist
+        run: uv build --out-dir dist
+        working-directory: ${{ env.PACKAGE_DIR }}
+
+      # Verifies the artifact rather than the source tree. Catches the failure this
+      # package actually had: metadata that claims something the distribution does not
+      # contain. Both console scripts are exercised from the built wheel, isolated from
+      # the repo, which is the only way to prove the entry points resolve.
+      - name: Smoke test the wheel
+        run: |
+          uv run --isolated --no-project --with dist/*.whl -- no-sim-check --help
+          uv run --isolated --no-project --with dist/*.whl -- check-no-aws-ids --help
+        working-directory: ${{ env.PACKAGE_DIR }}
+
+      - name: Smoke test the source distribution
+        run: |
+          uv run --isolated --no-project --with dist/*.tar.gz -- no-sim-check --help
+          uv run --isolated --no-project --with dist/*.tar.gz -- check-no-aws-ids --help
+        working-directory: ${{ env.PACKAGE_DIR }}
+
+      # The licence is in the metadata AND in the artifact, or this is not a release.
+      # Asserting a licence the distribution does not carry is the packaging version of
+      # a fake-success return, and it is what this package shipped until 2026-08-27.
+      - name: Assert the licence ships
+        run: |
+          unzip -l dist/*.whl | grep -q 'licenses/LICENSE' \
+            || { echo "wheel carries no LICENSE"; exit 1; }
+          tar -tzf dist/*.tar.gz | grep -q 'LICENSE' \
+            || { echo "sdist carries no LICENSE"; exit 1; }
+          echo "LICENSE present in both artifacts"
+        working-directory: ${{ env.PACKAGE_DIR }}
+
+      - name: Validate metadata
+        run: uvx twine check dist/*
+        working-directory: ${{ env.PACKAGE_DIR }}
+
+      - name: Upload distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: ${{ env.PACKAGE_DIR }}/dist/
+
+  publish-testpypi:
+    name: Publish to TestPyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: testpypi
+      url: https://test.pypi.org/p/agent-build-gates
+    permissions:
+      id-token: write
+    steps:
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: false
+
+      - name: Download distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to TestPyPI
+        run: uv publish --publish-url https://test.pypi.org/legacy/ dist/*
+
+  publish-pypi:
+    name: Publish to PyPI
+    # TestPyPI first, always. A version number cannot be reused on PyPI, so a bad
+    # upload is not correctable in place: the only remedy is to burn the version.
+    needs: publish-testpypi
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/agent-build-gates
+    permissions:
+      id-token: write
+    steps:
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: false
+
+      - name: Download distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      # PEP 740 provenance, tying the artifact to this workflow run. The PyPA action
+      # does this by default from v1.11.0; with uv publish it is an explicit step.
+      - name: Generate PEP 740 attestations
+        uses: astral-sh/attest-action@v0.0.6
+
+      - name: Publish to PyPI
+        run: uv publish dist/*

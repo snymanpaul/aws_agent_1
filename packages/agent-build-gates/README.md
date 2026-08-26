@@ -7,9 +7,15 @@ looks complete and never touched the service it claims to demonstrate: a class t
 a queue, a validator that returns `ALLOW` because the API was unreachable, a fallback chain whose
 models never got called. Asking for honesty does not catch that. A script that fails the build does.
 
+Not on PyPI yet, so install it from source. The release workflow and the packaging
+metadata are ready; what is outstanding is registering the trusted publishers and
+pushing the first tag.
+
 ```bash
-pip install agent-build-gates
+pip install "agent-build-gates @ git+https://github.com/snymanpaul/aws_agent_1#subdirectory=packages/agent-build-gates"
 ```
+
+Once published this becomes `pip install agent-build-gates`.
 
 ## The gates
 

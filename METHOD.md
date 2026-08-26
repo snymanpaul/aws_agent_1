@@ -143,6 +143,33 @@ because nobody checks it, and its false negatives are silent by construction. Me
 precision and recall of your own gates before you trust a green run, and treat the gate as
 code that needs tests rather than as the thing that tests code.
 
+## 7. Keep the exhaust
+
+The scripts written to settle a question are worth more than the answer they produced. An
+answer is a sentence someone has to trust. The script is the technique, and it can be re-run.
+
+`_sandbox/` holds 100-odd of these, and they are tracked deliberately rather than swept up.
+Four from the gate-repair work show the range:
+
+- `probe_l23_moto_sqs.py` asked whether moto implements SQS `RedrivePolicy` redrive and
+  visibility timeouts before the L23 rewrite was allowed to depend on it. It still runs, and
+  still prints the receive-count progression that answered the question.
+- `triage_no_sim_hits.sh` is the classification record for the anti-simulation triage. Every
+  edit is grouped under the verdict that justified it, so the reasoning survives with the
+  change instead of living in a commit message.
+- `fix_em_dashes_root_docs.sh` and `fix_em_dashes_plan_docs.sh` record which replacements
+  needed a comma rather than a colon, and why, including the one ASCII diagram line that had
+  to be repadded so the box still aligned.
+
+The rule this follows: **probe before you build, and keep the probe.** `CLAUDE.md` already
+requires probing a new AWS service before writing against it, because guessing API shapes cost
+more time than probing did (L33, eight failures). Discarding the probe afterwards throws away
+the only durable evidence of how the question was settled, and the next person, or the next
+agent, has to infer it again from the code that survived.
+
+Scratch directories are where this goes wrong. Work written to `/tmp` disappears, and with it
+the demonstration that a capability was checked rather than assumed.
+
 ## What is written down where
 
 | Artifact | Where |
@@ -150,6 +177,7 @@ code that needs tests rather than as the thing that tests code.
 | The instruction set that steers the agent | `CLAUDE.md` |
 | Raw append-only observation log, roughly 900 entries | `.claude/learnings/observations.jsonl` |
 | Per-level write-ups, including what went wrong | `.claude/learnings/reflections/` |
+| Probes and one-off scripts, kept so the technique survives | `_sandbox/` |
 | The gates, and their tests | `tools/`, `tests/` |
 | Enforcement on every push | `.github/workflows/gates.yml` |
 | An outside audit of this repo against its own claims | `MISSION_ASSESSMENT_2026-08-26.md` |

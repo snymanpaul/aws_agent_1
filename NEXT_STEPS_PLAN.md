@@ -98,22 +98,36 @@ Deferred deliberately until enforcement and the analytics feed were in place. Bo
 this is the next tier if lesson work resumes. Three levels, not a full tier of seven, chosen
 because each closes a gap the repo can name rather than a topic that merely looks next.
 
-The analysis behind these three, including the coverage counts and why Gateway ranks first, is
+The analysis behind these three, including the coverage counts and the ordering, is
 [`docs/assessment-aws-agent-1-cross-reference.md`](docs/assessment-aws-agent-1-cross-reference.md).
 Headline: two genuine data-plane touches in 101 levels (L45 S3 Vectors, L37 Kinesis), zero tracked
-Python mentioning Athena, Glue, Redshift, S3 Tables, Iceberg or Lake Formation, and three AgentCore
-services with no level at all.
+Python mentioning Athena, Glue, Redshift, S3 Tables, Iceberg or Lake Formation, and two AgentCore
+services with no level at all (Harness, Optimization).
 
-7. **AgentCore Gateway.** The one platform primitive never built here. L33 depends on it
-   conceptually and L75 touched a Gateway ARN, but no level ever created one. It converts APIs and
-   Lambda functions into MCP tools, and it is where Cedar policy intercepts every tool call, so it
-   extends the L33 versus L96 comparison directly rather than starting a new thread. Needs AWS
-   credentials, spends money, teardown-critical.
+7. **Give L27's Gateway target a real backend.** Corrected 2026-08-26: this was written as
+   "the one platform primitive never built here", which was wrong. Section 2.3 of the assessment
+   has the bytes. `10_production/l27agentcore/cdk/lib/stacks/agentcore-stack.ts` creates a
+   `CfnGateway` (MCP, Cognito CUSTOM_JWT) and a `CfnGatewayTarget` onto a Lambda with an inline
+   tool schema; `src/mcp_client/client.py` connects a Strands `MCPClient` to it with a bearer
+   token; L33 attaches Cedar to that same gateway; L75 provisions another through boto3. The
+   stack was deployed: `observations.jsonl:815` names `l27agentcore-AgentCoreStack` as a real
+   CloudFormation stack. Two things are missing, not one. The tool:
+   `mcp/lambda/handler.py` serves `placeholder_tool`, a no-op that echoes its arguments. And the
+   proof: no completed MCP call through the Gateway appears in the observation log, the
+   reflections or the level docs, while `level-33-reflection.md:61` records the gateway as having
+   no registered tool schema. So the work is to put something real behind the target, capture a
+   call landing on it with a runtime sentinel, then re-run L96's intervention taxonomy at the
+   Gateway instead of in-process. Still needs AWS credentials, still spends money, still
+   teardown-critical, but it is a substitution plus a proof rather than a new primitive, which
+   makes it the cheapest of the three.
 
 8. **The managed AWS MCP Server**, run under the L56 secure-MCP lens and L50 toxic-flow analysis.
-   Worth noting the current state: `.mcp.json` declares one server (`graphiti-memory`, local), so
-   this repo has MCP theory and no AWS MCP practice. The Agent Toolkit for AWS went GA in May 2026
-   and ships an `aws-data-analytics` plugin; see the analytics delta report for the survey.
+   Current state, stated precisely: `.mcp.json` declares one server (`graphiti-memory`, local),
+   and L27 calls an AgentCore Gateway over MCP, but that is an endpoint this repo stood up itself
+   with a placeholder tool behind it. No AWS-published server has been run: not the managed AWS
+   MCP Server, not `awslabs/mcp`, not the Knowledge MCP server. The Agent Toolkit for AWS went GA
+   in May 2026 and ships an `aws-data-analytics` plugin; see the analytics delta report for the
+   survey.
 
 9. **Trajectory evals against a data agent.** Highest value of the three. Port the L83 trajectory
    evaluator so the trajectory is catalog chosen, table resolved, join path taken, and filters

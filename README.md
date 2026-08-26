@@ -2,7 +2,7 @@
 
 A progressive learning path through the AWS Strands Agents SDK. 101 levels (L1 to L100, plus L97b), built December 2025 to July 2026, from a basic agent up through multi-agent orchestration, agentic memory, agentic evals, and the AWS AgentCore platform.
 
-Every lesson is meant to run live against real services, with no substituted integrations and no hardcoded success paths. `tools/no_sim_check.py` is the gate for that. The repo does not fully clear it. On 26 August 2026 the gate reported 56 hits across the 272 Python files it scans, down from 133 before I fixed the gate itself. Findings that depend on model behaviour were re-run on a second provider before I recorded them as findings.
+Every lesson runs live against real services, with no substituted integrations and no hardcoded success paths. `tools/no_sim_check.py` is the gate for that, and the repo now clears it: 0 hits across the 272 Python files it scans, down from 133 when the gate was first tested. CI runs that gate, the AWS-account tripwire and the 111-test suite on every push, so the standard holds for every clone rather than on my machine. Findings that depend on model behaviour were re-run on a second provider before I recorded them as findings.
 
 ## How this was built
 
@@ -37,7 +37,9 @@ The repo therefore serves two purposes: a reference implementation of Strands pa
 
 **Anti-simulation enforcement.** `no_sim_check.py` flags substitute-object vocabulary, fake-success returns, deferral comments, and a `return True` straight out of an `except`. The tests themselves are built so they cannot pass by accident: runtime sentinels that only the real service can produce, real process crashes for the durability lessons, and paired positive and negative controls on every evaluator.
 
-The gate itself went untested for most of its life. When I finally gave it the positive and negative controls it demands of every lesson (`tests/test_no_sim_check.py`, 56 tests), it turned out to be wrong in both directions. It fired on comments describing deliberate fault injection, and it missed `class MockSQSQueue` and `mock_client` completely, because `\b` does not match before a capital or an underscore. Fixing it dropped repo-wide hits from 133 to 56 and turned up six real substituted integrations in L23 that had been invisible the whole time.
+The gate itself went untested for most of its life, and so were `eval_harness.py` and `ship_gate.py`, which decide what counts as a passing run. When I finally gave all three the positive and negative controls they demand of every lesson (111 tests), the anti-simulation gate turned out to be wrong in both directions. It fired on comments describing deliberate fault injection, and it missed `class MockSQSQueue` and `mock_client` completely, because `\b` does not match before a capital or an underscore.
+
+Repairing it dropped repo-wide hits from 133 to 56. Triaging the survivors one function at a time took it to zero and turned up nine real substituted integrations that had been invisible the whole time. The worst was a Bedrock guardrail that silently fell back to a five-keyword blocklist whenever the client was missing or the API errored, so a safety check answered ALLOW when the service was simply unreachable. The discriminator that separated the nine from the noise: was a real call available and skipped? A helper that genuinely raises is fault injection. Code that fabricates a success is not.
 
 **Agentic memory.** The memory track (L78 onward) covers shared cross-agent memory, cross-session persistence on DynamoDB, filtered long-term retrieval on AgentCore Memory, long-horizon dynamics (consolidation, forgetting, conflict), and durable multi-agent resume after a real crash. Stores sit behind hexagonal ports so they are swappable. The capstone measured the effect: 1.00 goal success with memory against 0.00 without, p = 0.0003 by permutation test.
 
@@ -76,6 +78,16 @@ uv sync                                    # Python 3.13+, uv
 uv run python 01_basics/hello_agent.py     # simplest agent
 uv run pytest                              # tests
 uv run python tools/no_sim_check.py $(git ls-files '*.py')   # anti-simulation gate
+sh tools/install_hooks.sh                  # pre-commit tripwires, once per clone
+```
+
+Those three checks also run in CI on every push (`.github/workflows/gates.yml`). The lessons themselves do not: they need model credentials, a running proxy and AWS access, and several spend money.
+
+`tools/ship_gate.py` is the release step, kept manual for the same reason. Run it against a candidate before shipping:
+
+```bash
+podman start litellm-proxy
+uv run python tools/ship_gate.py           # one auditable GO/NO-GO over real paid runs
 ```
 
 Model access goes through an OpenAI-compatible LiteLLM proxy on `localhost:4000` (mine runs as a Podman container). `tools/get_model` resolves aliases to whatever the proxy serves. The AgentCore levels need AWS credentials with the policies in `10_production/l27_agentcore/iac_policy.json`.

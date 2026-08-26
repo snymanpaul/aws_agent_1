@@ -12,9 +12,11 @@ red-team, context management. Per-level docs: `docs/levels/` (one file per lesso
 `LEARNING_PLAN_agentic_memory_evals.md`, `LEARNING_PLAN_v148_impact.md`, `NEXT_STEPS_PLAN.md`,
 `MISSION_ASSESSMENT_2026-08-26.md`, and `.claude/learnings/reflections/`.
 
-**Gate status (2026-08-26)**: `no_sim_check` reports **56 hits over 272 tracked `.py` files**.
-The repo does not currently pass its own anti-simulation gate. Do not report a lesson or the
-repo as green on that basis; check the file you touched and say what remains.
+**Gate status (2026-08-26)**: `no_sim_check` reports **0 hits over 272 tracked `.py` files**,
+and CI enforces it on every push (`.github/workflows/gates.yml`) alongside `check_no_aws_ids`
+and `uv run pytest` (111 tests). The pre-commit hook runs both tripwires over staged files.
+Keep it at zero: any file you touch must come out clean, and a justified exception takes a
+trailing `# nosim:ok <reason>`, never a quiet reword of working code.
 
 ## Quick Start
 
@@ -98,9 +100,14 @@ Claude aliases route via the LiteLLM proxy at `localhost:4000`; `gemini*` goes d
 
 **Anti-simulation is non-negotiable** (enforced by `tools/no_sim_check.py`): every lesson is
 structurally un-fakeable (runtime sentinels, real services, real crashes, positive/negative controls)
-and must pass `no_sim_check`. This is the standard, not a description of the current state: see the
-gate status above. **Any file you touch must come out with no new hits, and you must report the
-file's remaining count rather than calling the work green.**
+and must pass `no_sim_check`. The repo is at zero and CI keeps it there, so **a new hit is a
+regression, not a backlog item.** When classifying one, open the flagged function rather than
+judging from the gate's 100-character summary: the discriminator is whether a real call was
+available and skipped. A helper that genuinely raises is fault injection and legitimate; code
+that fabricates a success is not.
+
+**`ship_gate.py` is a manual release step**, not part of CI, because it spends money. Run it
+against a candidate before shipping: `podman start litellm-proxy && uv run python tools/ship_gate.py`.
 
 ## Critical Non-Obvious Rules
 

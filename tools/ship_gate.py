@@ -46,9 +46,16 @@ def runner(system_prompt):
 
 
 def ship_gate(system_prompt, cases, evaluators, baseline=None,
-              min_quality=0.8, max_tokens_factor=3.0, n=4, label="candidate", audit_dir="/tmp"):
-    """Run the candidate N times; return an auditable GO/NO-GO verdict."""
-    result = run_suite(cases, runner(system_prompt), evaluators, n=n)
+              min_quality=0.8, max_tokens_factor=3.0, n=4, label="candidate", audit_dir="/tmp",
+              run_fn=None):
+    """Run the candidate N times; return an auditable GO/NO-GO verdict.
+
+    run_fn defaults to real paid agent runs through the proxy. It is injectable for
+    the same reason run_suite's is: the verdict logic (thresholds, significance,
+    audit artifact) is worth exercising without spending money on every check.
+    Passing a run_fn does not soften the gate, it only supplies the runs it judges.
+    """
+    result = run_suite(cases, run_fn or runner(system_prompt), evaluators, n=n)
     from statistics import mean
     max_tokens = (mean(baseline["tokens"]) * max_tokens_factor) if baseline else None
     passed, reasons = gate(result, baseline=baseline, min_quality=min_quality,

@@ -19,8 +19,7 @@ Podman, Rust-source-grounded SSRF), L99 red-team the memory channel (explicit de
 L100 context-mgmt verify (auto ~56% token cut confirms ~55%; accuracy lift an honest negative on
 Gemini's 1M window). Session-wide learnings: `.claude/learnings/reflections/SESSION_2026-07-19-reflection.md`.
 
-**New (2026-08-26):** outside assessment against the repo's stated mission, plus the first pass on
-standing item 4. Assessment: `MISSION_ASSESSMENT_2026-08-26.md`. Done:
+**New (2026-08-26):** a review of the repo against its two stated purposes, then the work it called for. Done:
 
 - `test_no_sim_check.py` (56 tests, now in the package): the gate now has the positive/negative controls it demands
   of everything else, plus characterization tests for its own gaps.

@@ -51,3 +51,6 @@ todo.md
 # MCP config (user-specific)
 .mcp.json
 .agentcore.json
+
+# Internal assessment, kept local
+MISSION_ASSESSMENT_*.md

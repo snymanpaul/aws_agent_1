@@ -180,4 +180,4 @@ the demonstration that a capability was checked rather than assumed.
 | Probes and one-off scripts, kept so the technique survives | `_sandbox/` |
 | The gates, installable, with their tests | `packages/agent-build-gates/` |
 | Enforcement on every push | `.github/workflows/gates.yml` |
-| An outside audit of this repo against its own claims | `MISSION_ASSESSMENT_2026-08-26.md` |
+| Forward work, and the record of what has landed | `NEXT_STEPS_PLAN.md` |

@@ -10,8 +10,7 @@ Progressive learning path from basic agents to production multi-agent systems.
 **Status (2026-08):** L1–L100 plus L97b complete. This file tracks L1–L76 plus the master index; L77
 lives in `artifacts/adk_patterns/`, L78–L93 in `LEARNING_PLAN_agentic_memory_evals.md`, and Tier 22
 (L94–L100, post-v1.48 ecosystem delta) is **complete** per `LEARNING_PLAN_v148_impact.md`.
-Open work: `NEXT_STEPS_PLAN.md`. Outside assessment against the repo's stated mission:
-`MISSION_ASSESSMENT_2026-08-26.md`.
+Open work: `NEXT_STEPS_PLAN.md`.
 
 ---
 

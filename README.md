@@ -100,7 +100,7 @@ If you are working in this repo with an AI coding agent, `CLAUDE.md` carries the
 
 If you came for the Strands patterns, start at [`docs/levels/L01-hello-world-agent.md`](docs/levels/L01-hello-world-agent.md) and use the table above to jump to whichever track you need.
 
-If you came for the method rather than the framework, start with [`METHOD.md`](METHOD.md), then `CLAUDE.md` for the instruction set itself, `packages/agent-build-gates/` for the gates and their tests, and any file in `.claude/learnings/reflections/` for what a level actually cost. `MISSION_ASSESSMENT_2026-08-26.md` is an outside audit of the repo against the two purposes stated above, including where it falls short.
+If you came for the method rather than the framework, start with [`METHOD.md`](METHOD.md), then `CLAUDE.md` for the instruction set itself, `packages/agent-build-gates/` for the gates and their tests, and any file in `.claude/learnings/reflections/` for what a level actually cost. `NEXT_STEPS_PLAN.md` carries the open work and the record of what has landed.
 
 If you find a claim in here that the runs behind it do not support, open an issue. That is the failure mode I care about most.
 

@@ -10,7 +10,7 @@ Progressive learning path for AWS Strands Agents SDK.
 v1.48 upgrade sweep, checkpoint runtime, unified interventions, memory rematch, sandbox tiers,
 red-team, context management. Per-level docs: `docs/levels/` (one file per lesson). See also
 `LEARNING_PLAN_agentic_memory_evals.md`, `LEARNING_PLAN_v148_impact.md`, `NEXT_STEPS_PLAN.md`,
-`MISSION_ASSESSMENT_2026-08-26.md`, and `.claude/learnings/reflections/`.
+and `.claude/learnings/reflections/`.
 
 **Gate status (2026-08-26)**: `no_sim_check` reports **0 hits over 275 tracked `.py` files**,
 and CI enforces it on every push (`.github/workflows/gates.yml`) alongside `check_no_aws_ids`

@@ -6,15 +6,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Progressive learning path for AWS Strands Agents SDK.
 
-**Status**: 93 levels (Dec 2025 – Jun 2026). Recent: agentic **memory** + **evals** (L78–L92),
-validated cross-model on Bedrock Nova Lite (L93). Per-level docs: `docs/levels/` (one file per
-lesson). See also `LEARNING_PLAN_agentic_memory_evals.md`, `NEXT_STEPS_PLAN.md`, and
-`.claude/learnings/reflections/`.
+**Status**: 101 levels, L1–L100 plus L97b (Dec 2025 – Jul 2026). Tier 22 (L94–L100) complete:
+v1.48 upgrade sweep, checkpoint runtime, unified interventions, memory rematch, sandbox tiers,
+red-team, context management. Per-level docs: `docs/levels/` (one file per lesson). See also
+`LEARNING_PLAN_agentic_memory_evals.md`, `LEARNING_PLAN_v148_impact.md`, `NEXT_STEPS_PLAN.md`,
+`MISSION_ASSESSMENT_2026-08-26.md`, and `.claude/learnings/reflections/`.
+
+**Gate status (2026-08-26)**: `no_sim_check` reports **56 hits over 272 tracked `.py` files**.
+The repo does not currently pass its own anti-simulation gate. Do not report a lesson or the
+repo as green on that basis; check the file you touched and say what remains.
 
 ## Quick Start
 
 ```bash
-# Ensure the LiteLLM proxy is running — it's a PODMAN container named `litellm-proxy` (podman, not docker)
+# Ensure the LiteLLM proxy is running: it's a PODMAN container named `litellm-proxy` (podman, not docker)
 podman start litellm-proxy && curl -s localhost:4000/health/liveliness   # expect HTTP 200
 
 # Run any level
@@ -50,7 +55,7 @@ uv run pytest
 18_agentcore_config/    # L75: config bundles (versioned resource config)
 19_agentcore_agui/      # L76: AG-UI native (serve_ag_ui)
 artifacts/          # L77 ADK patterns + review-gate architecture (verified on Gemini + Bedrock)
-docs/levels/        # One doc per lesson, L01-L93 (linked from LEARNING_PLAN.md tables)
+docs/levels/        # One doc per lesson, L01-L100 + L97b (linked from LEARNING_PLAN.md tables)
 tools/              # get_model + quality gates: no_sim_check, eval_harness, ship_gate
 ```
 
@@ -77,30 +82,39 @@ Claude aliases route via the LiteLLM proxy at `localhost:4000`; `gemini*` goes d
 
 ## Quality Gates / Tooling (`tools/`)
 
-- `no_sim_check.py` — simulation tripwire: flags stub/fake/mock/hardcoded vocabulary, fake-success
-  returns, and assume-good `except` defaults in `.py`. Run on new lessons: `uv run python tools/no_sim_check.py <path>`.
-- `eval_harness.py` — composable evals: datasets + evaluators + multi-run + Wilson/bootstrap CIs +
+- `no_sim_check.py`: tripwire for substituted integrations. Flags substitute-object vocabulary
+  (mock/stub/fake/dummy/hardcoded), fake-success returns, "in production this would" deferrals, and
+  `return True` straight out of an `except`. Run on new lessons: `uv run python tools/no_sim_check.py <path>`;
+  repo-wide use `$(git ls-files '*.py')`, because pointing it at `.` also sweeps `.venv`.
+  Two scoping rules, both learned from classifying every hit in the repo and both pinned by
+  `tests/test_no_sim_check.py` (56 tests): boundaries break on underscores and CamelCase humps, so
+  `MockSQSQueue` / `mock_client` / `_simulate_human_response` are caught; and the two vocabulary
+  rules do not fire on comments or docstrings, because prose cannot fake an integration. Escape a
+  justified line with a trailing `# nosim:ok <reason>`.
+- `eval_harness.py`: composable evals: datasets + evaluators + multi-run + Wilson/bootstrap CIs +
   permutation significance + token/latency cost gate + regression baseline.
-- `ship_gate.py` — one auditable GO/NO-GO verdict over real runs (the "paid, audit-reproducible gate").
-- `check_no_aws_ids.py` — **BINDING RULE: never put AWS account info (12-digit account ids, `AWSAdministratorAccess-*` / SSO profile strings, account-bearing ARNs) in ANY `.md` or `.py` file.** This tripwire blocks it; install the pre-commit hook once per clone with `sh tools/install_hooks.sh`. Account ids belong only in local, gitignored config (`~/.aws`, `.claude/settings.local.json`), never in tracked files.
+- `ship_gate.py`: one auditable GO/NO-GO verdict over real runs (the "paid, audit-reproducible gate").
+- `check_no_aws_ids.py`: **BINDING RULE: never put AWS account info (12-digit account ids, `AWSAdministratorAccess-*` / SSO profile strings, account-bearing ARNs) in ANY `.md` or `.py` file.** This tripwire blocks it; install the pre-commit hook once per clone with `sh tools/install_hooks.sh`. Account ids belong only in local, gitignored config (`~/.aws`, `.claude/settings.local.json`), never in tracked files.
 
 **Anti-simulation is non-negotiable** (enforced by `tools/no_sim_check.py`): every lesson is
 structurally un-fakeable (runtime sentinels, real services, real crashes, positive/negative controls)
-and must pass `no_sim_check`.
+and must pass `no_sim_check`. This is the standard, not a description of the current state: see the
+gate status above. **Any file you touch must come out with no new hits, and you must report the
+file's remaining count rather than calling the work green.**
 
 ## Critical Non-Obvious Rules
 
 ### Model Provider
-Use `OpenAIModel` with `base_url` for LiteLLM — **not** `LiteLLMModel`:
+Use `OpenAIModel` with `base_url` for LiteLLM, **not** `LiteLLMModel`:
 ```python
 from strands.models.openai import OpenAIModel
 model = OpenAIModel(model_id="claude-sonnet-4", client_args={"base_url": "http://localhost:4000", "api_key": "sk-local"})
 ```
 
-### LiteLLM proxy runs on PODMAN — diagnose before declaring it "down"
-The proxy is a **long-lived podman container named `litellm-proxy`** bound to `127.0.0.1:4000`, with its config mounted from `~/Code/litellm-proxy/litellm_config.yaml` (that repo has its own CLAUDE.md). Manage it with **podman, not docker** — don't `docker compose` from that dir.
+### LiteLLM proxy runs on PODMAN: diagnose before declaring it "down"
+The proxy is a **long-lived podman container named `litellm-proxy`** bound to `127.0.0.1:4000`, with its config mounted from `~/Code/litellm-proxy/litellm_config.yaml` (that repo has its own CLAUDE.md). Manage it with **podman, not docker**: don't `docker compose` from that dir.
 ```bash
-podman ps -a | grep litellm    # check state — do NOT truncate `podman ps` output; the container sorts low
+podman ps -a | grep litellm    # check state: do NOT truncate `podman ps` output; the container sorts low
 podman start litellm-proxy      # restart if "Exited"; exit 137 = OOM-killed (machine is only ~2GB)
 curl -s localhost:4000/health/liveliness   # HTTP 200 = ready
 ```
@@ -114,23 +128,23 @@ curl -s localhost:4000/health/liveliness   # HTTP 200 = ready
 Strands streams by default. For clean output: `Agent(..., callback_handler=None)` then `print(result)`.
 
 ### MCP Integration
-Always use real MCP calls — never simulate/comment out. Use `MCPClient(lambda: stdio_client(params))` with `prefix` param for multiple servers.
+Always use real MCP calls, never simulate/comment out. Use `MCPClient(lambda: stdio_client(params))` with `prefix` param for multiple servers.
 
-### New AWS Service — Probe First
+### New AWS Service: Probe First
 Before writing any implementation against a new AWS service:
-1. `_sandbox/probe_<level>_shapes.py` — enumerate operation input/output shapes via `service_model`
-2. `_sandbox/probe_<level>_state.py` — query live state of existing resources
+1. `_sandbox/probe_<level>_shapes.py`: enumerate operation input/output shapes via `service_model`
+2. `_sandbox/probe_<level>_state.py`: query live state of existing resources
 3. Check IAM role policies on any role that will call the new service
 Then code. Guessing API syntax costs more time than probing. (Lesson: L33, 8 failures.)
 
 ### AgentCore Deployment
-Use `BedrockAgentCoreApp` from `bedrock_agentcore` — do **not** manually create FastAPI apps with `/invocations`. Requires `POST /invocations` + `GET /ping` on port 8080.
+Use `BedrockAgentCoreApp` from `bedrock_agentcore`, do **not** manually create FastAPI apps with `/invocations`. Requires `POST /invocations` + `GET /ping` on port 8080.
 
 ### Streaming Swarm
 Use positional args: `Swarm([a1, a2], ...)`. Set `repetitive_handoff_detection_window` to prevent ping-pong loops.
 
 ### Thread Safety
-Create a fresh `Agent` per thread in parallel execution — agents are not thread-safe.
+Create a fresh `Agent` per thread in parallel execution: agents are not thread-safe.
 
 ## Knowledge Persistence
 
@@ -145,5 +159,5 @@ Use `/reflect` command after completing a level to ensure JSONL observation capt
 ## Resources
 
 - [Strands Docs](https://strandsagents.com/latest/) | [GitHub](https://github.com/strands-agents/sdk-python)
-- `LEARNING_PLAN.md` (master index, links per level) + `docs/levels/` (one doc per lesson, L01–L93) +
+- `LEARNING_PLAN.md` (master index, links per level) + `docs/levels/` (one doc per lesson, L01–L100 + L97b) +
   `LEARNING_PLAN_agentic_memory_evals.md` (memory/evals track overview)

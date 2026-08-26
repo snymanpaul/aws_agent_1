@@ -1,5 +1,9 @@
 # Next Steps
 
+**Status (2026-08-26):** L1 to L100 plus L97b complete, cross-model validated, repo published publicly
+with the README as the front door. The repo does not currently pass its own `no_sim_check` gate:
+56 hits over 271 tracked `.py` files.
+
 **Status (2026-07-18):** L1 to L93 complete, cross-model validated, repo published publicly with the
 README as the front door. Prior plan items (cross-model validation, doc fixes, public README, push to
 `main`) are done; the record lives in `.claude/learnings/reflections/` and git history.
@@ -14,11 +18,29 @@ Podman, Rust-source-grounded SSRF), L99 red-team the memory channel (explicit de
 L100 context-mgmt verify (auto ~56% token cut confirms ~55%; accuracy lift an honest negative on
 Gemini's 1M window). Session-wide learnings: `.claude/learnings/reflections/SESSION_2026-07-19-reflection.md`.
 
-## Tier 22 follow-ons (deferred by choice — each a clean next session)
+**New (2026-08-26):** outside assessment against the repo's stated mission, plus the first pass on
+standing item 4. Assessment: `MISSION_ASSESSMENT_2026-08-26.md`. Done:
+
+- `tests/test_no_sim_check.py` (56 tests): the gate now has the positive/negative controls it demands
+  of everything else, plus characterization tests for its own gaps.
+- `no_sim_check` repaired on the evidence those tests exposed: identifier-aware boundaries
+  (`MockSQSQueue`, `mock_client`, `_simulate_human_response` were all invisible before), the two
+  vocabulary rules no longer fire on comments or docstrings, and `assume-good-default` narrowed to
+  `return True` (its three numeric hits were pass-ratio floors, all false positives). Repo-wide:
+  **133 hits to 56**; comment-leading noise 72 to 3.
+- L23 `08_production/error_recovery.py`: six substituted integrations replaced with real calls (HITL
+  over stdin, real webhook POST, real boto3 SQS via moto with teardown, real model calls through the
+  LiteLLM proxy). Verified on live runs including a real 404-then-success fallback. Detail in
+  `docs/levels/L23-error-recovery.md`.
+
+Still open from that assessment: CI (nothing in `.github/` yet), packaging `tools/` for external
+reuse, and the `simulate_failure` naming that accounts for six of L23's seven remaining hits.
+
+## Tier 22 follow-ons (deferred by choice: each a clean next session)
 
 1. **Authentic `BedrockKnowledgeBaseStore` memory arm** (the real AWS L97b). L97b answered the
    parity question with a local semantic store; this does it on a provisioned Bedrock KB (vector
-   index + embedding model + S3 data source + IAM). Billable, teardown-critical — probe-first, and
+   index + embedding model + S3 data source + IAM). Billable, teardown-critical: probe-first, and
    run it as a deliberate session with a teardown checklist on the agentic sandbox account.
 
 2. **Full chaos-resilience evaluators** (`strands_evals.chaos`). L99 did the red-team half; the
@@ -28,7 +50,7 @@ Gemini's 1M window). Session-wide learnings: `.claude/learnings/reflections/SESS
 3. ~~**Cross-model (Bedrock Nova) pass of the L96/L99 security findings.**~~ **DONE 2026-07-19**
    (`13_quality/crossmodel_nova_l96_l99.py`, reflection `crossmodel-nova-l96-l99-reflection.md`):
    L96 interventions (Deny/Transform/Cedar/Guide) are framework-inherent on Nova; L99's
-   explicit-policy defense holds on Nova, but injection susceptibility is model-specific — Nova Lite
+   explicit-policy defense holds on Nova, but injection susceptibility is model-specific: Nova Lite
    is markedly MORE injection-resistant than Gemini (1–2/3 vs 4/4). Security posture transfers;
    raw attack-success rate does not.
 
@@ -37,7 +59,7 @@ Gemini's 1M window). Session-wide learnings: `.claude/learnings/reflections/SESS
 4. **Operationalize the quality gates.** Wire `tools/no_sim_check.py` and `uv run pytest` into
    pre-commit and CI (GitHub Actions) so the anti-simulation bar is enforced on every push, not run
    by hand. Precedent exists: `tools/install_hooks.sh` already installs the `check_no_aws_ids`
-   pre-commit hook — extend that hook to run `no_sim_check` + `pytest`. `ship_gate.py` stays manual
+   pre-commit hook; extend that hook to run `no_sim_check` + `pytest`. `ship_gate.py` stays manual
    (it spends money) but should be a documented release step.
 
 5. **Meta-eval: judge reliability at the ambiguous boundary.** L52 showed judges are reliable on

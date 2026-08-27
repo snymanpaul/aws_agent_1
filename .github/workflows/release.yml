@@ -50,7 +50,7 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # The build step has no business with a git credential.
           persist-credentials: false
@@ -97,7 +97,7 @@ jobs:
         working-directory: ${{ env.PACKAGE_DIR }}
 
       - name: Upload distributions
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: dist
           path: ${{ env.PACKAGE_DIR }}/dist/
@@ -118,7 +118,7 @@ jobs:
           enable-cache: false
 
       - name: Download distributions
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: dist
           path: dist/
@@ -149,7 +149,7 @@ jobs:
           enable-cache: false
 
       - name: Download distributions
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           name: dist
           path: dist/

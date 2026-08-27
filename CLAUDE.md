@@ -86,12 +86,15 @@ Claude aliases route via the LiteLLM proxy at `localhost:4000`; `gemini*` goes d
 
 ## Quality Gates (`packages/agent-build-gates/`)
 
-The four gates live in a workspace package with their own version and 111 tests, installable
-elsewhere (zero dependencies). **Not on PyPI yet**, so elsewhere means a git install or the
-`git+` source in a consumer's `pyproject.toml`, which is how `aws_data_engineering` pulls it.
-`.github/workflows/release.yml` publishes it on an `agent-build-gates-v*` tag once the trusted
-publishers are registered. Invoke the gates by console script, not by path. `tools/` keeps
-`models.py` (this repo's model aliases), `install_hooks.sh` and `check_mermaid.sh`.
+The four gates live in a workspace package with their own version and 111 tests, published on
+PyPI as [`agent-build-gates`](https://pypi.org/project/agent-build-gates/) since 2026-08-27
+(`pip install agent-build-gates`, zero dependencies). `aws_data_engineering` consumes it that
+way. Releases go out through `.github/workflows/release.yml` on an `agent-build-gates-v*` tag:
+build, smoke-test both artifacts, assert the licence ships, `twine check`, TestPyPI, then PyPI
+behind a required reviewer. Trusted publishing only, no API tokens. Bump the version in the
+package's `pyproject.toml` first, since a PyPI version can never be reused. Invoke the gates by
+console script, not by path. `tools/` keeps `models.py` (this repo's model aliases),
+`install_hooks.sh` and `check_mermaid.sh`.
 
 - `no-sim-check`: tripwire for substituted integrations. Flags substitute-object vocabulary
   (mock/stub/fake/dummy/hardcoded), fake-success returns, "in production this would" deferrals, and

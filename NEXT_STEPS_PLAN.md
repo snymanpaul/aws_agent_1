@@ -50,6 +50,31 @@ Then the rest of that work landed the same day:
 Still open from that pass: the 18 files using `sys.path.insert(0, ".")`, which break when run from
 anywhere but the repo root. Everything else on that list is done.
 
+## AWS accounts: which work goes where
+
+Two accounts, kept separate on purpose, and the separation has already been violated once at
+real cost.
+
+- **The agentic sandbox** is where anything AgentCore belongs: runtimes, memories, gateways,
+  identities, config bundles. Provided by another team, and cleaned out between engagements,
+  so treat every resource there as temporary and write the teardown checklist first.
+- **The data account** is for Athena, Glue, S3 and the catalog. It holds a substantial real
+  business catalog, so it is the only candidate for data-plane work and the wrong home for
+  agentic infrastructure.
+
+`observations.jsonl:812` records what happens without this: L27, L34, L62, L66, L67 and
+L71 to L73 were all provisioned into the data account because a project note named the wrong
+profile, and it went unnoticed across many sessions. **Before provisioning, confirm both the
+identity (`aws sts get-caller-identity`) and the account's purpose.** A documented profile is
+not evidence of either.
+
+Ids, profile strings and the other team's project names are deliberately absent here: this
+repo is public. The mapping lives in `ACCOUNTS.local.md`, which is gitignored, and the
+profiles live in `~/.aws`. `check-no-aws-ids` blocks ids and profile strings from `.md` and
+`.py`, but a control on 2026-08-27 confirmed it does **not** catch internal project names, so
+the pre-commit hook adds a `.git-denylist` check for those, also gitignored. Lesson code takes
+`AWS_PROFILE` from the environment and never a literal.
+
 ## Tier 22 follow-ons (deferred by choice: each a clean next session)
 
 1. **Authentic `BedrockKnowledgeBaseStore` memory arm** (the real AWS L97b). L97b answered the
@@ -120,6 +145,18 @@ services with no level at all (Harness, Optimization).
    Gateway instead of in-process. Still needs AWS credentials, still spends money, still
    teardown-critical, but it is a substitution plus a proof rather than a new primitive, which
    makes it the cheapest of the three.
+
+   **Revised 2026-08-27: this now includes a redeploy.** The paragraph above says the stack "was
+   deployed", which is true in the past tense only. The two CDK stacks show `DELETE_COMPLETE`,
+   created 2025-12-16 and deleted 2026-06-02, an hour before the wrong-account observation was
+   written, and they are in the *data* account because that is where the mistake put them. The
+   agentic sandbox has no AgentCore memories, runtimes or gateways left, no matching IAM roles
+   and no log groups; those listings returned exit 0 rather than AccessDenied, so that is a real
+   answer and not a permissions artefact. Nothing survived because the levels after the June
+   migration used direct boto3 calls rather than CDK, so a clean teardown left no stack history.
+   The sandbox is still reachable with admin and Bedrock enabled, so the work is not blocked, but
+   it is now redeploy plus substitution plus proof. Write the teardown checklist before creating
+   anything.
 
 8. **The managed AWS MCP Server**, run under the L56 secure-MCP lens and L50 toxic-flow analysis.
    Current state, stated precisely: `.mcp.json` declares one server (`graphiti-memory`, local),

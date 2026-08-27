@@ -54,3 +54,9 @@ todo.md
 
 # Internal assessment, kept local
 MISSION_ASSESSMENT_*.md
+
+# AWS account map, kept local: ids and internal team/project names never go in a public repo
+ACCOUNTS.local.md
+
+# Local denylist of strings that must never reach this public repo (see tools/install_hooks.sh)
+.git-denylist

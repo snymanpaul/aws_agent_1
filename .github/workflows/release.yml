@@ -123,8 +123,13 @@ jobs:
           name: dist
           path: dist/
 
+      # `--trusted-publishing always` is deliberate. The default is `automatic`, and
+      # `uv help publish` describes it as: "Attempt trusted publishing when we're in a
+      # supported environment, continue if that fails". Continuing on failure is the
+      # silent-fallback shape this repo exists to catch, so the release path demands
+      # OIDC or stops.
       - name: Publish to TestPyPI
-        run: uv publish --publish-url https://test.pypi.org/legacy/ dist/*
+        run: uv publish --trusted-publishing always --publish-url https://test.pypi.org/legacy/ dist/*
 
   publish-pypi:
     name: Publish to PyPI
@@ -155,4 +160,4 @@ jobs:
         uses: astral-sh/attest-action@v0.0.6
 
       - name: Publish to PyPI
-        run: uv publish dist/*
+        run: uv publish --trusted-publishing always dist/*

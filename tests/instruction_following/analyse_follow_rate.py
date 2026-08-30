@@ -75,8 +75,14 @@ def main() -> int:
             pp = rate(d["cells"], rule, "rules_present", pi)
             pa = rate(d["cells"], rule, "rules_absent", pi)
             print(f"      prompt {pi}: present {fmt(pp):<22} absent {fmt(pa)}")
-        if not present or not absent:
-            verdicts[rule] = "NO OPPORTUNITIES: the tasks did not create one"
+        if not present and not absent:
+            verdicts[rule] = "NO OPPORTUNITIES in either arm: the tasks did not create one"
+        elif not absent:
+            verdicts[rule] = ("OPPORTUNITIES ONLY WITH THE RULE: without it the answers never "
+                              "reached the fork, so the arms are not comparable")
+        elif not present:
+            verdicts[rule] = ("OPPORTUNITIES ONLY WITHOUT THE RULE: the arms are not "
+                              "comparable")
         elif p < corrected and sum(present) / len(present) > sum(absent) / len(absent):
             verdicts[rule] = "the rule RAISES adherence"
         elif sum(absent) / len(absent) >= 0.9:

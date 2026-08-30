@@ -38,13 +38,30 @@ HEADER = ("<!-- Rendered from .claude/learnings/observations.jsonl by "
 
 
 def promoted_rules() -> list[dict]:
-    """Every promoted rule entry, in id order, minus any a later entry supersedes."""
+    """Every live promoted rule, ordered by when the rule FIRST entered the file.
+
+    Ordering follows the supersedes chain back to its root, not the entry's own id.
+    Re-promoting a rule on new evidence appends a new entry; without this, that entry's
+    higher id would move the rule to the bottom of CLAUDE.md and the diff would say a rule
+    changed when only its evidence did.
+    """
     entries = [json.loads(line) for line in LOG.read_text(encoding="utf-8").splitlines()
                if line.strip()]
+    by_id = {e["id"]: e for e in entries if "id" in e}
     superseded = {e["supersedes"] for e in entries if e.get("supersedes")}
-    return [e for e in entries
+
+    def root(entry: dict) -> str:
+        seen = {entry["id"]}
+        current = entry
+        while current.get("supersedes") in by_id and current["supersedes"] not in seen:
+            seen.add(current["supersedes"])
+            current = by_id[current["supersedes"]]
+        return current["id"]
+
+    live = [e for e in entries
             if e.get("status") == "promoted" and e.get("cat") == "rule"
             and e["id"] not in superseded]
+    return sorted(live, key=root)
 
 
 def render() -> str:

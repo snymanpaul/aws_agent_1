@@ -44,8 +44,48 @@ def note_for(obs_id: str) -> str:
     raise KeyError(f"{obs_id} is not in {LOG.name}")
 
 
+FENCED = re.compile(r"```[a-zA-Z]*\n(.*?)```", re.S)
+# A line that TALKS ABOUT the wrong form rather than writing it. Same discipline the
+# no_sim_check gate uses: prose cannot commit the mistake, and an answer that carries the
+# memory tends to restate it ("Note: not Swarm(agents=[...])"). Scoring that as a recurrence
+# would penalise the memory arm for quoting the memory, which is the opposite of the truth.
+PROSE = re.compile(r"(?i)\b(not|never|instead of|rather than|note|avoid|don't|do not|wrong|"
+                   r"incorrect|deprecated|e\.g\.|rather|correct|prefer)\b")
+
+
+def code_of(text: str) -> str:
+    """The code in an answer, with the lines that discuss the rule removed.
+
+    Fenced blocks are the code when the answer has any, and then only comment lines are
+    dropped. With no fence there is no structural signal, so the prose guard runs over every
+    line; that can drop a code line which also contains a word like "not", which is a known
+    and accepted cost, the same one no_sim_check's GUARD carries.
+    """
+    blocks = FENCED.findall(text)
+    fenced = bool(blocks)
+    body = "\n".join(blocks) if fenced else text
+    keep = []
+    for line in body.splitlines():
+        stripped = line.strip()
+        if stripped.startswith(("#", "//")):
+            continue
+        if not fenced and PROSE.search(stripped):
+            continue
+        keep.append(line)
+    return "\n".join(keep)
+
+
 def _search(pattern: str, text: str) -> bool:
     return bool(re.search(pattern, text, re.S))
+
+
+def _code_only(verifier):
+    """Every verifier sees the code, never the prose around it. Applied once, at the bottom."""
+    def wrapped(text: str):
+        return verifier(code_of(text))
+    wrapped.__name__ = verifier.__name__
+    wrapped.__doc__ = verifier.__doc__
+    return wrapped
 
 
 # Each verifier answers one question: did the answer take the wrong fork the log recorded?
@@ -334,3 +374,8 @@ CASES = [
         "using the returned result.",
     ]),
 ]
+
+# Applied once, here, so every verifier above can be written and read as a plain function of
+# a string while the registry hands it code with the discussion stripped out.
+for _case in CASES:
+    _case["recurs"] = _code_only(_case["recurs"])

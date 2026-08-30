@@ -104,10 +104,10 @@ CONTROLS = [
      "for t in client.list_tools_sync():\n    print(t.tool_name, t.mcp_tool.description)",
      "Print how many tools the server exposes."),
     ("C19_SESSION_MESSAGE",
-     "for m in repo.list_messages(session_id):\n    if m.role == 'user':\n        n += 1\n"
-     "# SessionMessage rows",
-     "for m in repo.list_messages(session_id):\n    if m.message.get('role') == 'user':\n"
-     "        n += 1\n# SessionMessage rows",
+     "rows: list[SessionMessage] = repo.list_messages(session_id)\n"
+     "for m in rows:\n    if m.role == 'user':\n        n += 1",
+     "rows: list[SessionMessage] = repo.list_messages(session_id)\n"
+     "for m in rows:\n    if m.message.get('role') == 'user':\n        n += 1",
      "Count the turns stored on disk."),
     ("C20_METRICS",
      'print(result.metrics.get("inputTokens"))',
@@ -122,6 +122,21 @@ def test_verifier_separates_the_mistake_from_its_correction(key, wrong, right, n
     assert recurs(wrong) is True, f"{key}: the recorded mistake was not detected"
     assert recurs(right) is False, f"{key}: the correction was scored as the mistake"
     assert recurs(not_applicable) is None, f"{key}: an answer that never reached the fork was scored"
+
+
+@pytest.mark.parametrize("key,wrong,right,not_applicable", CONTROLS)
+def test_an_answer_that_explains_the_rule_is_not_a_recurrence(key, wrong, right, not_applicable):
+    """The control that changed the design, found in the run's own output.
+
+    A C02_SWARM answer in the memory arm wrote `Swarm([coder, reviewer])`, correctly, and
+    added "Note: Swarm expects agents as a positional list argument, e.g. Swarm([a1, a2]),
+    not as a keyword like Swarm(agents=[a1, a2])." The first verifier scored that as a
+    recurrence. It would have counted the memory arm's habit of restating the memory as
+    evidence that the memory does not work, which is the opposite of what the bytes say.
+    """
+    recurs = BY_KEY[key]["recurs"]
+    with_a_note = right + "\n\nNote: do not write " + wrong.replace("\n", " ") + " here."
+    assert recurs(with_a_note) is False, f"{key}: an explanation was scored as a recurrence"
 
 
 def test_every_case_is_controlled():

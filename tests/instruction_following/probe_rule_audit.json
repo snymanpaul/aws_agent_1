@@ -1,0 +1,92 @@
+{
+  "squash_date": "2026-07-18T18:00:36-07:00",
+  "levels_with_code": 100,
+  "opportunities": 8,
+  "rows": [
+    {
+      "level": 22,
+      "code": "08_production/safety_guardrails.py",
+      "new_services": [
+        "bedrock",
+        "bedrock-runtime"
+      ],
+      "probes": 1,
+      "verdict": "probe exists, order unrecoverable (squashed import)"
+    },
+    {
+      "level": 23,
+      "code": "08_production/error_recovery.py",
+      "new_services": [
+        "sqs"
+      ],
+      "probes": 1,
+      "verdict": "probe exists, order unrecoverable (squashed import)"
+    },
+    {
+      "level": 33,
+      "code": "11_platform/agentcore_policy.py",
+      "new_services": [
+        "bedrock-agentcore-control"
+      ],
+      "probes": 4,
+      "verdict": "probe exists, order unrecoverable (squashed import)"
+    },
+    {
+      "level": 34,
+      "code": "11_platform/agentcore_evaluations.py",
+      "new_services": [
+        "bedrock-agentcore",
+        "iam",
+        "logs"
+      ],
+      "probes": 10,
+      "verdict": "probe exists, order unrecoverable (squashed import)"
+    },
+    {
+      "level": 37,
+      "code": "11_platform/ltm_streaming.py",
+      "new_services": [
+        "kinesis",
+        "sts"
+      ],
+      "probes": 7,
+      "verdict": "probe exists, order unrecoverable (squashed import)"
+    },
+    {
+      "level": 45,
+      "code": "12_orchestration/s3_vectors_rag.py",
+      "new_services": [
+        "s3vectors"
+      ],
+      "probes": 4,
+      "verdict": "probe exists, order unrecoverable (squashed import)"
+    },
+    {
+      "level": 48,
+      "code": "12_orchestration/durable_execution.py",
+      "new_services": [
+        "stepfunctions"
+      ],
+      "probes": 2,
+      "verdict": "probe exists, order unrecoverable (squashed import)"
+    },
+    {
+      "level": 79,
+      "code": "06_memory/cross_session_memory.py",
+      "new_services": [
+        "dynamodb"
+      ],
+      "probes": 0,
+      "verdict": "no probe"
+    }
+  ],
+  "probe_exists": {
+    "followed": 7,
+    "n": 8
+  },
+  "probe_predates": {
+    "followed": 0,
+    "n": 0
+  },
+  "unrecoverable": 7
+}

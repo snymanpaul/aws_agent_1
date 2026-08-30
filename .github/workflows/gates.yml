@@ -52,6 +52,25 @@ jobs:
       - name: No substituted integrations
         run: git ls-files -z '*.py' | xargs -0 uv run no-sim-check
 
+      # A1. Observations carry an id, a lifecycle status and a resolvable supersedes link,
+      # so a rule, a reflection and a test can all cite the same entry. Ids must also stay
+      # in increasing order, which is what makes "append-only" checkable rather than
+      # asserted. Everything that reads the log back depends on this holding.
+      - name: Observations carry an id and a lifecycle
+        run: uv run python tools/check_obs_schema.py
+
+      # A2. CLAUDE.md's rule section is a view of the promoted observations, not a file
+      # that gets rewritten whole. This fails on a hand edit inside the generated block,
+      # which is the update pattern that loses the detail and the incident behind a rule.
+      - name: CLAUDE.md matches what the store renders
+        run: uv run python tools/render_claude_md.py --check
+
+      # A6. The one step in the loop that used to run on judgement alone. A promoted or
+      # parked rule names the run or the incident that decided it, and the reference has
+      # to resolve.
+      - name: Promotions cite the evidence that decided them
+        run: uv run python tools/check_promotions.py
+
       - name: Tests
         run: uv run pytest -q
 

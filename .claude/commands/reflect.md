@@ -26,8 +26,26 @@ Identify every:
 One line per observation:
 
 ```
-{"ts":"ISO8601","repo":"aws_agent_1","level":N,"cat":"mistake|pattern|insight|question","topic":"short-slug","obs":"full observation","ctx":"what triggered this","entities":["Technology","Pattern","Pitfall"]}
+{"id":"obs-NNNN","status":"raw","supersedes":null,"ts":"ISO8601","repo":"aws_agent_1","level":N,"cat":"mistake|pattern|insight|question","topic":"short-slug","obs":"full observation","ctx":"what triggered this","entities":["Technology","Pattern","Pitfall"]}
 ```
+
+`id`, `status` and `supersedes` are the A1 lifecycle fields and they are assigned for you.
+Append with a named script in `_sandbox/` that calls the helper, never by writing the line
+by hand:
+
+```python
+from tools.obs_log import append
+
+append([
+    dict(ts="ISO8601", level=N, cat="mistake", topic="short-slug",
+         obs="full observation", ctx="what triggered this", entities=["Technology"]),
+])
+```
+
+`status` starts at `raw` and moves through `proposed` / `promoted` / `parked` / `retired`.
+A corrected entry is a NEW entry carrying `supersedes` with the id it replaces: the log is
+append-only and nothing in it is edited or deleted. `uv run python tools/check_obs_schema.py`
+enforces all of that in CI, and a rule that reaches `CLAUDE.md` cites the ids it came from.
 
 ---
 

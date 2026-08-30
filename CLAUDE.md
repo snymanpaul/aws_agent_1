@@ -125,14 +125,17 @@ against a candidate before shipping: `podman start litellm-proxy && uv run ship-
 
 ## Critical Non-Obvious Rules
 
-### Model Provider
+<!-- BEGIN GENERATED: critical-rules -->
+<!-- Rendered from .claude/learnings/observations.jsonl by tools/render_claude_md.py. Do not hand-edit inside this block: CI re-renders it and compares. Each heading carries the observation ids the rule came from. -->
+
+### Model Provider  (obs-0001, obs-0002)
 Use `OpenAIModel` with `base_url` for LiteLLM, **not** `LiteLLMModel`:
 ```python
 from strands.models.openai import OpenAIModel
 model = OpenAIModel(model_id="claude-sonnet-4", client_args={"base_url": "http://localhost:4000", "api_key": "sk-local"})
 ```
 
-### LiteLLM proxy runs on PODMAN: diagnose before declaring it "down"
+### LiteLLM proxy runs on PODMAN: diagnose before declaring it "down"  (obs-0845, obs-0864, obs-0846, obs-0725)
 The proxy is a **long-lived podman container named `litellm-proxy`** bound to `127.0.0.1:4000`, with its config mounted from `~/Code/litellm-proxy/litellm_config.yaml` (that repo has its own CLAUDE.md). Manage it with **podman, not docker**: don't `docker compose` from that dir.
 ```bash
 podman ps -a | grep litellm    # check state: do NOT truncate `podman ps` output; the container sorts low
@@ -145,27 +148,29 @@ curl -s localhost:4000/health/liveliness   # HTTP 200 = ready
 - **Claude models may 400 "credit balance too low"** → fall back to `gemini-2.5-flash`.
 - A single failed curl or a truncated `podman ps` is NOT evidence the proxy is gone. Check container state and `podman start` first.
 
-### Streaming
+### Streaming  (obs-0005)
 Strands streams by default. For clean output: `Agent(..., callback_handler=None)` then `print(result)`.
 
-### MCP Integration
+### MCP Integration  (obs-0040, obs-0042)
 Always use real MCP calls, never simulate/comment out. Use `MCPClient(lambda: stdio_client(params))` with `prefix` param for multiple servers.
 
-### New AWS Service: Probe First
+### New AWS Service: Probe First  (obs-0341, obs-0789, obs-0381, obs-0382, obs-0383, obs-0384, obs-0385, obs-0386, obs-0387, obs-0388)
 Before writing any implementation against a new AWS service:
 1. `_sandbox/probe_<level>_shapes.py`: enumerate operation input/output shapes via `service_model`
 2. `_sandbox/probe_<level>_state.py`: query live state of existing resources
 3. Check IAM role policies on any role that will call the new service
 Then code. Guessing API syntax costs more time than probing. (Lesson: L33, 8 failures.)
 
-### AgentCore Deployment
+### AgentCore Deployment  (obs-0326, obs-0327, obs-0045)
 Use `BedrockAgentCoreApp` from `bedrock_agentcore`, do **not** manually create FastAPI apps with `/invocations`. Requires `POST /invocations` + `GET /ping` on port 8080.
 
-### Streaming Swarm
+### Streaming Swarm  (obs-0025, obs-0026)
 Use positional args: `Swarm([a1, a2], ...)`. Set `repetitive_handoff_detection_window` to prevent ping-pong loops.
 
-### Thread Safety
+### Thread Safety  (obs-0259, obs-0537)
 Create a fresh `Agent` per thread in parallel execution: agents are not thread-safe.
+
+<!-- END GENERATED: critical-rules -->
 
 ## Knowledge Persistence
 

@@ -176,11 +176,20 @@ Create a fresh `Agent` per thread in parallel execution: agents are not thread-s
 
 ```
 .claude/learnings/
-├── observations.jsonl      # Append-only raw observations
+├── observations.jsonl      # Append-only, one entry per observation, id + lifecycle
 └── reflections/            # Per-level summaries (L1-93)
 ```
 
 Use `/reflect` command after completing a level to ensure JSONL observation capture (manual reflection misses this).
+
+Every entry carries `id` (obs-NNNN), `status` (`raw` → `proposed` → `promoted` / `parked` →
+`retired`) and `supersedes`. **Append with `tools/obs_log.py` from a named script in `_sandbox/`;
+never edit or delete a line** (a correction is a new entry carrying `supersedes`). Critical
+Non-Obvious Rules above is RENDERED from the promoted entries, so edit the observation and
+`uv run python tools/render_claude_md.py --write`; a promotion names the run or incident that
+decided it. `tests/instruction_following/` measures whether these rules are followed and
+`tests/memory_effect/` whether a captured mistake is avoided because it was captured; both
+spend model calls, so only their offline verifier controls run in CI.
 
 ## Resources
 

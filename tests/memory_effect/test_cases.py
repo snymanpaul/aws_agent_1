@@ -96,9 +96,11 @@ CONTROLS = [
      "except s3vectors.exceptions.NotFoundException:\n    create_index()",
      "Create the bucket if the list call comes back empty."),
     ("C17_TEMPORAL",
+     'handle = await client.start_workflow(Flow.run, id="x")\n'
      "result = await handle.result(timeout=60)",
+     'handle = await client.start_workflow(Flow.run, id="x")\n'
      "result = await asyncio.wait_for(handle.result(), timeout=60)",
-     "Start the workflow and return its id."),
+     "Start the run and return its id."),
     ("C18_MCP_TOOL_ATTR",
      "for t in client.list_tools_sync():\n    print(t.name)",
      "for t in client.list_tools_sync():\n    print(t.tool_name, t.mcp_tool.description)",
@@ -137,6 +139,31 @@ def test_an_answer_that_explains_the_rule_is_not_a_recurrence(key, wrong, right,
     recurs = BY_KEY[key]["recurs"]
     with_a_note = right + "\n\nNote: do not write " + wrong.replace("\n", " ") + " here."
     assert recurs(with_a_note) is False, f"{key}: an explanation was scored as a recurrence"
+
+
+# False positives found by reading the run's own answers, each now pinned. Every row is an
+# answer that does NOT make the recorded mistake and that an earlier verifier scored as if it
+# had. They are listed with the answer that produced them so the next reader can see the
+# shape rather than the rule.
+NEAR_MISSES = [
+    ("C01_SESSIONS",
+     # The variable is called session_id; it is passed as the agent's NAME, not as session_id.
+     'agent = Agent(name=session_id, session_manager=session_manager)'),
+    ("C12_AGENT_CARD",
+     # Awaited two lines later rather than on the call itself.
+     "coro = remote.get_agent_card()\ncard = asyncio.run(coro)\nprint(card.name)"),
+    ("C17_TEMPORAL",
+     # concurrent.futures.Future.result really does take a timeout. No Temporal in sight.
+     "fut = pool.submit(work)\nresult = fut.result(timeout=60)"),
+    ("C18_MCP_TOOL_ATTR",
+     # The tools are read correctly; the .name belongs to the agent, not to a tool.
+     "for t in client.list_tools_sync():\n    print(t.tool_name)\nprint(agent.name)"),
+]
+
+
+@pytest.mark.parametrize("key,answer", NEAR_MISSES)
+def test_a_near_miss_is_not_scored_as_the_mistake(key, answer):
+    assert BY_KEY[key]["recurs"](answer) is not True, f"{key}: a near miss was scored as the mistake"
 
 
 def test_every_case_is_controlled():

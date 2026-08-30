@@ -94,7 +94,7 @@ def _code_only(verifier):
 def sessions(text: str):
     if "SessionManager" not in text:
         return None
-    return _search(r"Agent\([^)]{0,240}session_id", text)
+    return _search(r"Agent\([^)]{0,240}\bsession_id\s*=", text)
 
 
 def swarm_positional(text: str):
@@ -165,7 +165,12 @@ def steering_method(text: str):
 def agent_card_await(text: str):
     if "get_agent_card" not in text:
         return None
-    return not _search(r"(await|asyncio\.run\()[^\n]{0,80}get_agent_card", text)
+    if _search(r"(await|asyncio\.run\()[^\n]{0,80}get_agent_card", text):
+        return False
+    # Conservative on purpose: an answer that awaits or runs the coroutine somewhere else,
+    # two lines down, has not made the recorded mistake either. Only a call with no async
+    # handling anywhere is the AttributeError the log records.
+    return not _search(r"await |asyncio\.run\(", text)
 
 
 def structured_output_call(text: str):
@@ -193,7 +198,9 @@ def s3vectors_exception(text: str):
 
 
 def temporal_result_timeout(text: str):
-    if not _search(r"\.result\s*\(", text):
+    # concurrent.futures' Future.result DOES take a timeout, so the fork only exists when the
+    # answer is talking to Temporal.
+    if not (_search(r"\.result\s*\(", text) and _search(r"(?i)temporal|workflow", text)):
         return None
     return _search(r"\.result\(\s*timeout\s*=", text)
 
@@ -201,7 +208,16 @@ def temporal_result_timeout(text: str):
 def mcp_tool_name_attr(text: str):
     if "list_tools_sync" not in text:
         return None
-    return _search(r"\b\w+\.name\b", text) and not _search(r"\.tool_name\b", text)
+    # Bind to the loop variable when there is a loop, so an `agent.name` elsewhere in the
+    # answer is not read as the AttributeError the log records.
+    loop = re.search(r"for\s+(\w+)\s+in\s+[^\n]*list_tools_sync", text)
+    if loop:
+        var = re.escape(loop.group(1))
+        if re.search(rf"\b{var}\.tool_name\b", text):
+            return False
+        return bool(re.search(rf"\b{var}\.name\b", text))
+    return (_search(r"list_tools_sync[\s\S]{0,200}?\.name\b", text)
+            and not _search(r"\.tool_name\b", text))
 
 
 def session_message_role(text: str):

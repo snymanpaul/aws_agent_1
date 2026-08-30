@@ -41,10 +41,21 @@ PREREGISTRATION, committed before the first measured run
   raw output      Every answer is stored and every rate is recomputed from it by
                   `analyse_follow_rate.py`. No stored boolean is read back.
 
-  model           gpt-5.4-mini through the LiteLLM proxy. Probed live first, on the day:
-                  Anthropic routes return "credit balance too low" and gemini-2.0-flash
-                  returns 404 RETIRED, so the Azure route is what answers. temperature=1,
-                  because the gpt-5 family refuses 0.
+  model           gpt-5-nano through the LiteLLM proxy. temperature=1, because the gpt-5
+                  family refuses 0.
+
+                  AMENDED before the first measured run, and the amendment is the point of
+                  writing this down. The route was preregistered as gpt-5.4-mini after a
+                  liveness probe returned "ok" on all four candidate routes. Under the real
+                  workload that route returns HTTP 429 from Azure eastus2 with no fallback
+                  group, and one call took 92 seconds and came back empty. Anthropic routes
+                  return "credit balance too low" and gemini-2.0-flash returns 404 RETIRED,
+                  both matching what the log already says (obs-0725, obs-0734). gpt-5-nano
+                  answers the same prompt in 11 to 17 seconds with real code. A liveness
+                  probe is not a throughput probe.
+
+  concurrency     3 workers, with exponential backoff on 429. Sequentially this is 90 calls
+                  at about 15 seconds. The arms and the scoring do not depend on order.
 
     podman start litellm-proxy
     uv run python tests/instruction_following/run_follow_rate.py
@@ -64,11 +75,12 @@ sys.path.insert(0, str(HERE))
 
 from verifiers import RULES  # noqa: E402
 
-MODEL = os.environ.get("IF_MODEL", "gpt-5.4-mini")
+MODEL = os.environ.get("IF_MODEL", "gpt-5-nano")
 N_RUNS = int(os.environ.get("IF_RUNS", "5"))
 TEMPERATURE = float(os.environ.get("IF_TEMPERATURE", "1"))
-RETRIES = int(os.environ.get("IF_RETRIES", "4"))
+RETRIES = int(os.environ.get("IF_RETRIES", "5"))
 BACKOFF = float(os.environ.get("IF_BACKOFF", "10"))
+WORKERS = int(os.environ.get("IF_WORKERS", "3"))
 
 BASE_SYSTEM = (
     "You are helping maintain a Python repository of AWS agent lessons that run against real "
@@ -110,7 +122,27 @@ def system_for(rule_key: str, arm: str) -> str:
     return BASE_SYSTEM + "\n\nProject rule: " + RULES[rule_key]["statement"]
 
 
+def ask(client, system: str, task: str) -> tuple[str | None, str | None]:
+    """One call, retrying on 429. Returns (answer, error)."""
+    for attempt in range(RETRIES):
+        try:
+            resp = client.chat.completions.create(
+                model=MODEL, temperature=TEMPERATURE,
+                messages=[{"role": "system", "content": system},
+                          {"role": "user", "content": task}])
+            return resp.choices[0].message.content or "", None
+        except Exception as e:  # noqa: BLE001
+            err = str(e)
+            if ("429" in err or "RateLimit" in err) and attempt < RETRIES - 1:
+                time.sleep(BACKOFF * (2 ** attempt))
+                continue
+            return None, err
+    return None, "retries exhausted"
+
+
 def main() -> int:
+    from concurrent.futures import ThreadPoolExecutor
+
     from openai import OpenAI
 
     client = OpenAI(base_url=os.environ.get("LITELLM_BASE_URL", "http://localhost:4000"),
@@ -129,39 +161,22 @@ def main() -> int:
             "cells": cells,
         }, indent=2) + "\n")
 
-    print(f"A3 follow rate: model={MODEL} n={N_RUNS} temperature={TEMPERATURE}")
+    print(f"A3 follow rate: model={MODEL} n={N_RUNS} temperature={TEMPERATURE} "
+          f"workers={WORKERS}")
     print(f"{len(RULES)} rules x 3 paraphrases x 2 arms x {N_RUNS} runs = "
           f"{len(RULES) * 3 * 2 * N_RUNS} calls\n")
 
     for rule_key in RULES:
         for arm in ("rules_present", "rules_absent"):
             for pi, task in enumerate(TASKS[rule_key]):
-                runs = []
-                for i in range(N_RUNS):
-                    answer, err = None, None
-                    for attempt in range(RETRIES):
-                        try:
-                            resp = client.chat.completions.create(
-                                model=MODEL, temperature=TEMPERATURE,
-                                messages=[{"role": "system",
-                                           "content": system_for(rule_key, arm)},
-                                          {"role": "user", "content": task}])
-                            answer = resp.choices[0].message.content or ""
-                            err = None
-                            break
-                        except Exception as e:  # noqa: BLE001
-                            err = str(e)
-                            if "429" in err or "RateLimit" in err:
-                                wait = BACKOFF * (2 ** attempt)
-                                print(f"    rate limited {rule_key}/{arm}/p{pi}/{i}, "
-                                      f"retry {attempt + 1}/{RETRIES} in {wait}s")
-                                time.sleep(wait)
-                                continue
-                            break
-                    if err is not None:
-                        print(f"  RUN FAILED {rule_key}/{arm}/p{pi}/{i}: {err[:110]}")
-                        continue
-                    runs.append({"answer": answer})
+                system = system_for(rule_key, arm)
+                with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+                    results = list(pool.map(lambda _: ask(client, system, task),
+                                            range(N_RUNS)))
+                runs = [{"answer": a} for a, err in results if err is None]
+                for _, err in results:
+                    if err:
+                        print(f"  RUN FAILED {rule_key}/{arm}/p{pi}: {err[:110]}")
 
                 verifier = RULES[rule_key]["verifier"]
                 scored = [verifier(r["answer"]) for r in runs]
@@ -169,9 +184,10 @@ def main() -> int:
                 followed = sum(1 for s in opps if s)
                 print(f"  {rule_key} {arm:<14} p{pi}: followed {followed}/{len(opps)} "
                       f"opportunit{'y' if len(opps) == 1 else 'ies'} "
-                      f"({len(runs) - len(opps)} n/a of {len(runs)})")
+                      f"({len(runs) - len(opps)} n/a of {len(runs)})", flush=True)
                 cells.append({"rule": rule_key, "arm": arm, "prompt": pi,
-                              "prompt_text": task, "runs": runs})
+                              "prompt_text": task, "runs": runs,
+                              "failed": sum(1 for _, err in results if err)})
                 write(complete=False)
 
     write(complete=True)

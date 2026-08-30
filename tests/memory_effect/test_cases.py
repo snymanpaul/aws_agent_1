@@ -158,6 +158,15 @@ NEAR_MISSES = [
     ("C18_MCP_TOOL_ATTR",
      # The tools are read correctly; the .name belongs to the agent, not to a tool.
      "for t in client.list_tools_sync():\n    print(t.tool_name)\nprint(agent.name)"),
+    ("C18_MCP_TOOL_ATTR",
+     # The answer that was scored as A5's only memory-arm recurrence. It uses the getattr
+     # form, which is the same correct access, and its DOCSTRING says the rule out loud.
+     '```python\ndef log_tools(client, logger):\n    """List the tools.\n\n'
+     '      - MCPAgentTool has tool_name\n'
+     '      - There is no .name attribute on these objects\n    """\n'
+     "    tools = client.list_tools_sync()\n    for tool in tools:\n"
+     "        name = getattr(tool, 'tool_name', None)\n"
+     '        logger.info("MCP Tool: %s", name)\n```'),
 ]
 
 

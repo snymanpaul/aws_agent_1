@@ -93,6 +93,48 @@ the rules are followed, and whether a captured mistake is avoided because it was
    capture never had. Rather than backfilling invented text, the gate allows those nulls only
    at or below `obs-0208`, so history stays honest and new decay is impossible.
 
+### What the two experiments found
+
+**A3, are the rules followed?** 90 calls, three rules, three paraphrases each, two arms.
+
+| Rule | With the rule | Without | p | Verdict |
+|---|---|---|---|---|
+| Anti-simulation | 15/15 | 5/15 | 0.0007 | the rule raises adherence |
+| No AWS account ids | 11/11 | 7/11 | 0.0956 | not separated at this n |
+| Model provider | 15/15 | 0/15 opportunities | n/a | the arms are not comparable |
+
+The third row is the interesting one. Without the rule, no answer reached the fork at all:
+every one invented an API that does not exist, across eight different names. That line is
+supplying the surface, not choosing between two known classes.
+
+The probe rule was audited against the repo instead of against answers, because it is about
+the order of work: 7 of the 8 levels that introduce a new AWS service have a probe script,
+and whether the probe came first is unrecoverable for all 7, since they landed in one
+squashed import.
+
+**A5, is a captured mistake avoided because it was captured?** 600 calls, 20 mistakes from
+L5 to L58, three paraphrases each, two arms, verifier written from each observation's text.
+
+```
+recurrence, over runs that reached the fork
+
+  memory in context    0 / 268   [0.00, 0.01]
+  memory absent       86 / 200   [0.36, 0.50]      perm_test p = 0.0003
+
+  per case:  12 used     the mistake vanished with the note
+              6 no mistake in either arm
+              2 one arm never reached the fork
+              0 ignored
+```
+
+Read the limit with the number. The note is placed straight into the system prompt, keyed to
+the case by hand, so retrieval is perfect by construction. This is a ceiling: given the right
+observation, in context, relevant to the task, it gets used. It says nothing about choosing
+that one observation out of 1012, which is the part a real memory system has to do.
+
+The six cases that never recurred in either arm are worth as much as the twelve that
+separated: for this model, on these tasks, capturing those mistakes bought nothing.
+
 ### The single most important thing
 
 A rule that is never measured is indistinguishable from a rule that does nothing, and the
@@ -199,6 +241,10 @@ measure(rule):
 | obs-1006 | mistake | a-liveness-probe-is-not-a-throughput-probe | 429 and 92s under load after "ok" on a probe |
 | obs-1007 | pattern | probe-rule-audited-against-the-repo | 7 of 8 opportunities have a probe; order unrecoverable |
 | obs-1008 | rule | rule-model-provider | first promotion carrying a run report |
+| obs-1009 | insight | a-captured-mistake-in-context-does-not-recur | 0/268 against 86/200, p=0.0003 |
+| obs-1010 | insight | a5-measures-the-ceiling-not-a-memory-system | retrieval is perfect by construction |
+| obs-1011 | insight | six-of-twenty-captured-mistakes-bought-nothing | the model does not make them unaided |
+| obs-1012 | mistake | four-verifier-defects-all-found-by-reading-answers | none of them visible in a rate |
 
 ### Forward links
 

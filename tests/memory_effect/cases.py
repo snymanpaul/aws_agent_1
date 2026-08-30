@@ -65,8 +65,18 @@ def code_of(text: str) -> str:
     fenced = bool(blocks)
     body = "\n".join(blocks) if fenced else text
     keep = []
+    in_docstring = False
     for line in body.splitlines():
         stripped = line.strip()
+        # A docstring inside the code is prose too, and an answer carrying the memory puts
+        # the rule there: "There is no .name attribute on these objects" sat in a docstring
+        # above code that used tool_name correctly, and the first verifier called it a
+        # recurrence. Same triple-quote tracking no_sim_check uses.
+        was_in = in_docstring
+        if (line.count('"""') + line.count("'''")) % 2 == 1:
+            in_docstring = not in_docstring
+        if was_in or in_docstring:
+            continue
         if stripped.startswith(("#", "//")):
             continue
         if not fenced and PROSE.search(stripped):
@@ -210,14 +220,15 @@ def mcp_tool_name_attr(text: str):
         return None
     # Bind to the loop variable when there is a loop, so an `agent.name` elsewhere in the
     # answer is not read as the AttributeError the log records.
+    # getattr(tool, "tool_name") is the same correct access as tool.tool_name.
+    uses_tool_name = _search(r"\.tool_name\b|[\"']tool_name[\"']", text)
     loop = re.search(r"for\s+(\w+)\s+in\s+[^\n]*list_tools_sync", text)
     if loop:
         var = re.escape(loop.group(1))
-        if re.search(rf"\b{var}\.tool_name\b", text):
+        if uses_tool_name:
             return False
         return bool(re.search(rf"\b{var}\.name\b", text))
-    return (_search(r"list_tools_sync[\s\S]{0,200}?\.name\b", text)
-            and not _search(r"\.tool_name\b", text))
+    return _search(r"list_tools_sync[\s\S]{0,200}?\.name\b", text) and not uses_tool_name
 
 
 def session_message_role(text: str):

@@ -48,9 +48,9 @@ REQUIRED = ("id", "status", "ts", "repo", "level", "cat", "topic", "obs", "ctx",
 LEGACY_WINDOW = "obs-0208"
 
 
-def load() -> tuple[list[tuple[int, dict]], list[str]]:
+def load(log: pathlib.Path) -> tuple[list[tuple[int, dict]], list[str]]:
     entries, problems = [], []
-    for n, line in enumerate(LOG.read_text(encoding="utf-8").splitlines(), 1):
+    for n, line in enumerate(log.read_text(encoding="utf-8").splitlines(), 1):
         if not line.strip():
             continue
         try:
@@ -60,8 +60,9 @@ def load() -> tuple[list[tuple[int, dict]], list[str]]:
     return entries, problems
 
 
-def main() -> int:
-    entries, problems = load()
+def main(argv: list[str] | None = None) -> int:
+    log = pathlib.Path(argv[0]) if argv else LOG
+    entries, problems = load(log)
 
     for n, e in entries:
         for field in REQUIRED:
@@ -120,4 +121,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))

@@ -29,8 +29,9 @@ LOG = ROOT / ".claude" / "learnings" / "observations.jsonl"
 NEEDS_REPORT = {"promoted", "parked"}
 
 
-def main() -> int:
-    entries = [json.loads(line) for line in LOG.read_text(encoding="utf-8").splitlines()
+def main(argv: list[str] | None = None) -> int:
+    log = pathlib.Path(argv[0]) if argv else LOG
+    entries = [json.loads(line) for line in log.read_text(encoding="utf-8").splitlines()
                if line.strip()]
     known = {e["id"] for e in entries if "id" in e}
     problems: list[str] = []
@@ -92,4 +93,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    sys.exit(main(sys.argv[1:]))

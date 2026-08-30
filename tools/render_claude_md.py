@@ -90,6 +90,14 @@ def main(argv: list[str]) -> int:
     fresh = render()
     n_rules = len(promoted_rules())
 
+    if "--cites" in argv:
+        # A1's done-condition: resolve any rule in CLAUDE.md back to the entries behind it.
+        for rule in promoted_rules():
+            print(f"{rule['rule_title']}")
+            print(f"  rule entry  {rule['id']}   evidence  {rule.get('report')}")
+            print(f"  from        {', '.join(rule.get('cites', []))}")
+        return 0
+
     if "--write" in argv:
         head, _, tail = split(CLAUDE_MD.read_text(encoding="utf-8"))
         CLAUDE_MD.write_text(head + fresh + tail, encoding="utf-8")

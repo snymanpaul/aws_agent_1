@@ -488,7 +488,7 @@ Current open work lives in `NEXT_STEPS_PLAN.md`.
 
 #### Tier 22: Platform Convergence, post-v1.48 (L94+, in progress)
 
-*Plan: `LEARNING_PLAN_v148_impact.md`. Stack: strands 1.48.0 / tools 0.8.4 / agentcore 1.18.1 / evals 1.0.2.*
+*Plan: `LEARNING_PLAN_v148_impact.md`. Stack at completion: strands 1.48.0 / tools 0.8.4 / agentcore 1.18.1 / evals 1.0.2. Re-based 2026-09-10 to strands 1.55.1 / tools 0.8.8 / agentcore 1.22.0 / evals 1.2.0 (mcp pinned below 2); see the v1.48 to v1.55 delta report below.*
 
 | Level | Topic | Status | Where |
 |-------|-------|--------|-------|
@@ -583,6 +583,7 @@ model = get_model("claude-sonnet-4")  # or haiku, opus, gemini-flash
 - [strands-agents/samples: 05-agentic-rag](https://github.com/strands-agents/samples): agentic RAG examples
 - [Research report: SOTA + community adoption](docs/work/research/reports/2026-03-18_strands-sota-agent-orchestration.md)
 - [Research report: ecosystem delta v1.42 → v1.48, 2026-06 → 2026-07](docs/work/research/reports/2026-07-18_strands-ecosystem-delta-v142-to-v148.md): input to the L94+ extension decision
+- [Research report: ecosystem delta v1.48 to v1.55.1, 2026-07 to 2026-09](docs/work/research/reports/2026-09-10_strands-ecosystem-delta-v148-to-v155.md): stack re-base, mcp 2 impact, AgentCore GA wave
 
 ---
 

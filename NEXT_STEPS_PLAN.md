@@ -1,5 +1,14 @@
 # Next Steps
 
+**Status (2026-09-10):** stack re-based to strands 1.55.1 / tools 0.8.8 / evals 1.2.0 / agentcore 1.22.0
+(8 SDK releases, 4 AgentCore minors since L100). `uv lock --upgrade`, 221 tests, both gates clean, 16/16
+runtime surface probe, six lessons live. mcp is pinned below 2 because mcp 2.0 renamed `FastMCP` and removed
+`streamablehttp_client` and `mcp.server.experimental`, which 13 lessons import; the SDK's new MCP tasks
+support needs mcp 2, so that is the trade. Delta report with the follow-ons (F1 mcp 2 migration of 13 files,
+F2 seven files on deprecated `calculator`/`current_time`, F3 L76 re-run on ag-ui-strands 0.3.0, F4 native
+`AgentCoreMemoryStore` as a second candidate for follow-on 1, F5 re-baseline evals):
+`docs/work/research/reports/2026-09-10_strands-ecosystem-delta-v148-to-v155.md`.
+
 **Status (2026-08-26):** L1 to L100 plus L97b complete, cross-model validated, repo published publicly
 with the README as the front door. The repo passes its own gates: 0 `no_sim_check` hits over 277
 `.py` files scanned, 132 tests, all enforced in CI on every push. The gates now ship as

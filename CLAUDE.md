@@ -6,16 +6,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Progressive learning path for AWS Strands Agents SDK.
 
-**Status**: 101 levels, L1–L100 plus L97b (Dec 2025 – Jul 2026). Tier 22 (L94–L100) complete:
+**Status**: 101 levels, L1–L100 plus L97b (Dec 2025 – Jul 2026). Stack re-based on strands 1.55.1 on
+2026-09-10 (delta report: `docs/work/research/reports/2026-09-10_strands-ecosystem-delta-v148-to-v155.md`,
+mcp pinned below 2 until 13 lessons migrate). Tier 22 (L94–L100) complete:
 v1.48 upgrade sweep, checkpoint runtime, unified interventions, memory rematch, sandbox tiers,
 red-team, context management. Per-level docs: `docs/levels/` (one file per lesson). See also
 `LEARNING_PLAN_agentic_memory_evals.md`, `LEARNING_PLAN_v148_impact.md`, `NEXT_STEPS_PLAN.md`,
 and `.claude/learnings/reflections/`.
 
-**Gate status (2026-08-26)**: `no_sim_check` reports **0 hits over the 277 `.py` files it scans**
-(278 tracked, minus the checker itself),
+**Gate status (2026-09-10)**: `no_sim_check` reports **0 hits over the 307 `.py` files it scans**
+(308 tracked, minus the checker itself),
 and CI enforces it on every push (`.github/workflows/gates.yml`) alongside `check_no_aws_ids`
-and `uv run pytest` (132 tests). The pre-commit hook runs both tripwires over staged files.
+and `uv run pytest` (221 tests). The pre-commit hook runs both tripwires over staged files.
 Keep it at zero: any file you touch must come out clean, and a justified exception takes a
 trailing `# nosim:ok <reason>`, never a quiet reword of working code.
 

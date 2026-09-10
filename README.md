@@ -4,7 +4,7 @@ A worked example of directing an AI agent through a months-long engineering prog
 
 **The method is written up in [`METHOD.md`](METHOD.md).** That is the part that transfers, and it does not depend on Strands, on AWS, or on which model you use. The rest of this file is the ladder that produced it.
 
-Every lesson runs live against real services, with no substituted integrations and no hardcoded success paths. `agent_build_gates.no_sim_check` is the gate for that, and the repo now clears it: 0 hits across the 277 Python files it scans, down from 133 when the gate was first tested. CI runs that gate, the AWS-account tripwire and the 132-test suite on every push, so the standard holds for every clone rather than on my machine. Findings that depend on model behaviour were re-run on a second provider before I recorded them as findings.
+Every lesson runs live against real services, with no substituted integrations and no hardcoded success paths. `agent_build_gates.no_sim_check` is the gate for that, and the repo now clears it: 0 hits across the 307 Python files it scans, down from 133 when the gate was first tested. CI runs that gate, the AWS-account tripwire and the 221-test suite on every push, so the standard holds for every clone rather than on my machine. Findings that depend on model behaviour were re-run on a second provider before I recorded them as findings.
 
 ## How this was built
 

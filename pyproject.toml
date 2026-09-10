@@ -5,7 +5,7 @@ description = "Progressive learning path for AWS Strands Agents SDK"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "boto3>=1.43.19",
+    "boto3>=1.43.92",
     "chromadb>=1.3.0",
     "fastapi>=0.124.2",
     "graphiti-core[falkordb,google-genai]>=0.7.0",
@@ -13,30 +13,33 @@ dependencies = [
     "litellm>=1.80.9",
     "nest-asyncio>=1.6.0",
     "openai>=2.9.0",
+    # mcp 2.0 renamed FastMCP to MCPServer and dropped streamablehttp_client and
+    # mcp.server.experimental, which 13 lessons import. Pin below 2 until they migrate.
+    "mcp>=1.23.3,<2",
     "pandas>=2.0.0",
     "pydantic>=2.12.5",
     "python-dotenv>=1.0.0",
     "requests>=2.31.0",
     "sentence-transformers>=3.0.0",
     "spacy>=3.8.11",
-    "strands-agents[otel,a2a,cedar]>=1.48",
+    "strands-agents[otel,a2a,cedar]>=1.55.1",
     "opentelemetry-sdk>=1.25.0",
     "opentelemetry-exporter-otlp>=1.25.0",
     "opentelemetry-exporter-prometheus>=0.48b0",
-    "strands-agents-tools>=0.7.0",
+    "strands-agents-tools>=0.8.8",
     "tiktoken>=0.12.0",
     "uvicorn>=0.38.0",
-    "botocore>=1.43.19",
-    "strands-ai-functions>=0.1.0",
-    "strands-agents-sops>=1.1.1",
-    "ag-ui-strands>=0.1.1",
+    "botocore>=1.43.92",
+    "strands-ai-functions>=0.4.0",
+    "strands-agents-sops>=1.1.3",
+    "ag-ui-strands>=0.3.0",
     "ag-ui-protocol>=0.1.14",
     "temporalio>=1.23.0",
-    "strands-agents-evals>=0.1.14",
-    "bedrock-agentcore>=1.12",
-    "bedrock-agentcore-starter-toolkit>=0.3.9",
+    "strands-agents-evals>=1.2.0",
+    "bedrock-agentcore>=1.22.0",
+    "bedrock-agentcore-starter-toolkit>=0.3.12",
     "playwright>=1.60.0",
-    "strands-shell>=0.3.1",
+    "strands-shell>=0.3.3",
 ]
 
 [dependency-groups]

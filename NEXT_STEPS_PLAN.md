@@ -13,7 +13,12 @@ State on disk when the session stopped:
   deleted from `~/.cache/puppeteer/chrome`; `~/.cache/puppeteer/chrome-headless-shell` (a
   pre-existing 131 build, 172M) is still there and is yours to delete.
   Run 1 (no env) passed: `mermaid: 135 block(s) from 135 fence(s), 0 failed`. Run 2
-  (`PUPPETEER_CONFIG` set, the CI code path) was at 35/135 when the session stopped.
+  (`PUPPETEER_CONFIG` set to a config with `executablePath` plus `--no-sandbox`, the CI code
+  path) reported `1 failed` of 135, and the line naming the block was lost to a `tail -1`.
+  A rerun of that path was started in the background; its full output, if it finished, is at
+  the session scratchpad `mermaid_ci_path_rerun.txt`, else run step 1 below. Do NOT commit
+  the checker until the failing block is named and explained: a one-off timeout under
+  `--no-sandbox` and a diagram that only renders on one path are different fixes.
 - **Uncommitted, pre-existing:** `tools/models.py` alias `claude-opus-4` to `claude-opus-5`.
   Nine other tracked files still name `claude-opus-4` (`git grep -n claude-opus-4`), two of
   them the alias tables in `CLAUDE.md:81` and `LEARNING_PLAN.md:513`.

@@ -1,5 +1,46 @@
 # Next Steps
 
+## RESUME HERE (2026-09-10, session ended mid-verification)
+
+State on disk when the session stopped:
+
+- Committed `2cd34c6`: stack re-base to strands 1.55.1 (see the status block below and the delta
+  report `docs/work/research/reports/2026-09-10_strands-ecosystem-delta-v148-to-v155.md`).
+- **Uncommitted, verified once:** `tools/check_mermaid.sh` now renders with the installed
+  Google Chrome (`/Applications/Google Chrome.app`, 152.0.7977.83) when `PUPPETEER_CONFIG` is unset,
+  instead of the Chrome 131 (Dec 2024) build that mmdc 11.9.0's puppeteer downloads. Reason:
+  that download is never patched, so it carries every Chrome CVE since. The pinned build was
+  deleted from `~/.cache/puppeteer/chrome`; `~/.cache/puppeteer/chrome-headless-shell` (a
+  pre-existing 131 build, 172M) is still there and is yours to delete.
+  Run 1 (no env) passed: `mermaid: 135 block(s) from 135 fence(s), 0 failed`. Run 2
+  (`PUPPETEER_CONFIG` set, the CI code path) was at 35/135 when the session stopped.
+- **Uncommitted, pre-existing:** `tools/models.py` alias `claude-opus-4` to `claude-opus-5`.
+  Nine other tracked files still name `claude-opus-4` (`git grep -n claude-opus-4`), two of
+  them the alias tables in `CLAUDE.md:81` and `LEARNING_PLAN.md:513`.
+
+To continue:
+
+1. `sh tools/check_mermaid.sh` (about 10 minutes, launches Chrome per block). Expect 135/135.
+   Then `PUPPETEER_CONFIG=/tmp/p.json sh tools/check_mermaid.sh` with
+   `{"executablePath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"}` in
+   that file to prove the config path still works. Commit the checker if both pass.
+2. Decide whether CI should use the runner's preinstalled Chrome too: `.github/workflows/gates.yml`
+   installs `@mermaid-js/mermaid-cli@11` fresh, whose puppeteer downloads its own pinned Chrome
+   at install time. Ubuntu runners ship a current stable Chrome; adding `executablePath` to the
+   config written in the "Configure puppeteer for the runner" step would use it. Not done: a
+   separate proposal.
+3. Finish or drop the opus alias sweep (`tools/models.py` plus the nine files).
+4. Then the follow-ons F1 to F5 in the delta report, section 6: F1 migrate the 13 mcp 1.x lesson
+   files to mcp 2 and drop the `mcp<2` pin (unlocks SEP-2663 MCP tasks); F2 seven files on
+   deprecated `calculator`/`current_time`; F3 re-run L76 on ag-ui-strands 0.3.0; F4 native
+   `AgentCoreMemoryStore` for the memory arm; F5 re-baseline evals 1.2.0.
+
+Known environment facts for the next session: proxy is podman `litellm-proxy` (was up, HTTP 200);
+`GEMINI_API_KEY` is not in the shell or the repo `.env`, the proxy container has it
+(`podman exec litellm-proxy printenv GEMINI_API_KEY`, pass it inline, never print it);
+`tools/check_obs_schema.py` runs in CI and rejects any `cat` outside
+`gotcha|insight|mistake|pattern|question|rule`.
+
 **Status (2026-09-10):** stack re-based to strands 1.55.1 / tools 0.8.8 / evals 1.2.0 / agentcore 1.22.0
 (8 SDK releases, 4 AgentCore minors since L100). `uv lock --upgrade`, 221 tests, both gates clean, 16/16
 runtime surface probe, six lessons live. mcp is pinned below 2 because mcp 2.0 renamed `FastMCP` and removed

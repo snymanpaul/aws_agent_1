@@ -116,7 +116,7 @@ def main() -> int:
     from openai import OpenAI
 
     client = OpenAI(base_url=os.environ.get("LITELLM_BASE_URL", "http://localhost:4000"),
-                    api_key=os.environ.get("LITELLM_API_KEY", "sk-local"))
+                    api_key=os.environ["LITELLM_API_KEY"])
 
     cases = [c for c in CASES if not ONLY or c["key"] in ONLY]
     report_path = HERE / f"memory_effect_n{N_RUNS}.json"

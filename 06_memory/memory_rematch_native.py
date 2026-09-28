@@ -55,7 +55,7 @@ TURN2 = "Please process my $20 refund using my preferred method."
 
 def _model(temp=0.4):
     return OpenAIModel(model_id="gemini-2.5-flash",
-                       client_args={"base_url": "http://localhost:4000", "api_key": "sk-local"},
+                       client_args={"base_url": "http://localhost:4000", "api_key": os.environ["LITELLM_API_KEY"]},
                        params={"temperature": temp})
 
 

@@ -1089,7 +1089,7 @@ def call_model_via_proxy(model_id: str, prompt: str) -> str:
             "messages": [{"role": "user", "content": prompt}],
             "max_tokens": 64,
         },
-        headers={"Authorization": "Bearer sk-local"},
+        headers={"Authorization": "Bearer " + os.environ["LITELLM_API_KEY"]},
         timeout=20,
     )
     if not (200 <= response.status_code < 300):
@@ -3397,7 +3397,7 @@ class ResilientAgentV2:
             model_id=model_id,
             client_args={
                 "base_url": "http://localhost:4000",
-                "api_key": "sk-local"
+                "api_key": os.environ["LITELLM_API_KEY"]
             }
         )
 

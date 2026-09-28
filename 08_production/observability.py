@@ -1424,8 +1424,9 @@ class LiteLLMCostTracker:
     Much more accurate than estimation.
     """
 
-    def __init__(self, base_url: str = "http://localhost:4000", api_key: str = "sk-local"):
+    def __init__(self, base_url: str = "http://localhost:4000", api_key: str | None = None):
         self.base_url = base_url
+        api_key = api_key or os.environ["LITELLM_API_KEY"]  # read at call time, not import
         self.api_key = api_key
         self.headers = {"Authorization": f"Bearer {api_key}"}
 

@@ -144,7 +144,7 @@ def embed_api(texts: list[str]) -> list[list[float]]:
                 "model": "text-embedding-3-small",
                 "input": texts
             },
-            headers={"Authorization": "Bearer sk-local"},
+            headers={"Authorization": "Bearer " + os.environ["LITELLM_API_KEY"]},
             timeout=30
         )
         response.raise_for_status()

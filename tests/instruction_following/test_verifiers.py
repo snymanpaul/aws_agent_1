@@ -23,7 +23,7 @@ from verifiers import (  # noqa: E402
 class TestModelProvider:
     def test_openai_model_with_a_base_url_follows(self):
         text = ('model = OpenAIModel(model_id="claude-sonnet-4", '
-                'client_args={"base_url": "http://localhost:4000", "api_key": "sk-local"})')
+                'client_args={"base_url": "http://localhost:4000", "api_key": os.environ["LITELLM_API_KEY"]})')
         assert followed_model_provider(text) is True
 
     def test_building_a_litellm_model_breaks_it(self):

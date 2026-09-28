@@ -103,7 +103,7 @@ CHECKPOINT_TTL_HOURS: "24"
 # LiteLLM proxy for local development
 # Only used when NOT running in AWS environment
 LITELLM_BASE_URL: http://localhost:4000
-LITELLM_API_KEY: sk-local
+LITELLM_API_KEY: ${LITELLM_API_KEY}
 
 # Force DynamoDB usage locally (for testing)
 # Set to "true" to use real DynamoDB instead of LocalPersistence

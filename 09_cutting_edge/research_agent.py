@@ -29,6 +29,7 @@ Integrations:
 Run: uv run python 09_cutting_edge/research_agent.py
 """
 
+import os
 import sys
 import json
 import hashlib
@@ -648,7 +649,7 @@ Include the ACTUAL URLs from your search results."""
                 json=payload,
                 headers={
                     "Content-Type": "application/json",
-                    "Authorization": "Bearer sk-local"
+                    "Authorization": "Bearer " + os.environ["LITELLM_API_KEY"]
                 },
                 timeout=60
             )

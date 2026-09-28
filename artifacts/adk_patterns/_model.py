@@ -15,7 +15,7 @@ import os
 
 # --- Gemini via OpenAI-compat proxy (default) ---
 BASE_URL = "http://localhost:4000"
-API_KEY = "sk-local"
+API_KEY = os.environ["LITELLM_API_KEY"]
 GEMINI_MODEL = "gemini-2.5-flash"
 
 # --- AWS Bedrock ---

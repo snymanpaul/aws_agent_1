@@ -24,6 +24,7 @@ Note: This file demonstrates the MCP integration PATTERN.
 Actual server packages may need adjustment based on availability.
 """
 
+import os
 import asyncio
 from strands import Agent
 from strands.tools.mcp import MCPClient
@@ -34,7 +35,7 @@ model = OpenAIModel(
     model_id="claude-sonnet-4",
     client_args={
         "base_url": "http://localhost:4000",
-        "api_key": "sk-local"
+        "api_key": os.environ["LITELLM_API_KEY"]
     }
 )
 

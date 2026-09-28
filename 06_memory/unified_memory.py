@@ -2091,7 +2091,7 @@ class EpisodicMemoryLanceDB:
             import openai
             client = openai.OpenAI(
                 base_url="http://localhost:4000",
-                api_key="sk-local"  # LiteLLM master key from .env
+                api_key=os.environ["LITELLM_API_KEY"]  # LiteLLM master key from .env
             )
             response = client.embeddings.create(
                 model="text-embedding-3-small",
@@ -2218,7 +2218,7 @@ class SemanticMemoryLanceDB:
             import openai
             client = openai.OpenAI(
                 base_url="http://localhost:4000",
-                api_key="sk-local"
+                api_key=os.environ["LITELLM_API_KEY"]
             )
             response = client.embeddings.create(
                 model="text-embedding-3-small",

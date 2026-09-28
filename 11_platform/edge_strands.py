@@ -18,6 +18,7 @@ the LlamaCppModel's httpx.AsyncClient on one event loop. consult_cloud is
 async and calls cloud_agent.invoke_async() — no nested asyncio.run() calls.
 """
 
+import os
 import asyncio
 from strands import Agent, tool
 from strands.models import LlamaCppModel
@@ -35,7 +36,7 @@ edge_model = LlamaCppModel(
 # Cloud: Claude Sonnet 4 via LiteLLM proxy
 cloud_model = OpenAIModel(
     model_id="claude-sonnet-4",
-    client_args={"base_url": "http://localhost:4000", "api_key": "sk-local"},
+    client_args={"base_url": "http://localhost:4000", "api_key": os.environ["LITELLM_API_KEY"]},
 )
 
 # ─── Cloud agent (created first — referenced by the edge tool below) ───────────

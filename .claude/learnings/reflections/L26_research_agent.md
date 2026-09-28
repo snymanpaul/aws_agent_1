@@ -114,7 +114,7 @@ The initial L26 implementation had simulated components despite CLAUDE.md rule.
 
 ### Key Learnings
 
-1. **LiteLLM Auth Header**: Always include `Authorization: Bearer sk-local` for localhost:4000 calls
+1. **LiteLLM Auth Header**: Always include `Authorization: Bearer $LITELLM_API_KEY` (the key comes from the environment) for localhost:4000 calls
 2. **Perplexity Built-in Search**: Just prompt it to search - no separate API needed
 3. **Fallback Chain**: Perplexity → LLM knowledge (both REAL, different sources)
 4. **MCPClient Pattern**: `call_tool_sync(tool_use_id, tool_name, params)` with unique ID per call

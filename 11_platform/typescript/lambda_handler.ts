@@ -14,10 +14,16 @@ import { Agent, tool } from "@strands-agents/sdk";
 import { OpenAIModel } from "@strands-agents/sdk/openai";
 import { z } from "zod";
 
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) throw new Error(`${name} is not set`);
+  return value;
+}
+
 // Agent is created once outside the handler — reused on warm invocations
 const model = new OpenAIModel({
   modelId: "claude-sonnet-4",
-  apiKey: process.env.LITELLM_API_KEY ?? "sk-local",
+  apiKey: requireEnv("LITELLM_API_KEY"),
   clientConfig: {
     baseURL: process.env.LITELLM_BASE_URL ?? "http://localhost:4000",
   },

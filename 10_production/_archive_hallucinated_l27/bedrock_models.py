@@ -86,7 +86,7 @@ def get_litellm_model(model_type: ModelType = "reasoning"):
     from strands.models.openai import OpenAIModel
 
     base_url = os.environ.get("LITELLM_BASE_URL", "http://localhost:4000")
-    api_key = os.environ.get("LITELLM_API_KEY", "sk-local")
+    api_key = os.environ["LITELLM_API_KEY"]
     model_id = LITELLM_MODELS.get(model_type, LITELLM_MODELS["reasoning"])
 
     return OpenAIModel(

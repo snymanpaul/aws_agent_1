@@ -20,6 +20,7 @@ Run:
   uv run python 13_quality/eval_significance.py
 """
 
+import os
 import math
 import random
 
@@ -42,7 +43,7 @@ DEGRADED = "Say something about the vibe. Maybe a word. Whatever comes to mind."
 
 def _judge(prompt):
     a = Agent(model=OpenAIModel(model_id="gemini-2.5-flash",
-                                client_args={"base_url": "http://localhost:4000", "api_key": "sk-local"},
+                                client_args={"base_url": "http://localhost:4000", "api_key": os.environ["LITELLM_API_KEY"]},
                                 params={"temperature": 0.7}),
               callback_handler=None, system_prompt=prompt)
     return a

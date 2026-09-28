@@ -26,6 +26,8 @@ trailing `# nosim:ok <reason>`, never a quiet reword of working code.
 ```bash
 # Ensure the LiteLLM proxy is running: it's a PODMAN container named `litellm-proxy` (podman, not docker)
 podman start litellm-proxy && curl -s localhost:4000/health/liveliness   # expect HTTP 200
+# Lessons read the proxy key from the environment; no tracked file carries it
+export LITELLM_API_KEY=...   # set once in your shell profile
 
 # Run any level
 uv run python 01_basics/hello_agent.py
@@ -133,8 +135,10 @@ against a candidate before shipping: `podman start litellm-proxy && uv run ship-
 ### Model Provider  (obs-0001, obs-0002)
 Use `OpenAIModel` with `base_url` for LiteLLM, **not** `LiteLLMModel`:
 ```python
+import os
+
 from strands.models.openai import OpenAIModel
-model = OpenAIModel(model_id="claude-sonnet-4", client_args={"base_url": "http://localhost:4000", "api_key": "sk-local"})
+model = OpenAIModel(model_id="claude-sonnet-4", client_args={"base_url": "http://localhost:4000", "api_key": os.environ["LITELLM_API_KEY"]})
 ```
 
 ### LiteLLM proxy runs on PODMAN: diagnose before declaring it "down"  (obs-0845, obs-0864, obs-0846, obs-0725)
@@ -145,7 +149,7 @@ podman start litellm-proxy      # restart if "Exited"; exit 137 = OOM-killed (ma
 curl -s localhost:4000/health/liveliness   # HTTP 200 = ready
 ```
 - **Gemini routes through the proxy too** (this is the OpenAIModel→compat→Gemini path):
-  `OpenAIModel(model_id="gemini-2.5-flash", client_args={"base_url":"http://localhost:4000","api_key":"sk-local"})`.
+  `OpenAIModel(model_id="gemini-2.5-flash", client_args={"base_url":"http://localhost:4000","api_key":os.environ["LITELLM_API_KEY"]})`.
   (`tools/get_model` instead sends `gemini*` DIRECT to Google AI and needs `GEMINI_API_KEY`/`LESSON_DOTENV`.)
 - **Claude models may 400 "credit balance too low"** → fall back to `gemini-2.5-flash`.
 - A single failed curl or a truncated `podman ps` is NOT evidence the proxy is gone. Check container state and `podman start` first.

@@ -1695,7 +1695,7 @@ def call_model_via_proxy(model_id: str, prompt: str) -> str:
             "messages": [{"role": "user", "content": prompt}],
             "max_tokens": 64,
         },
-        headers={"Authorization": "Bearer sk-local"},
+        headers={"Authorization": "Bearer " + os.environ["LITELLM_API_KEY"]},
         timeout=20,
     )
     if not (200 <= response.status_code < 300):

@@ -16,6 +16,7 @@ Run:
   uv run python 13_quality/memory_faithfulness_eval.py
 """
 
+import os
 import random
 
 from strands import Agent, tool
@@ -26,7 +27,7 @@ N = 4
 
 def _model():
     return OpenAIModel(model_id="gemini-2.5-flash",
-                       client_args={"base_url": "http://localhost:4000", "api_key": "sk-local"},
+                       client_args={"base_url": "http://localhost:4000", "api_key": os.environ["LITELLM_API_KEY"]},
                        params={"temperature": 0.3})
 
 

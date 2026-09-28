@@ -59,7 +59,7 @@ CONTROLS = [
     ("C08_PROXY_AUTH",
      'requests.post("http://localhost:4000/v1/chat/completions", json=payload)',
      'requests.post("http://localhost:4000/v1/chat/completions", json=payload,\n'
-     '              headers={"Authorization": "Bearer sk-local"})',
+     '              headers={"Authorization": "Bearer " + os.environ["LITELLM_API_KEY"]})',
      "Call the provider API directly with the SDK."),
     ("C09_CONTAINER_URL",
      "FROM python:3.13\nENV LITELLM_BASE_URL=http://localhost:4000",

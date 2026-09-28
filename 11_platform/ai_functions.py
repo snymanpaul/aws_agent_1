@@ -47,7 +47,7 @@ from strands import Agent
 
 model = OpenAIModel(
     model_id="claude-sonnet-4",
-    client_args={"base_url": "http://localhost:4000", "api_key": "sk-local"},
+    client_args={"base_url": "http://localhost:4000", "api_key": os.environ["LITELLM_API_KEY"]},
 )
 
 # ---------------------------------------------------------------------------

@@ -7,6 +7,41 @@
 [extend]
 useDefault = true
 
+# The local LiteLLM proxy key. Every tracked use reads LITELLM_API_KEY from the environment;
+# these rules stop a literal key coming back. The first matches the retired value, the second
+# the format of its replacement (sk-litellm- plus 32 hex characters).
+[[rules]]
+id = "litellm-proxy-key-retired"
+description = "Retired LiteLLM proxy master key written inline"
+regex = '''sk-local'''
+keywords = ["sk-local"]
+
+[[rules]]
+id = "litellm-proxy-key"
+description = "LiteLLM proxy master key written inline"
+regex = '''sk-litellm-[0-9a-f]{32}'''
+keywords = ["sk-litellm-"]
+
+# Records that must keep the retired value verbatim, each for a stated reason. Path-scoped to
+# the retired-key rule only, so a new key in these files is still reported.
+[[allowlists]]
+description = "Frozen records of the retired proxy key"
+targetRules = ["litellm-proxy-key-retired"]
+paths = [
+    # append-only observation log; old entries cannot be edited
+    '''^\.claude/learnings/observations\.jsonl$''',
+    # recorded model outputs from a completed run
+    '''^tests/instruction_following/follow_rate_n5\.json$''',
+    # preregistered experiment prompt text (its client code reads the environment)
+    '''^tests/instruction_following/run_follow_rate\.py$''',
+    # verbatim source of a frozen observation
+    '''^_sandbox/append_2026_06_obs\.py$''',
+    # these files name the retired value in order to find, block or explain it
+    '''^\.gitleaks\.toml$''',
+    '''^_sandbox/litellm_key_from_env\.sh$''',
+    '''^_sandbox/supersede_rules_key_from_env\.py$''',
+]
+
 # tests/memory_effect/cases.py names each preregistered case with key="C17_TEMPORAL" style
 # identifiers. The generic-api-key rule reads `key="<long token>"` as a credential. Both
 # conditions must hold (AND), so a real secret added to that file is still reported.

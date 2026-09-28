@@ -12,6 +12,7 @@ Key Concepts:
 Run: uv run python 01_basics/custom_tools.py
 """
 
+import os
 from strands import Agent, tool
 from strands.models.openai import OpenAIModel
 
@@ -20,7 +21,7 @@ model = OpenAIModel(
     model_id="claude-sonnet-4",
     client_args={
         "base_url": "http://localhost:4000",
-        "api_key": "sk-local"
+        "api_key": os.environ["LITELLM_API_KEY"]
     }
 )
 

@@ -17,6 +17,7 @@ Run:
   uv run python 13_quality/goal_success_eval.py
 """
 
+import os
 from strands import Agent, tool
 from strands.hooks import HookProvider, HookRegistry, BeforeToolCallEvent
 from strands.models.openai import OpenAIModel
@@ -24,7 +25,7 @@ from strands.models.openai import OpenAIModel
 
 def _model():
     return OpenAIModel(model_id="gemini-2.5-flash",
-                       client_args={"base_url": "http://localhost:4000", "api_key": "sk-local"},
+                       client_args={"base_url": "http://localhost:4000", "api_key": os.environ["LITELLM_API_KEY"]},
                        params={"temperature": 0.0})
 
 

@@ -146,7 +146,7 @@ def main() -> int:
     from openai import OpenAI
 
     client = OpenAI(base_url=os.environ.get("LITELLM_BASE_URL", "http://localhost:4000"),
-                    api_key=os.environ.get("LITELLM_API_KEY", "sk-local"))
+                    api_key=os.environ["LITELLM_API_KEY"])
 
     report_path = HERE / f"follow_rate_n{N_RUNS}.json"
     cells: list[dict] = []

@@ -38,7 +38,7 @@ MODEL_ID, TEMPERATURE = "gemini-2.5-flash", 0.0
 
 def _model():
     return OpenAIModel(model_id=MODEL_ID,
-                       client_args={"base_url": "http://localhost:4000", "api_key": "sk-local"},
+                       client_args={"base_url": "http://localhost:4000", "api_key": os.environ["LITELLM_API_KEY"]},
                        params={"temperature": TEMPERATURE})
 
 

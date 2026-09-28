@@ -178,7 +178,7 @@ def get_embedding(text: str) -> list[float]:
     from openai import OpenAI
 
     client = OpenAI(
-        api_key="sk-local",
+        api_key=os.environ["LITELLM_API_KEY"],
         base_url="http://localhost:4000"
     )
 

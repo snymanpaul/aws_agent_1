@@ -32,7 +32,8 @@ except ImportError:
 
 # Default LiteLLM proxy configuration
 LITELLM_BASE_URL = os.environ.get("LITELLM_BASE_URL", "http://localhost:4000")
-LITELLM_API_KEY = os.environ.get("LITELLM_API_KEY", "sk-local")
+# The proxy key is read from LITELLM_API_KEY when a model is built (get_model), not at
+# import, so importing tools never needs it; building a proxy model without it fails.
 
 # Available models in your LiteLLM proxy
 AVAILABLE_MODELS = {
@@ -72,7 +73,7 @@ def get_model(
     Args:
         model_name: One of the available model names (see AVAILABLE_MODELS)
         base_url: Override LiteLLM proxy URL (default: localhost:4000)
-        api_key: Override API key (default: sk-local)
+        api_key: Override API key (default: the LITELLM_API_KEY environment variable)
 
     Returns:
         Configured OpenAIModel ready for use with Agent()
@@ -110,7 +111,7 @@ def get_model(
         model_id=model_id,
         client_args={
             "base_url": base_url or LITELLM_BASE_URL,
-            "api_key": api_key or LITELLM_API_KEY
+            "api_key": api_key or os.environ["LITELLM_API_KEY"]
         },
         **extra,
     )

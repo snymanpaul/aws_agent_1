@@ -7,7 +7,7 @@ Strands. Read this together with `strands-review-gate-architecture.md` — where
 architecture doc's hedges; this handover is the empirical follow-up, not a stronger claim.
 
 > **Transport caveat (read first).** These prototypes run against a **local LiteLLM proxy**
-> (`_model.py`: `localhost:4000`, `sk-local`) — the **same OpenAI-compat *shape* as your stack, but a
+> (`_model.py`: `localhost:4000`, key from `LITELLM_API_KEY`) — the **same OpenAI-compat *shape* as your stack, but a
 > different wire path** than Google's first-party Gemini compat endpoint. They were **not** run against
 > your endpoint. Editing `_model.py` (`BASE_URL`/`API_KEY`/`MODEL_ID`) is **mandatory** to run these, and
 > the architecture doc flags that a proxy can drop provider metadata — so re-confirm the model-level
@@ -153,7 +153,7 @@ signal/verdict projection, not raw JSONL**; (c) reasoning/CoT is not captured; (
 ```bash
 # Prereqs: Python >=3.13, strands-agents >=1.42; an OpenAI-compat endpoint you control.
 # The bundled local proxy is a single fragile container (it OOM'd on a 2GB VM mid-session) — not for prod.
-# 1) EDIT _model.py: point BASE_URL/API_KEY at YOUR Gemini compat endpoint (sk-local won't work).
+# 1) EDIT _model.py: point BASE_URL/API_KEY at YOUR Gemini compat endpoint (the LiteLLM proxy key won't work).
 cd .../artifacts/adk_patterns && uv run python run_all.py     # or any pN_*.py alone
 ```
 The Bedrock path (`ADK_MODEL_PROVIDER=bedrock`) needs AWS SSO + Bedrock model-access grants; Anthropic

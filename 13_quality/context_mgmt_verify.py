@@ -61,7 +61,7 @@ class CappedModel(OpenAIModel):
 
 def _model():
     return CappedModel(model_id="gemini-2.5-flash",
-                       client_args={"base_url": "http://localhost:4000", "api_key": "sk-local"},
+                       client_args={"base_url": "http://localhost:4000", "api_key": os.environ["LITELLM_API_KEY"]},
                        params={"temperature": 0.3})
 
 

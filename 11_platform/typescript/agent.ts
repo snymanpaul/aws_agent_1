@@ -14,11 +14,17 @@ import { Agent, tool } from "@strands-agents/sdk";
 import { OpenAIModel } from "@strands-agents/sdk/openai";
 import { z } from "zod";
 
+function requireEnv(name: string): string {
+  const value = process.env[name];
+  if (!value) throw new Error(`${name} is not set`);
+  return value;
+}
+
 // ─── Model ───────────────────────────────────────────────────────────────────
 // Use OpenAIModel with clientConfig.baseURL for LiteLLM (same pattern as Python SDK)
 const model = new OpenAIModel({
   modelId: "claude-sonnet-4",
-  apiKey: "sk-local",
+  apiKey: requireEnv("LITELLM_API_KEY"),
   clientConfig: {
     baseURL: "http://localhost:4000",
   },

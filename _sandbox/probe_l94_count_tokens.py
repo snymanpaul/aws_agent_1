@@ -12,6 +12,7 @@ For each L61-style test string (code / CJK / punctuation / plain), prints the SD
 true tiktoken cl100k_base length, and ceil(chars/4), and states which one the SDK count matches.
 """
 
+import os
 import asyncio
 import math
 import subprocess
@@ -31,7 +32,7 @@ def run_probe() -> None:
     from strands.models.openai import OpenAIModel
 
     enc = tiktoken.get_encoding("cl100k_base")
-    model = OpenAIModel(model_id="probe", client_args={"base_url": "http://localhost:4000", "api_key": "sk-local"})
+    model = OpenAIModel(model_id="probe", client_args={"base_url": "http://localhost:4000", "api_key": os.environ["LITELLM_API_KEY"]})
 
     for name, text in TESTS.items():
         sdk = asyncio.run(model.count_tokens([{"role": "user", "content": [{"text": text}]}]))
@@ -52,7 +53,7 @@ def run_probe_no_tt() -> None:
 
     from strands.models.openai import OpenAIModel
 
-    model = OpenAIModel(model_id="probe", client_args={"base_url": "http://localhost:4000", "api_key": "sk-local"})
+    model = OpenAIModel(model_id="probe", client_args={"base_url": "http://localhost:4000", "api_key": os.environ["LITELLM_API_KEY"]})
     for name, text in TESTS.items():
         sdk = asyncio.run(model.count_tokens([{"role": "user", "content": [{"text": text}]}]))
         heur = math.ceil(len(text) / 4)

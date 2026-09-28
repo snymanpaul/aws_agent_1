@@ -11,6 +11,7 @@ Key Concepts:
 Run: uv run python 01_basics/hello_agent.py
 """
 
+import os
 from strands import Agent
 from strands.models.openai import OpenAIModel
 
@@ -19,7 +20,7 @@ model = OpenAIModel(
     model_id="claude-sonnet-4",  # Model alias from your litellm_config.yaml
     client_args={
         "base_url": "http://localhost:4000",  # LiteLLM proxy
-        "api_key": "sk-local"  # Your LITELLM_MASTER_KEY
+        "api_key": os.environ["LITELLM_API_KEY"]  # Your LITELLM_MASTER_KEY
     }
 )
 

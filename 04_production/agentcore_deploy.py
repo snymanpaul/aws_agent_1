@@ -36,6 +36,7 @@ def example_sdk_approach():
     print("SDK Approach:")
     print("-" * 40)
     print("""
+import os
 from bedrock_agentcore.runtime import BedrockAgentCoreApp
 from strands import Agent
 
@@ -132,7 +133,7 @@ def create_local_test_server():
         model_id="claude-sonnet-4",
         client_args={
             "base_url": "http://localhost:4000",
-            "api_key": "sk-local"
+            "api_key": os.environ["LITELLM_API_KEY"]
         }
     )
 

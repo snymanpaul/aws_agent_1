@@ -17,7 +17,7 @@ and `.claude/learnings/reflections/`.
 **Gate status (2026-09-10)**: `no_sim_check` reports **0 hits over the 307 `.py` files it scans**
 (308 tracked, minus the checker itself),
 and CI enforces it on every push (`.github/workflows/gates.yml`) alongside `check_no_aws_ids`
-and `uv run pytest` (221 tests). The pre-commit hook runs both tripwires over staged files.
+and `uv run pytest` (251 tests). The pre-commit hook runs both tripwires over staged files.
 Keep it at zero: any file you touch must come out clean, and a justified exception takes a
 trailing `# nosim:ok <reason>`, never a quiet reword of working code.
 
@@ -88,7 +88,7 @@ Claude aliases route via the LiteLLM proxy at `localhost:4000`; `gemini*` goes d
 
 ## Quality Gates (`packages/agent-build-gates/`)
 
-The four gates live in a workspace package with their own version and 111 tests, published on
+The four gates live in a workspace package with their own version and 141 tests, published on
 PyPI as [`agent-build-gates`](https://pypi.org/project/agent-build-gates/) since 2026-08-27
 (`pip install agent-build-gates`, zero dependencies). `aws_data_engineering` consumes it that
 way. Releases go out through `.github/workflows/release.yml` on an `agent-build-gates-v*` tag:
@@ -107,9 +107,9 @@ console script, not by path. `tools/` keeps `models.py` (this repo's model alias
   `MockSQSQueue` / `mock_client` / `_simulate_human_response` are caught; and the two vocabulary
   rules do not fire on comments or docstrings, because prose cannot fake an integration. Escape a
   justified line with a trailing `# nosim:ok <reason>`.
-- `eval_harness`: composable evals: datasets + evaluators + multi-run + Wilson/bootstrap CIs +
-  permutation significance + token/latency cost gate + regression baseline. `run_suite` takes an
-  injectable `run_fn`, so it never assumes a framework.
+- `eval_harness`: composable evals: datasets + evaluators + multi-run + case-level Wilson CI +
+  paired sign-flip significance + token/latency cost gate + regression baseline (fails closed
+  under 6 cases). `run_suite` takes an injectable `run_fn`, so it never assumes a framework.
 - `ship-gate`: one auditable GO/NO-GO verdict over real runs (the "paid, audit-reproducible gate").
   Needs the `[strands]` extra; `run_fn` is injectable so the verdict logic is testable unpaid.
 - `check-no-aws-ids`: **BINDING RULE: never put AWS account info (12-digit account ids, `AWSAdministratorAccess-*` / SSO profile strings, account-bearing ARNs) in ANY `.md` or `.py` file.** This tripwire blocks it; install the pre-commit hook once per clone with `sh tools/install_hooks.sh`. Account ids belong only in local, gitignored config (`~/.aws`, `.claude/settings.local.json`), never in tracked files. A line that must legitimately carry an account-shaped string (this gate's own tests, docs describing the patterns) takes `noaws:ok` anywhere on it, which works as `# noaws:ok reason` in Python and `<!-- noaws:ok reason -->` in Markdown, and covers only that line.

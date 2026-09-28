@@ -67,18 +67,30 @@ Multi-run evaluation with confidence intervals and significance testing, so a si
 cannot be reported as a result.
 
 ```python
-from agent_build_gates import Case, run_suite, gate, wilson
+from agent_build_gates import Case, run_suite, gate, label_match, wilson, case_means
 
-cases = [Case("input text", expected="positive")]
-correct = lambda out, case: 1.0 if case.expected in out.lower() else 0.0
+cases = [Case("input text", expected="positive")]  # at least 6 cases to compare to a baseline
 
-result = run_suite(cases, my_run_fn, {"correct": correct}, n=5)
+result = run_suite(cases, my_run_fn, {"correct": label_match}, n=5)
 passed, reasons = gate(result, baseline=previous, min_quality=0.8, metric="correct")
+print(wilson(case_means(result, "correct")))
 ```
 
 `run_fn(input) -> (output, tokens)` is yours, so the harness never assumes a framework. `gate`
-combines a quality floor, a cost ceiling and a permutation test against a frozen baseline, and
-returns every reason it failed rather than the first. `wilson` gives the interval on the rate.
+combines a quality floor, a cost ceiling and a paired sign-flip test against a frozen baseline,
+and returns every reason it failed rather than the first.
+
+The case is the unit of evidence, not the run. The n runs of each case are averaged into one
+score before any interval or test, because repeats of one prompt are not independent samples.
+A paired test on k cases cannot return p below `2 * 0.5**k`, so with fewer than 6 cases the
+baseline comparison cannot detect a regression; `gate` then fails with "regression undetectable"
+rather than passing. `label_match` scores an answer correct only when the whole normalised output
+is the expected label, so "positive, not negative" does not count for both. `wilson` gives the
+interval on the rate; pass it `case_means`, not the flat run scores.
+
+Each result carries `cases_sha256`, a fingerprint of its case set, and whatever you pass as
+`run_suite(..., meta={...})` (model, temperature, a prompt hash). Both are saved with a baseline,
+and `gate` refuses to compare against a baseline measured on a different case set.
 
 ## `ship-gate`, behind an extra
 

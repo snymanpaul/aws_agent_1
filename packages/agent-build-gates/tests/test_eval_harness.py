@@ -196,9 +196,10 @@ def test_gate_fails_on_a_significant_regression_against_baseline():
 
 
 def test_gate_tolerates_a_drop_that_is_not_significant():
-    """A single unlucky run must not be reported as a regression."""
-    baseline = result_with([1.0, 1.0, 1.0, 1.0])
-    candidate = result_with([1.0, 1.0, 1.0, 0.0])
+    """A single unlucky case must not be reported as a regression. 8 cases, so the
+    comparison has the power to detect one and the pass is a real non-detection."""
+    baseline = result_with([1.0] * 8)
+    candidate = result_with([1.0] * 7 + [0.0])
     passed, reasons = eh.gate(candidate, baseline=baseline, metric="correct")
     assert passed is True
     assert reasons == []
@@ -246,3 +247,164 @@ def test_a_restored_baseline_still_drives_the_gate(tmp_path):
     passed, reasons = eh.gate(result_with([0.0] * 10), baseline=restored, metric="correct")
     assert passed is False
     assert any("regression" in r for r in reasons)
+
+
+# ---------------------------------------------------------------------------
+# case-level statistics (0.2.0: the case, not the run, is the unit of evidence)
+# ---------------------------------------------------------------------------
+
+
+def runs(per_case, n):
+    """A result with n identical runs per case, as run_suite lays them out (case-major)."""
+    flat = [s for s in per_case for _ in range(n)]
+    return {"scores": {"correct": flat}, "tokens": [], "latency": [], "n": n, "cases": len(per_case)}
+
+
+def test_case_means_averages_each_case_over_its_runs():
+    result = {"scores": {"correct": [1.0, 0.0, 1.0, 0.0, 0.0, 0.0]}, "n": 3, "cases": 2}
+    assert eh.case_means(result, "correct") == [2 / 3, 0.0]
+
+
+def test_quality_is_unchanged_by_repeating_runs():
+    assert eh.quality(runs([1.0, 0.0, 1.0], n=1), "correct") == eh.quality(runs([1.0, 0.0, 1.0], n=7), "correct")
+
+
+def test_sign_flip_exact_p_for_six_cases_all_one_direction():
+    """2 of the 64 sign patterns are as extreme: p = 2 / 64."""
+    assert eh.sign_flip_test([0.0] * 6, [1.0] * 6) == 2 / 64
+
+
+def test_sign_flip_identical_arms_are_not_significant():
+    """Negative control: no differing case, no evidence."""
+    assert eh.sign_flip_test([1.0, 0.0, 1.0], [1.0, 0.0, 1.0]) == 1.0
+
+
+def test_sign_flip_matches_its_floor_when_every_case_moves_one_way():
+    for k in range(1, 10):
+        assert eh.sign_flip_test([0.0] * k, [1.0] * k) == eh.min_p(k)
+
+
+def test_sign_flip_large_suite_uses_a_deterministic_estimate():
+    """Above EXACT_MAX differing cases the test samples sign patterns with a fixed seed."""
+    a, b = [0.0] * 20, [1.0] * 20
+    p = eh.sign_flip_test(a, b)
+    assert p == eh.sign_flip_test(a, b)
+    assert p < 0.001
+
+
+def test_repeats_do_not_manufacture_significance():
+    """R1: 3 cases x 4 runs is 3 samples, not 12. The old flat unpaired test called this
+    significant; at case level no 3-case comparison can reach p < 0.05."""
+    baseline, candidate = runs([1.0] * 3, n=4), runs([0.0] * 3, n=4)
+    assert eh.perm_test(candidate["scores"]["correct"], baseline["scores"]["correct"]) < 0.05  # the old flaw
+    passed, reasons = eh.gate(candidate, baseline=baseline, metric="correct")
+    assert passed is False
+    assert not any("significant" in r for r in reasons)
+    assert any("undetectable" in r for r in reasons)
+
+
+def test_gate_fails_closed_when_too_few_cases_to_detect_a_regression():
+    """R3: with 5 cases the best achievable p is 0.0625, so even an unchanged candidate
+    cannot be cleared against the baseline."""
+    passed, reasons = eh.gate(runs([1.0] * 5, n=3), baseline=runs([1.0] * 5, n=3), metric="correct")
+    assert passed is False
+    assert any("undetectable" in r for r in reasons)
+
+
+def test_six_cases_is_enough_to_clear_an_unchanged_candidate():
+    passed, reasons = eh.gate(runs([1.0] * 6, n=3), baseline=runs([1.0] * 6, n=3), metric="correct")
+    assert passed is True
+    assert reasons == []
+
+
+def test_six_cases_is_enough_to_detect_a_full_regression():
+    """Positive control for the power gate: the smallest suite that can detect one does."""
+    passed, reasons = eh.gate(runs([0.0] * 6, n=3), baseline=runs([1.0] * 6, n=3), metric="correct")
+    assert passed is False
+    assert any("significant" in r for r in reasons)
+
+
+def test_power_counts_only_cases_the_baseline_scored_on():
+    """10 cases, but the baseline scores on only 3: a drop can show on at most 3."""
+    baseline = runs([1.0] * 3 + [0.0] * 7, n=2)
+    passed, reasons = eh.gate(runs([0.0] * 10, n=2), baseline=baseline, metric="correct")
+    assert passed is False
+    assert any("undetectable" in r and "3 baseline-scoring" in r for r in reasons)
+
+
+def test_a_baseline_that_scores_nothing_cannot_be_regressed_against():
+    passed, _ = eh.gate(runs([1.0] * 3, n=2), baseline=runs([0.0] * 3, n=2), metric="correct")
+    assert passed is True
+
+
+def test_gate_refuses_to_pair_different_case_sets():
+    with pytest.raises(ValueError, match="same cases"):
+        eh.gate(runs([1.0] * 6, n=1), baseline=runs([1.0] * 7, n=1), metric="correct")
+
+
+def test_a_0_1_0_baseline_file_still_pairs_by_case(tmp_path):
+    """0.1.0 saved only the flat list plus n; case_means recovers the cases from that."""
+    path = tmp_path / "old.json"
+    path.write_text(json.dumps({"scores": {"correct": [1.0] * 16}, "tokens": [], "latency": [], "n": 2, "cases": 8}))
+    passed, reasons = eh.gate(runs([0.0] * 8, n=2), baseline=eh.load_baseline(str(path)), metric="correct")
+    assert passed is False
+    assert any("significant" in r and "8 paired cases" in r for r in reasons)
+
+
+# ---------------------------------------------------------------------------
+# label_match (R4)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("out", ["positive", "Positive", " positive.\n", "**positive**", "'positive'"])
+def test_label_match_accepts_the_label_alone(out):
+    assert eh.label_match(out, eh.Case("x", "positive")) == 1.0
+
+
+@pytest.mark.parametrize("out", ["positive, not negative", "negative", "It is positive", ""])
+def test_label_match_rejects_anything_but_the_label(out):
+    assert eh.label_match(out, eh.Case("x", "positive")) == 0.0
+
+
+def test_label_match_is_case_insensitive_on_the_expected_side():
+    """The 0.1.0 substring grader never matched an expected label with capitals."""
+    assert eh.label_match("positive", eh.Case("x", "Positive")) == 1.0
+
+
+# ---------------------------------------------------------------------------
+# baseline provenance (R6)
+# ---------------------------------------------------------------------------
+
+
+def test_run_suite_records_the_case_set_and_what_produced_the_runs():
+    cases = [eh.Case("a", "x"), eh.Case("b", "y")]
+    meta = {"model": "m", "temperature": 0.0}
+    result = eh.run_suite(cases, lambda inp: ("x", 1), {"correct": CORRECT}, n=1, meta=meta)
+    assert result["cases_sha256"] == eh.cases_sha256(cases)
+    assert result["meta"] == meta
+
+
+def test_case_set_hash_changes_with_any_input_or_label():
+    base = [eh.Case("a", "x"), eh.Case("b", "y")]
+    assert eh.cases_sha256(base) == eh.cases_sha256([eh.Case("a", "x"), eh.Case("b", "y")])
+    assert eh.cases_sha256(base) != eh.cases_sha256([eh.Case("a", "x"), eh.Case("b", "z")])
+    assert eh.cases_sha256(base) != eh.cases_sha256(list(reversed(base)))
+
+
+def test_gate_refuses_a_baseline_from_a_different_case_set_of_the_same_size():
+    one = [eh.Case(str(i), "x") for i in range(6)]
+    other = [eh.Case(str(i), "y") for i in range(6)]
+    run = lambda inp: ("x", 1)
+    with pytest.raises(ValueError, match="same cases"):
+        eh.gate(eh.run_suite(one, run, {"correct": CORRECT}, n=1),
+                baseline=eh.run_suite(other, run, {"correct": CORRECT}, n=1), metric="correct")
+
+
+def test_provenance_survives_the_baseline_round_trip(tmp_path):
+    result = eh.run_suite([eh.Case("a", "x")], lambda inp: ("x", 1), {"correct": CORRECT}, n=1,
+                          meta={"model": "m"})
+    path = tmp_path / "b.json"
+    eh.save_baseline(str(path), result)
+    restored = eh.load_baseline(str(path))
+    assert restored["meta"] == {"model": "m"}
+    assert restored["cases_sha256"] == result["cases_sha256"]

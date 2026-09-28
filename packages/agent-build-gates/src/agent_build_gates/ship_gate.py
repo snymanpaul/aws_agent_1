@@ -3,8 +3,9 @@ Level 92: Agentic ship-gate — one auditable GO/NO-GO verdict (the synthesis)
 ==========================================================================
 Composes the whole build-out into the deliverable the original review-gate question wanted:
 a paid, AUDIT-REPRODUCIBLE gate. For a candidate agent it runs the eval harness (quality +
-cost + permutation-significance vs a frozen baseline) over N real runs and emits a single
-GO/NO-GO verdict + a JSON audit artifact.
+cost + paired case-level significance vs a frozen baseline) over N real runs and emits a
+single GO/NO-GO verdict + a JSON audit artifact. With a baseline and too few cases to
+detect a regression, the verdict is NO-GO ("regression undetectable"), never a blind GO.
 
 Anti-simulation design (no fakes/stubs):
   - Real agent runs scored deterministically; tokens from real usage; significance from real
@@ -15,11 +16,12 @@ Run:
   ship-gate
 """
 
+import hashlib
 import json
 import os
 import sys
 
-from .eval_harness import Case, run_suite, gate, quality
+from .eval_harness import Case, run_suite, gate, label_match, quality
 
 try:
     from strands import Agent
@@ -31,10 +33,13 @@ except ImportError as exc:  # pragma: no cover - exercised by the install-hint t
     ) from exc
 
 
+MODEL_ID, TEMPERATURE = "gemini-2.5-flash", 0.0
+
+
 def _model():
-    return OpenAIModel(model_id="gemini-2.5-flash",
+    return OpenAIModel(model_id=MODEL_ID,
                        client_args={"base_url": "http://localhost:4000", "api_key": "sk-local"},
-                       params={"temperature": 0.0})
+                       params={"temperature": TEMPERATURE})
 
 
 def _tokens(r):
@@ -59,7 +64,10 @@ def ship_gate(system_prompt, cases, evaluators, baseline=None,
     audit artifact) is worth exercising without spending money on every check.
     Passing a run_fn does not soften the gate, it only supplies the runs it judges.
     """
-    result = run_suite(cases, run_fn or runner(system_prompt), evaluators, n=n)
+    meta = {"system_prompt_sha256": hashlib.sha256(system_prompt.encode()).hexdigest()}
+    # An injected run_fn chooses its own model, so only the default runner's is recorded.
+    meta.update({"run_fn": "injected"} if run_fn else {"model": MODEL_ID, "temperature": TEMPERATURE})
+    result = run_suite(cases, run_fn or runner(system_prompt), evaluators, n=n, meta=meta)
     from statistics import mean
     max_tokens = (mean(baseline["tokens"]) * max_tokens_factor) if baseline else None
     passed, reasons = gate(result, baseline=baseline, min_quality=min_quality,
@@ -74,9 +82,12 @@ def ship_gate(system_prompt, cases, evaluators, baseline=None,
     return verdict, result
 
 
+# 8 cases so a regression can be significant at case level: min_p(8) = 0.0078 < 0.05.
 CASES = [Case("I love it, fantastic!", "positive"), Case("Terrible, broke instantly.", "negative"),
-         Case("Best purchase this year.", "positive"), Case("Awful, never again.", "negative")]
-CORRECT = lambda out, c: 1.0 if c.expected in out.lower() else 0.0
+         Case("Best purchase this year.", "positive"), Case("Awful, never again.", "negative"),
+         Case("Works perfectly, highly recommend.", "positive"), Case("Rude staff and a late delivery.", "negative"),
+         Case("Exceeded every expectation.", "positive"), Case("Cheap plastic that snapped at once.", "negative")]
+CORRECT = label_match
 GOOD = "Classify sentiment as exactly 'positive' or 'negative'. One word."
 REGRESSED = "Respond with an unrelated emoji only."
 
@@ -93,9 +104,10 @@ def verify():
 
     checks = {
         "baseline ships (GO)": base_v["decision"] == "GO",
-        "good candidate ships (GO)": good_v["decision"] == "GO",
+        "negative control: good candidate vs baseline ships (GO)": good_v["decision"] == "GO",
         "regressed candidate is BLOCKED (NO-GO)": bad_v["decision"] == "NO-GO",
-        "block cites a concrete reason (quality/significance/cost)": len(bad_v["reasons"]) > 0,
+        "positive control: the block cites a case-level significant regression":
+            any("significant" in r for r in bad_v["reasons"]),
         "verdict is a persisted audit artifact": os.path.exists(bad_v["audit_file"]),
     }
     for k, v in checks.items():

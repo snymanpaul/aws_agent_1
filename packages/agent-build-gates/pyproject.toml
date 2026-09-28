@@ -1,6 +1,6 @@
 [project]
 name = "agent-build-gates"
-version = "0.1.0"
+version = "0.2.0"
 description = "Quality gates for agent-built code: an anti-simulation tripwire, an AWS-account tripwire, and an eval harness with confidence intervals and significance testing."
 readme = "README.md"
 requires-python = ">=3.10"

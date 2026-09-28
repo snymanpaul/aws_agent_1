@@ -1,34 +1,30 @@
 # Next Steps
 
-## RESUME HERE (2026-09-10, session ended mid-verification)
+## RESUME HERE (updated 2026-09-28)
 
-State on disk when the session stopped:
+State on disk:
 
 - Committed `2cd34c6`: stack re-base to strands 1.55.1 (see the status block below and the delta
   report `docs/work/research/reports/2026-09-10_strands-ecosystem-delta-v148-to-v155.md`).
-- **Uncommitted, verified once:** `tools/check_mermaid.sh` now renders with the installed
-  Google Chrome (`/Applications/Google Chrome.app`, 152.0.7977.83) when `PUPPETEER_CONFIG` is unset,
-  instead of the Chrome 131 (Dec 2024) build that mmdc 11.9.0's puppeteer downloads. Reason:
-  that download is never patched, so it carries every Chrome CVE since. The pinned build was
-  deleted from `~/.cache/puppeteer/chrome`; `~/.cache/puppeteer/chrome-headless-shell` (a
-  pre-existing 131 build, 172M) is still there and is yours to delete.
-  Run 1 (no env) passed: `mermaid: 135 block(s) from 135 fence(s), 0 failed`. Run 2
-  (`PUPPETEER_CONFIG` set to a config with `executablePath` plus `--no-sandbox`, the CI code
-  path) reported `1 failed` of 135, and the line naming the block was lost to a `tail -1`.
-  A rerun of that path was started in the background; its full output, if it finished, is at
-  the session scratchpad `mermaid_ci_path_rerun.txt`, else run step 1 below. Do NOT commit
-  the checker until the failing block is named and explained: a one-off timeout under
-  `--no-sandbox` and a diagram that only renders on one path are different fixes.
+- **Committed 2026-09-28, verified on both paths:** `tools/check_mermaid.sh` renders with the
+  installed Google Chrome when `PUPPETEER_CONFIG` is unset, instead of the pinned build mmdc's
+  puppeteer downloads (never patched, so it carries every Chrome CVE since). Verified with
+  mermaid-cli 11.17.0 (what CI's `@11` resolves to) and Chrome 153.0.8010.53, full output kept:
+  the CI path (`executablePath` plus `--no-sandbox --disable-setuid-sandbox`) rendered 135/135;
+  the local path rendered 134/135, the one failure being
+  `docs/assessment-aws-agent-1-cross-reference.md` block 2 with
+  `ProtocolError: Target.setAutoAttach timed out`. That block then rendered 5/5 alone with the
+  checker's own config, so it is a one-off Chrome start-up timeout, not a diagram that renders on
+  only one path. `~/.cache/puppeteer` was deleted entirely (1.2G, including the 131 build).
+  mermaid-cli is no longer installed globally on this machine: `npm i -g @mermaid-js/mermaid-cli`
+  with `PUPPETEER_SKIP_DOWNLOAD=true` before running the checker locally.
 - **Uncommitted, pre-existing:** `tools/models.py` alias `claude-opus-4` to `claude-opus-5`.
   Nine other tracked files still name `claude-opus-4` (`git grep -n claude-opus-4`), two of
-  them the alias tables in `CLAUDE.md:81` and `LEARNING_PLAN.md:513`.
+  them the alias tables in `CLAUDE.md:85` and `LEARNING_PLAN.md:513`.
 
 To continue:
 
-1. `sh tools/check_mermaid.sh` (about 10 minutes, launches Chrome per block). Expect 135/135.
-   Then `PUPPETEER_CONFIG=/tmp/p.json sh tools/check_mermaid.sh` with
-   `{"executablePath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"}` in
-   that file to prove the config path still works. Commit the checker if both pass.
+1. Done 2026-09-28 (see above).
 2. Decide whether CI should use the runner's preinstalled Chrome too: `.github/workflows/gates.yml`
    installs `@mermaid-js/mermaid-cli@11` fresh, whose puppeteer downloads its own pinned Chrome
    at install time. Ubuntu runners ship a current stable Chrome; adding `executablePath` to the

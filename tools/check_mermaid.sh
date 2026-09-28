@@ -24,13 +24,23 @@ cd "$(dirname "$0")/.." || exit 1
 
 command -v mmdc >/dev/null 2>&1 || {
     echo "mmdc not found. Install with: npm i -g @mermaid-js/mermaid-cli" >&2
+    echo "Rendering uses an installed Google Chrome when one exists (see SYSTEM_CHROME below);" >&2
+    echo "otherwise puppeteer needs its own pinned Chrome download." >&2
     exit 127
 }
 
 # mmdc drives Chromium through puppeteer and takes its puppeteer settings as a FILE
 # (-p/--puppeteerConfigFile), not an environment variable. CI runners cannot use the
 # Chromium sandbox, so the workflow writes a config and points PUPPETEER_CONFIG at it;
-# locally the variable is unset and the default applies.
+# locally, when the variable is unset, an installed Google Chrome is used if present.
+#
+# Why not the browser puppeteer downloads: that download is pinned to whatever Chrome
+# the bundled puppeteer was built against (mmdc 11.9.0 wants Chrome 131 from December
+# 2024) and is never patched, so it accumulates every Chrome CVE published since. The
+# system Chrome is kept current by its own updater. Rendering repository markdown
+# does not need an exact-version match: all 135 blocks render on Chrome 152 with
+# puppeteer 23 (verified 2026-09-10).
+SYSTEM_CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 PUPPETEER_ARGS=""
 if [ -n "${PUPPETEER_CONFIG:-}" ]; then
     if [ -f "${PUPPETEER_CONFIG}" ]; then
@@ -41,8 +51,14 @@ if [ -n "${PUPPETEER_CONFIG:-}" ]; then
     fi
 fi
 
+if [ -z "${PUPPETEER_CONFIG:-}" ] && [ -x "$SYSTEM_CHROME" ]; then
+    SYSCFG=$(mktemp) || exit 1
+    printf '{"executablePath": "%s"}\n' "$SYSTEM_CHROME" > "$SYSCFG"
+    PUPPETEER_ARGS="-p $SYSCFG"
+fi
+
 TMP=$(mktemp -d) || exit 1
-trap 'rm -rf "$TMP"' EXIT
+trap 'rm -rf "$TMP" "${SYSCFG:-}"' EXIT
 
 # Extract each block to its own file. The `blk_` prefix keeps paths that begin with a
 # dot from producing hidden temp files.

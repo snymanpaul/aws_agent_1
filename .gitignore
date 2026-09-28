@@ -60,3 +60,9 @@ ACCOUNTS.local.md
 
 # Local denylist of strings that must never reach this public repo (see tools/install_hooks.sh)
 .git-denylist
+
+# Claude Code local settings: permission rules name AWS profiles, so they carry account ids.
+# Also ignored by a personal global gitignore on the author's machine, but a fresh clone
+# elsewhere has no such file, so the repo has to ignore it itself.
+.claude/settings.local.json
+*.local.*

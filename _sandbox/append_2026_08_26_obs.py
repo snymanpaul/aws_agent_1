@@ -4,7 +4,7 @@ A named script rather than an inline one-liner, so the append is reviewable and
 re-runnable, and so the entries themselves are diffable before they land.
 
 Session: corrected the AgentCore Gateway finding in the coverage assessment (twice),
-then split data-plane work into ~/Code/aws_data_engineering and built its L01.
+then split data-plane work into the separate aws_data_engineering repo and built its L01.
 """
 
 import json
@@ -62,7 +62,7 @@ ENTRIES = [
             "Python mentions Athena/Glue/Redshift/S3 Tables/Iceberg/Lake Formation; CI is declared "
             "free-and-deterministic in .github/workflows/gates.yml while data lessons meter on bytes "
             "scanned; 33 runtime deps are all agent-SDK-shaped. Split three ways, not two: agent-side "
-            "work stays here, data-plane goes to ~/Code/aws_data_engineering, and anything both need "
+            "work stays here, data-plane goes to ~/Code/aws_data_engineering, and anything both need "  # localpath:ok verbatim source of obs-0972
             "(e.g. a bytes-scanned cost gate) goes into packages/agent-build-gates. The third leg "
             "already existing is what made the split cheap.",
         ctx="docs/assessment-aws-agent-1-cross-reference.md section 6 + NEXT_STEPS_PLAN tier 23.",
@@ -78,7 +78,7 @@ ENTRIES = [
             "(no-sim-check, check-no-aws-ids). It is NOT on PyPI (pypi.org/pypi/agent-build-gates/json "
             "returns 404), so `pip install agent-build-gates` as written in CLAUDE.md is currently "
             "wrong and should say the git source until it is published.",
-        ctx="Bootstrapping ~/Code/aws_data_engineering; uv 0.8.22.",
+        ctx="Bootstrapping ~/Code/aws_data_engineering; uv 0.8.22.",  # localpath:ok verbatim source of obs-0973
         entities=["agent-build-gates", "Packaging", "uv", "PyPI", "DocDrift"],
     ),
 ]

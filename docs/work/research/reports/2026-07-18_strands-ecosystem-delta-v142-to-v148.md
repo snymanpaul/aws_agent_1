@@ -10,7 +10,7 @@ extension decision.
 Three parallel read-only explorations, consolidated here losslessly:
 
 1. **Core SDK**: fresh clone of the `strands-agents/sdk-python` monorepo at
-   `~/Code/strands-sdk-python`, HEAD `41f9f59b` (2026-07-17). 152 commits touching `strands-py`
+   a local working clone, HEAD `41f9f59b` (2026-07-17). 152 commits touching `strands-py`
    between tags `python/v1.42.0` and `python/v1.48.0` were inventoried; key modules read at HEAD.
    All `file:line` citations below are relative to `strands-py/src/strands/` at `python/v1.48.0`
    unless noted.
@@ -24,7 +24,7 @@ Three parallel read-only explorations, consolidated here losslessly:
    Strands blog, third-party writeups, and YouTube — written sources verified by fetching each
    page; video metadata carries snippet-level confidence only (noted inline).
 
-The old clone at `~/Documents/Code/strands-sdk-python` was unusable (OneDrive dataless-stub damage;
+An older clone kept under the OneDrive-synced Documents folder was unusable (OneDrive dataless-stub damage;
 file reads hang) and was replaced, not repaired.
 
 ## Baseline vs current
@@ -512,7 +512,7 @@ flowchart LR
 
 ## 8. Formerly-unknowns, resolved (2026-07-18 second pass)
 
-Grounded via a fresh clone of `aws/bedrock-agentcore-sdk-python` at `~/Code/bedrock-agentcore-sdk-python`
+Grounded via a fresh clone of `aws/bedrock-agentcore-sdk-python` (local working clone)
 (HEAD `a4bc13f`, 2026-07-17) plus deeper reads of the strands clone and the Shell docs/PyPI.
 
 ### AgentCore module history (git first-appearance, `--diff-filter=A`)

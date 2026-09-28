@@ -1,7 +1,7 @@
 # Assessment: `aws_agent_1` cross-referenced against the AWS data engineering landscape
 
 **Date:** 2026-08-25
-**Subject repo:** `/Users/paulsnyman/Code/aws_agent_1` (HEAD `97e759e`, last commit 2026-07-19, clean tree)
+**Subject repo:** `aws_agent_1`, this repo (HEAD `97e759e`, last commit 2026-07-19, clean tree)
 **Reference:** [`aws-data-engineering-landscape.md`](./aws-data-engineering-landscape.md)
 
 **Revised 2026-08-26 (HEAD `b82c35f`).** The AgentCore Gateway finding was wrong and is

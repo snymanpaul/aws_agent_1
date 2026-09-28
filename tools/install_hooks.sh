@@ -1,9 +1,10 @@
 #!/bin/sh
 # Install the repo's git pre-commit guard. Run once per clone: sh tools/install_hooks.sh
 #
-# Both gates come from the agent-build-gates workspace package. The hook blocks a commit
-# whose staged files carry AWS account info, or whose staged .py carry a substituted
-# integration. Staged files only, so the cost is proportional to the change.
+# The hook blocks a commit whose staged files carry AWS account info or a substituted
+# integration (both gates from the agent-build-gates workspace package), a local machine
+# path (tools/check_no_local_paths.sh), or a secret (gitleaks with .gitleaks.toml).
+# Staged files only, so the cost is proportional to the change.
 #
 # CI (.github/workflows/gates.yml) runs the same two checks repo-wide plus the test
 # suite. The hook is the fast local copy, not the source of truth.
@@ -33,6 +34,22 @@ if [ -n "$staged_py" ]; then
   # shellcheck disable=SC2086
   uv run no-sim-check $staged_py || exit 1
 fi
+
+# Local machine paths (home directories, ~/Code, /Volumes, macOS per-user temp) in any
+# staged file. Same script CI runs over every tracked file.
+all_staged_paths=$(git diff --cached --name-only --diff-filter=ACM)
+if [ -n "$all_staged_paths" ]; then
+  # shellcheck disable=SC2086
+  sh "$(git rev-parse --show-toplevel)/tools/check_no_local_paths.sh" $all_staged_paths || exit 1
+fi
+
+# Secrets in the staged changes, with the repo's .gitleaks.toml. Fails closed when gitleaks
+# is missing: a secret scan that silently does not run is worse than a blocked commit.
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "gitleaks not found: install it (brew install gitleaks) or the commit cannot be scanned" >&2
+  exit 1
+fi
+gitleaks git --staged --config "$(git rev-parse --show-toplevel)/.gitleaks.toml" --redact --no-banner || exit 1
 
 # Local denylist: literal strings that must never reach this public repo and that
 # check_no_aws_ids does not cover, such as another team's project names. One term per
@@ -65,4 +82,5 @@ EOF
 
 chmod +x "$HOOK"
 echo "installed pre-commit hook -> $HOOK"
-echo "  checks: check_no_aws_ids (staged .md/.py), no_sim_check (staged .py)"
+echo "  checks: check_no_aws_ids (staged .md/.py), no_sim_check (staged .py),"
+echo "          check_no_local_paths + gitleaks (all staged files), .git-denylist (if present)"

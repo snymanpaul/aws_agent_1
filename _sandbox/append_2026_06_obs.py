@@ -15,7 +15,7 @@ base = datetime.now(timezone.utc)
 
 OBS = [
     dict(level=64, cat="insight", topic="pyc-read-stall-hang",
-         obs="strands lessons hung at 0% CPU forever in a read() syscall during import. macOS `sample <pid>` showed the stack stuck in _io_FileIO_readall_impl->read; `lsof -p` named fd 3r = tools/__pycache__/__init__.cpython-313.pyc. Raw `cat` of every module file was instant (0.01s), so it was NOT file content — it was the FRESHLY-WRITTEN .pyc bytecode under iCloud-synced ~/Documents stalling on read (iCloud/EDR intercept of new files). Fix: PYTHONDONTWRITEBYTECODE=1 -> import tools OK in 1.04s.",
+         obs="strands lessons hung at 0% CPU forever in a read() syscall during import. macOS `sample <pid>` showed the stack stuck in _io_FileIO_readall_impl->read; `lsof -p` named fd 3r = tools/__pycache__/__init__.cpython-313.pyc. Raw `cat` of every module file was instant (0.01s), so it was NOT file content — it was the FRESHLY-WRITTEN .pyc bytecode under iCloud-synced ~/Documents stalling on read (iCloud/EDR intercept of new files). Fix: PYTHONDONTWRITEBYTECODE=1 -> import tools OK in 1.04s.",  # localpath:ok verbatim source of obs-0717
          ctx="Cost ~hours misdiagnosing as iCloud-eviction(.icloud placeholders=0), OTel(OTEL_SDK_DISABLED no help), stray procs, corrupt pycache. Lesson: on a 0%-CPU import hang, go straight to `sample <pid>` + `lsof -p <pid>`.",
          entities=["pyc", "PYTHONDONTWRITEBYTECODE", "icloud", "import-hang", "sample", "lsof"]),
     dict(level=64, cat="pattern", topic="invocation-limits-verified",

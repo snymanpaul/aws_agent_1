@@ -138,7 +138,7 @@ model = OpenAIModel(model_id="claude-sonnet-4", client_args={"base_url": "http:/
 ```
 
 ### LiteLLM proxy runs on PODMAN: diagnose before declaring it "down"  (obs-0845, obs-0864, obs-0846, obs-0725)
-The proxy is a **long-lived podman container named `litellm-proxy`** bound to `127.0.0.1:4000`, with its config mounted from `~/Code/litellm-proxy/litellm_config.yaml` (that repo has its own CLAUDE.md). Manage it with **podman, not docker**: don't `docker compose` from that dir.
+The proxy is a **long-lived podman container named `litellm-proxy`** bound to `127.0.0.1:4000`, with its config mounted from `litellm_config.yaml` in the separate `litellm-proxy` repo (it has its own CLAUDE.md). Manage it with **podman, not docker**: don't `docker compose` from that repo.
 ```bash
 podman ps -a | grep litellm    # check state: do NOT truncate `podman ps` output; the container sorts low
 podman start litellm-proxy      # restart if "Exited"; exit 137 = OOM-killed (machine is only ~2GB)

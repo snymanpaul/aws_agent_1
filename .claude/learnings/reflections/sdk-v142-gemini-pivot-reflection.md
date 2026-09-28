@@ -30,7 +30,7 @@ stray procs, corrupt pycache — all wrong. **macOS `sample <pid>` + `lsof -p`**
 on the live hung PID nailed it: stuck in `read()` on a freshly-written
 `tools/__pycache__/__init__.cpython-313.pyc`. Raw `cat` of every module was
 instant (0.01s) — so it was the *newly-written `.pyc`* under iCloud-synced
-`~/Documents` stalling on read (iCloud/EDR new-file intercept), **not** file
+macOS Documents stalling on read (iCloud/EDR new-file intercept), **not** file
 content. **Fix: `PYTHONDONTWRITEBYTECODE=1`** (import: ∞ -> 1.04s).
 **Lesson: on a 0%-CPU import hang, go straight to `sample`+`lsof`.**
 

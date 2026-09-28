@@ -10,15 +10,15 @@ environment upgrade that put the repo on the new stack. Successor to
 
 Four parallel read-only explorations plus one hands-on upgrade, consolidated here:
 
-1. **Core SDK**: the existing clone at `~/Code/strands-sdk-python` fetched and fast-forwarded
+1. **Core SDK**: the existing local clone fetched and fast-forwarded
    from `41f9f59b` (2026-07-17) to `9663bcfa5` (2026-09-10). Its origin now resolves to
    `strands-agents/harness-sdk.git`. 175 commits touching `strands-py/` between tags
    `python/v1.48.0` and `python/v1.55.1` were inventoried (section 1).
-2. **AgentCore SDK**: clone at `~/Code/bedrock-agentcore-sdk-python` fast-forwarded from
+2. **AgentCore SDK**: the local clone fast-forwarded from
    `a4bc13f` (v1.18.1) to `3c9f15e` (2026-09-09); tags v1.19.0 to v1.22.0 read commit by commit,
    release bodies pulled from the GitHub API (section 3).
 3. **Ecosystem packages**: GitHub release bodies and PyPI `requires_dist` for tools, evals,
-   ai-functions, sops, ag-ui-strands, shell (clone `~/Code/strands-shell-src` fast-forwarded to
+   ai-functions, sops, ag-ui-strands, shell (local clone fast-forwarded to
    `943e4dc`), and the two transitive majors, mcp 2.x and a2a-sdk 1.x (sections 4 and 5).
 4. **External coverage**: AWS What's New, AWS blogs, the AgentCore release-notes page, and the
    Strands blog, each page fetched and quoted (section 7). Fetch output is an extraction, so each
@@ -88,7 +88,7 @@ Three things moved at once.
 
 ## 1. Core Python SDK: 1.48.0 to 1.55.1
 
-Clone `~/Code/strands-sdk-python`, HEAD `9663bcfa5`. 175 commits touch `strands-py/` between the
+Local clone of `strands-agents/sdk-python`, HEAD `9663bcfa5`. 175 commits touch `strands-py/` between the
 tags; `git diff python/v1.48.0..python/v1.55.1 --stat -- strands-py/src` ends
 `173 files changed, 18359 insertions(+), 2507 deletions(-)`. Tags are lightweight and the version
 is tag-derived (`pyproject.toml:8` `dynamic = ["version"]`). Per-release changelogs live at
@@ -185,7 +185,7 @@ The SDK's own test matrix keeps an mcp 1.x lane: `[tool.hatch.envs.hatch-test.ov
 
 ## 2. What the upgrade did to this repo
 
-Commands run, in order, in `~/Code/aws_agent_1`:
+Commands run, in order, at this repo's root:
 
 ```
 uv lock --upgrade          # 271 packages resolved; strands 1.48.0 -> 1.55.1 and friends

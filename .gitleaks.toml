@@ -1,0 +1,18 @@
+# gitleaks config: the default rules, plus one narrow allowlist.
+#
+# The pre-commit hook runs `gitleaks git --staged` and CI runs `gitleaks git` over the whole
+# history. Untracked local files (.env and friends) are never scanned by either, because
+# neither touches the working tree outside git.
+
+[extend]
+useDefault = true
+
+# tests/memory_effect/cases.py names each preregistered case with key="C17_TEMPORAL" style
+# identifiers. The generic-api-key rule reads `key="<long token>"` as a credential. Both
+# conditions must hold (AND), so a real secret added to that file is still reported.
+[[allowlists]]
+description = "memory_effect case identifiers such as key=\"C17_TEMPORAL\""
+condition = "AND"
+paths = ['''^tests/memory_effect/cases\.py$''']
+regexTarget = "match"
+regexes = ['''key="C[0-9]{2}_[A-Z0-9_]+"''']

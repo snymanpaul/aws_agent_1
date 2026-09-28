@@ -54,7 +54,7 @@ ENTRIES = [
             "versions, so a typo like 1.48.0 -> 1.84.0 sailed through'. Whether the skip was a typo "
             "is not stated anywhere. LESSON: a gap in a version sequence is a question to answer "
             "from the release machinery, not a sign of a pulled release.",
-        ctx="Inventory of python/v1.48.0..python/v1.55.1 in ~/Code/strands-sdk-python.",
+        ctx="Inventory of python/v1.48.0..python/v1.55.1 in ~/Code/strands-sdk-python.",  # localpath:ok verbatim source of obs-1015
         entities=["strands-agents", "Release", "Versioning"],
     ),
     dict(

@@ -3,7 +3,7 @@ Model configuration helpers for connecting to LiteLLM proxy.
 
 Your LiteLLM proxy runs at localhost:4000 with these models available:
 - claude-sonnet-4: Claude Sonnet 4 (general purpose, good tool-use)
-- claude-opus-4: Claude Opus 4 (complex reasoning)
+- claude-opus-5: Claude Opus 5 (Opus 4 retired 2026-06-15)
 - claude-haiku-4-5: Claude Haiku 4.5 (fast, cheap iterations)
 - gemini/gemini-2.0-flash: Google Gemini Flash (fast)
 - perplexity/sonar-reasoning: Perplexity (research tasks)
@@ -39,7 +39,9 @@ LITELLM_BASE_URL = os.environ.get("LITELLM_BASE_URL", "http://localhost:4000")
 AVAILABLE_MODELS = {
     # Anthropic Claude models
     "claude-sonnet-4": "claude-sonnet-4",
-    "claude-opus-4": "claude-opus-4",
+    # claude-opus-4 was retired by Anthropic on 2026-06-15 and its proxy entry is
+    # gone, so naming it now fails at the proxy rather than upstream.
+    "claude-opus-5": "claude-opus-5",
     "claude-haiku-4-5": "claude-haiku-4-5",
     "haiku": "claude-haiku-4-5",       # Short alias (Haiku 4.5, replaces deprecated 3.5)
     "claude-3-5-haiku": "claude-haiku-4-5",  # Legacy alias

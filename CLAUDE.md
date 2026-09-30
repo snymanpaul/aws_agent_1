@@ -73,20 +73,15 @@ packages/agent-build-gates/  # the quality gates, extracted as an installable pa
 from tools import get_model
 from strands import Agent
 
-model = get_model("claude-sonnet-4")  # or haiku, opus, gemini-flash
+model = get_model("<alias>")
 agent = Agent(model=model, tools=[...])
 ```
 
-## Available Models (aliases resolved by `tools/get_model`)
-
-| Alias | Model | Use Case |
-|-------|-------|----------|
-| `claude-sonnet-4` | Claude Sonnet 4 | General, tool-use |
-| `claude-opus-4` | Claude Opus 4 | Complex reasoning |
-| `haiku` | Claude Haiku 4.5 | Fast iterations |
-| `gemini-flash` | Gemini 2.5 Flash | Fast alternative |
-
-Claude aliases route via the LiteLLM proxy at `localhost:4000`; `gemini*` goes direct to Google AI (needs `GEMINI_API_KEY`).
+Model names are not listed here, because releases retire. The aliases live in
+`AVAILABLE_MODELS` in `tools/models.py`; an unknown name passes through unchanged. What the
+proxy actually serves is `curl -s -H "Authorization: Bearer $LITELLM_API_KEY" localhost:4000/v1/models`.
+Non-`gemini*` names route via the LiteLLM proxy at `localhost:4000`; `gemini*` goes direct to
+Google AI (needs `GEMINI_API_KEY`).
 
 ## Quality Gates (`packages/agent-build-gates/`)
 

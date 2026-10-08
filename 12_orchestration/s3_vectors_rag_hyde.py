@@ -37,6 +37,7 @@ import re
 import boto3
 from strands import Agent
 from tools import get_model
+from tools.aws_tags import lesson_tags
 
 REGION         = "us-east-1"
 BUCKET_NAME    = "strands-hyde-l45d"
@@ -106,7 +107,7 @@ def ingest_corpus():
     try:
         s3v.get_vector_bucket(vectorBucketName=BUCKET_NAME)
     except s3v.exceptions.NotFoundException:
-        s3v.create_vector_bucket(vectorBucketName=BUCKET_NAME)
+        s3v.create_vector_bucket(vectorBucketName=BUCKET_NAME, tags=lesson_tags("L45d", "12_orchestration/s3_vectors_rag_hyde.py cleanup"))
 
     try:
         s3v.get_index(vectorBucketName=BUCKET_NAME, indexName=INDEX_NAME)
@@ -114,6 +115,7 @@ def ingest_corpus():
         return
     except s3v.exceptions.NotFoundException:
         s3v.create_index(
+            tags=lesson_tags("L45d", "12_orchestration/s3_vectors_rag_hyde.py cleanup"),
             vectorBucketName=BUCKET_NAME, indexName=INDEX_NAME,
             dataType="float32", dimension=EMBED_DIM, distanceMetric="cosine",
             metadataConfiguration={"nonFilterableMetadataKeys": ["text"]},

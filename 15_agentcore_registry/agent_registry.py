@@ -57,11 +57,15 @@ Usage:
     AWS_PROFILE=<admin-profile> uv run python 15_agentcore_registry/agent_registry.py
 """
 
+import os
 import sys
 import time
 
 import boto3
 from botocore.exceptions import ClientError
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from tools.aws_tags import lesson_tags
 
 REGION = "us-east-1"
 REGISTRY_NAME = "l71skillscatalog"
@@ -143,6 +147,8 @@ def iteration_1_create_registry() -> str:
         approvalConfiguration={"autoApproval": False},  # governance ON
     )
     registry_id = r["registryArn"].split("/")[-1]
+    control.tag_resource(resourceArn=r["registryArn"],
+                         tags=lesson_tags("L71", "15_agentcore_registry/agent_registry.py teardown"))
     print(f"  created (async 202). registry_id={registry_id}")
     status = wait(lambda: reg_status(registry_id))
     print(f"  status -> {status}")
@@ -166,6 +172,8 @@ def iteration_2_publish_skill(registry_id: str) -> str:
         descriptors={"agentSkills": {"skillMd": {"inlineContent": SKILL_MD}}},
     )
     record_id = rec["recordArn"].split("/")[-1]
+    control.tag_resource(resourceArn=rec["recordArn"],
+                         tags=lesson_tags("L71", "15_agentcore_registry/agent_registry.py teardown"))
     print(f"  created record_id={record_id} initial status={rec.get('status')}")
     status = wait(lambda: rec_status(registry_id, record_id))
     print(f"  status -> {status}")

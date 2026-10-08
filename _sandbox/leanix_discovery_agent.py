@@ -38,8 +38,8 @@ POLICY = "invoke-bedrock-and-write-logs"
 KEY = f"{NAME}/code.zip"
 SRC = pathlib.Path(__file__).with_name(NAME)
 STATE = pathlib.Path.home() / ".aws" / f"{NAME}.state.json"
-TAGS = {"purpose": "leanix-discovery-test", "owner": "paul", "created": "2026-09-28",
-        "teardown": "_sandbox/leanix_discovery_agent.py teardown"}
+TAGS = {"purpose": "leanix-discovery-test", "owner": "paul", "project": "aws_agent_1", "lesson": "sandbox-leanix",
+        "created": "2026-09-28", "teardown": "_sandbox/leanix_discovery_agent.py teardown"}
 
 
 def mask(s):

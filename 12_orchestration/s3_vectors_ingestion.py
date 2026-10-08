@@ -41,6 +41,7 @@ import boto3
 from dataclasses import dataclass, field
 from strands import Agent
 from tools import get_model
+from tools.aws_tags import lesson_tags
 
 REGION         = "us-east-1"
 BUCKET_NAME    = "strands-ingestion-l45"
@@ -287,6 +288,7 @@ def ensure_index(index_name: str):
         s3v.get_index(vectorBucketName=BUCKET_NAME, indexName=index_name)
     except s3v.exceptions.NotFoundException:
         s3v.create_index(
+            tags=lesson_tags("L45", "12_orchestration/s3_vectors_ingestion.py cleanup"),
             vectorBucketName=BUCKET_NAME, indexName=index_name,
             dataType="float32", dimension=EMBED_DIM, distanceMetric="cosine",
             metadataConfiguration={"nonFilterableMetadataKeys": ["text", "embed_prefix"]},
@@ -379,7 +381,7 @@ if __name__ == "__main__":
     try:
         s3v.get_vector_bucket(vectorBucketName=BUCKET_NAME)
     except s3v.exceptions.NotFoundException:
-        s3v.create_vector_bucket(vectorBucketName=BUCKET_NAME)
+        s3v.create_vector_bucket(vectorBucketName=BUCKET_NAME, tags=lesson_tags("L45", "12_orchestration/s3_vectors_ingestion.py cleanup"))
 
     STRATEGIES = {
         "A-naive":        ("idx-a", strategy_a_naive),

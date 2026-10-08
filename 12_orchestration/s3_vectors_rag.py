@@ -39,6 +39,7 @@ import boto3
 import re
 from strands import Agent, tool
 from tools import get_model
+from tools.aws_tags import lesson_tags
 
 # ── AWS clients ───────────────────────────────────────────────────────────────
 
@@ -72,7 +73,7 @@ def ensure_bucket_and_index():
         s3v.get_vector_bucket(vectorBucketName=BUCKET_NAME)
         print(f"  [ok] bucket '{BUCKET_NAME}' already exists")
     except s3v.exceptions.NotFoundException:
-        s3v.create_vector_bucket(vectorBucketName=BUCKET_NAME)
+        s3v.create_vector_bucket(vectorBucketName=BUCKET_NAME, tags=lesson_tags("L45", "12_orchestration/s3_vectors_rag.py cleanup"))
         print(f"  [created] bucket '{BUCKET_NAME}'")
 
     # Index
@@ -81,6 +82,7 @@ def ensure_bucket_and_index():
         print(f"  [ok] index '{INDEX_NAME}' already exists")
     except s3v.exceptions.NotFoundException:
         s3v.create_index(
+            tags=lesson_tags("L45", "12_orchestration/s3_vectors_rag.py cleanup"),
             vectorBucketName=BUCKET_NAME,
             indexName=INDEX_NAME,
             dataType="float32",

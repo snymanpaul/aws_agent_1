@@ -58,6 +58,10 @@ from botocore.exceptions import ClientError
 
 from bedrock_agentcore.identity import requires_api_key
 
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from tools.aws_tags import lesson_tags
+
 REGION = "us-east-1"
 PROVIDER = "l74apiprovider"
 DEMO_SECRET = "sk-demo-DO-NOT-LOG-7chars-9931"  # the "real" key we vault; ends 9931
@@ -95,7 +99,9 @@ def iteration_1_vault() -> None:
     print("ITERATION 1: vault a secret — the raw key never comes back")
     print("=" * 70)
     cleanup_provider()
-    created = control.create_api_key_credential_provider(name=PROVIDER, apiKey=DEMO_SECRET)
+    created = control.create_api_key_credential_provider(
+        name=PROVIDER, apiKey=DEMO_SECRET,
+        tags=lesson_tags("L74", "17_agentcore_identity/workload_identity.py main finally"))
     print(f"  created provider {PROVIDER!r}")
     print(f"    secret stored in: {created['apiKeySecretArn']['secretArn'].split(':secret:')[-1][:45]}…")
     print(f"    source: {created.get('apiKeySecretSource')}  (AWS-managed Secrets Manager)")
@@ -146,7 +152,8 @@ def iteration_3_workload_identity(before: set) -> None:
     # You can also create a NAMED identity for a deployed agent.
     named = "l74namedagent"
     try:
-        w = control.create_workload_identity(name=named)
+        w = control.create_workload_identity(
+            name=named, tags=lesson_tags("L74", "17_agentcore_identity/workload_identity.py main finally"))
         print(f"  explicit create_workload_identity({named!r}) -> "
               f"{w['workloadIdentityArn'].split('/')[-1]}")
     except ClientError as e:

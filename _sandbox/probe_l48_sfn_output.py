@@ -3,6 +3,8 @@ Bedrock-integrated Step Functions state?"""
 import os
 import base64
 import json
+import pathlib
+import sys
 import time
 import uuid
 import boto3
@@ -11,6 +13,13 @@ PROFILE = os.environ.get("AWS_PROFILE")
 REGION  = "us-east-1"
 ACCOUNT = "<data-account-id>"
 ROLE_ARN = f"arn:aws:iam::{ACCOUNT}:role/l48-probe-sfn-role"
+
+ROOT = pathlib.Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from tools.aws_tags import lesson_tags, tag_list  # noqa: E402
+
+PROBE_TAGS = lesson_tags("L48-probe", "_sandbox/probe_l48_sfn_output.py cleanup block at end of file")
 
 TRUST_POLICY = json.dumps({
     "Version": "2012-10-17",
@@ -60,7 +69,8 @@ try:
     role_arn = iam.get_role(RoleName="l48-probe-sfn-role")["Role"]["Arn"]
     print("Role exists:", role_arn)
 except Exception:
-    r = iam.create_role(RoleName="l48-probe-sfn-role", AssumeRolePolicyDocument=TRUST_POLICY, Description="l48 probe role")
+    r = iam.create_role(RoleName="l48-probe-sfn-role", AssumeRolePolicyDocument=TRUST_POLICY, Description="l48 probe role",
+                        Tags=tag_list(PROBE_TAGS))
     role_arn = r["Role"]["Arn"]
     iam.put_role_policy(RoleName="l48-probe-sfn-role", PolicyName="p", PolicyDocument=BEDROCK_POLICY)
     print("Role created:", role_arn)
@@ -76,7 +86,8 @@ for page in sfn.get_paginator("list_state_machines").paginate():
             print("SM exists:", sm_arn)
 
 if sm_arn is None:
-    sm_arn = sfn.create_state_machine(name=sm_name, definition=SM_DEF, roleArn=role_arn, type="STANDARD")["stateMachineArn"]
+    sm_arn = sfn.create_state_machine(name=sm_name, definition=SM_DEF, roleArn=role_arn, type="STANDARD",
+                                    tags=tag_list(PROBE_TAGS, "key", "value"))["stateMachineArn"]
     print("SM created:", sm_arn)
 
 # run

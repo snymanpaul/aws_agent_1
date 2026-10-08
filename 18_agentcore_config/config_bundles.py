@@ -52,6 +52,10 @@ import time
 import boto3
 from botocore.exceptions import ClientError
 
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from tools.aws_tags import lesson_tags, tag_list
+
 if os.environ.get("AWS_PROFILE"):
     for _k in ("AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_SESSION_TOKEN"):
         os.environ.pop(_k, None)
@@ -61,6 +65,7 @@ ROLE_NAME = "l75gatewayrole"
 GATEWAY_NAME = "l75gateway"
 BUNDLE_NAME = "l75configbundle"
 TOOL = "search_docs"
+TEARDOWN = "18_agentcore_config/config_bundles.py main finally"
 
 control = boto3.client("bedrock-agentcore-control", region_name=REGION)
 iam = boto3.client("iam")
@@ -86,7 +91,7 @@ def ensure_role() -> str:
         "Effect": "Allow", "Principal": {"Service": "bedrock-agentcore.amazonaws.com"},
         "Action": "sts:AssumeRole"}]}
     try:
-        arn = iam.create_role(RoleName=ROLE_NAME,
+        arn = iam.create_role(RoleName=ROLE_NAME, Tags=tag_list(lesson_tags("L75", TEARDOWN)),
                               AssumeRolePolicyDocument=json.dumps(trust))["Role"]["Arn"]
         time.sleep(8)  # IAM propagation before the gateway can assume it
         return arn
@@ -130,7 +135,8 @@ def iteration_1_first_version() -> tuple:
     print("=" * 70)
     role_arn = ensure_role()
     g = control.create_gateway(name=GATEWAY_NAME, roleArn=role_arn,
-                               authorizerType="AWS_IAM", protocolType="MCP")
+                               authorizerType="AWS_IAM", protocolType="MCP",
+                               tags=lesson_tags("L75", TEARDOWN))
     gid = g.get("gatewayId") or g["gatewayArn"].split("/")[-1]
     gateway_arn = g["gatewayArn"]
     print(f"  gateway {gid} -> {wait_gateway_ready(gid)}")
@@ -138,7 +144,8 @@ def iteration_1_first_version() -> tuple:
     b = control.create_configuration_bundle(
         bundleName=BUNDLE_NAME, description="L75 demo config",
         components={gateway_arn: component("Search the documentation.")},
-        branchName="main", commitMessage="v1: initial tool description")
+        branchName="main", commitMessage="v1: initial tool description",
+        tags=lesson_tags("L75", TEARDOWN))
     bundle_id, v1 = b["bundleId"], b["versionId"]
     print(f"  bundle {bundle_id}  version v1={v1[:8]} (commit: 'v1: initial tool description')")
     return gid, gateway_arn, bundle_id, v1

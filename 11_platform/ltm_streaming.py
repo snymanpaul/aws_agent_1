@@ -39,6 +39,8 @@ import datetime
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import boto3
+
+from tools.aws_tags import lesson_tags
 from botocore.exceptions import ClientError
 
 # ---------------------------------------------------------------------------
@@ -121,7 +123,8 @@ try:
         print(f"  Stream {STREAM_NAME!r} already exists — reusing")
         stream_arn = wait_kinesis_active(STREAM_NAME)
     else:
-        kinesis.create_stream(StreamName=STREAM_NAME, ShardCount=1)
+        kinesis.create_stream(StreamName=STREAM_NAME, ShardCount=1,
+                              Tags=lesson_tags("L37", "11_platform/ltm_streaming.py cleanup"))
         print(f"  Creating stream {STREAM_NAME!r} …")
         stream_arn = wait_kinesis_active(STREAM_NAME)
         print(f"  Stream ACTIVE: {stream_arn}")
@@ -136,6 +139,7 @@ if stream_arn:
     try:
         resp = ctrl.create_memory(
             name=MEMORY_NAME,
+            tags=lesson_tags("L37", "11_platform/ltm_streaming.py cleanup"),
             description="L37: LTM streaming demo — memory records pushed to Kinesis",
             eventExpiryDuration=7,          # 7-day event retention
             memoryStrategies=[

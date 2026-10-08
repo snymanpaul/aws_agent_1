@@ -39,6 +39,8 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from tools.aws_tags import lesson_tags, tag_list
+
 from bedrock_agentcore.payments.integrations.config import AgentCorePaymentsPluginConfig
 from bedrock_agentcore.payments.integrations.strands.plugin import AgentCorePaymentsPlugin
 
@@ -96,7 +98,9 @@ def tier1_provision_payment_manager() -> None:
     print(f"  role: {role_arn}")
     pm_id = None
     try:
-        resp = cp.create_payment_manager(name=pm_name, authorizerType="AWS_IAM", roleArn=role_arn)
+        resp = cp.create_payment_manager(
+            name=pm_name, authorizerType="AWS_IAM", roleArn=role_arn,
+            tags=lesson_tags("L67", "14_agentcore_platform/payments.py tier1 finally"))
         pm_id = resp.get("paymentManagerId") or resp.get("id")
         print(f"  created paymentManagerId={pm_id} status={resp.get('status')}")
         got = cp.get_payment_manager(paymentManagerId=pm_id)
@@ -121,7 +125,9 @@ def _ensure_role(iam, role_name: str) -> str:
         }],
     }
     try:
-        arn = iam.create_role(RoleName=role_name, AssumeRolePolicyDocument=json.dumps(trust))["Role"]["Arn"]
+        arn = iam.create_role(
+            RoleName=role_name, AssumeRolePolicyDocument=json.dumps(trust),
+            Tags=tag_list(lesson_tags("L67", "14_agentcore_platform/payments.py tier1 finally")))["Role"]["Arn"]
     except iam.exceptions.EntityAlreadyExistsException:
         arn = iam.get_role(RoleName=role_name)["Role"]["Arn"]
     # CreatePaymentManager validates the execution role can manage workload identities.

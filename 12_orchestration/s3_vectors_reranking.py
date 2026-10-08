@@ -33,6 +33,7 @@ import re
 import boto3
 from strands import Agent
 from tools import get_model
+from tools.aws_tags import lesson_tags
 
 REGION         = "us-east-1"
 BUCKET_NAME    = "strands-rerank-l45e"
@@ -116,13 +117,14 @@ def setup():
     try:
         s3v.get_vector_bucket(vectorBucketName=BUCKET_NAME)
     except s3v.exceptions.NotFoundException:
-        s3v.create_vector_bucket(vectorBucketName=BUCKET_NAME)
+        s3v.create_vector_bucket(vectorBucketName=BUCKET_NAME, tags=lesson_tags("L45e", "12_orchestration/s3_vectors_reranking.py cleanup"))
     try:
         s3v.get_index(vectorBucketName=BUCKET_NAME, indexName=INDEX_NAME)
         print("  [ok] index already exists")
         return
     except s3v.exceptions.NotFoundException:
         s3v.create_index(
+            tags=lesson_tags("L45e", "12_orchestration/s3_vectors_reranking.py cleanup"),
             vectorBucketName=BUCKET_NAME, indexName=INDEX_NAME,
             dataType="float32", dimension=EMBED_DIM, distanceMetric="cosine",
             metadataConfiguration={"nonFilterableMetadataKeys": ["text"]},

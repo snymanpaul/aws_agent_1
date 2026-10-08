@@ -56,6 +56,8 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import boto3
 
+from tools.aws_tags import lesson_tags
+
 RUN_ID = str(int(time.time()))[-6:]   # unique suffix per run
 
 REGION       = "us-east-1"
@@ -175,7 +177,10 @@ why findings may be empty for a gateway without a populated tool schema.
 """)
 
 print("--- create policy engine ---")
-engine_resp = client.create_policy_engine(name="l33_policy_engine")
+engine_resp = client.create_policy_engine(
+    name="l33_policy_engine",
+    tags=lesson_tags("L33", "11_platform/agentcore_policy.py cleanup"),
+)
 engine_resp.pop("ResponseMetadata", None)
 jprint(engine_resp)
 

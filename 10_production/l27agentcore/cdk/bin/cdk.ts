@@ -21,3 +21,14 @@ const agentCoreStack = new AgentCoreStack(app, `l27agentcore-AgentCoreStack`, {
   imageUri: dockerImageStack.imageUri
 });
 agentCoreStack.addDependency(dockerImageStack);
+
+// Shared repo tag set (tools/aws_tags.py): owner + project select the paul-aws-agent-1 Resource Group.
+const lessonTags: Record<string, string> = {
+  owner: 'paul',
+  project: 'aws_agent_1',
+  lesson: 'L27',
+  teardown: 'cdk destroy --all (10_production/l27agentcore/cdk)',
+};
+for (const [key, value] of Object.entries(lessonTags)) {
+  cdk.Tags.of(app).add(key, value);
+}

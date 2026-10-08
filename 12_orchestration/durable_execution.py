@@ -53,6 +53,7 @@ from strands import Agent
 from strands.session.file_session_manager import FileSessionManager
 
 from tools import get_model
+from tools.aws_tags import lesson_tags, tag_list
 
 # ---------------------------------------------------------------------------
 # Config
@@ -441,6 +442,7 @@ def create_role(iam) -> str:
         RoleName=ROLE_NAME,
         AssumeRolePolicyDocument=TRUST_POLICY,
         Description="L48 demo role - Step Functions calling Bedrock",
+        Tags=tag_list(lesson_tags("L48", "12_orchestration/durable_execution.py cleanup")),
     )
     iam.put_role_policy(
         RoleName=ROLE_NAME,
@@ -467,6 +469,7 @@ def create_state_machine(sfn, role_arn: str) -> str:
         definition=STATE_MACHINE_DEFINITION,
         roleArn=role_arn,
         type="STANDARD",
+        tags=tag_list(lesson_tags("L48", "12_orchestration/durable_execution.py cleanup"), key="key", value="value"),
     )
     print(f"  State machine created: {SM_NAME}")
     return resp["stateMachineArn"]

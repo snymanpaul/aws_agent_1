@@ -22,9 +22,14 @@ Run (needs AWS creds + region; runs several minutes for async extraction):
 
 import os
 import time
+import sys
 import uuid
 
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from bedrock_agentcore.memory import MemoryClient
+
+from tools.aws_tags import lesson_tags
 
 REGION = os.environ.get("AWS_REGION", "us-east-1")
 # MemoryClient.create_event expects (text, role) tuples (role in USER/ASSISTANT/TOOL/OTHER).
@@ -53,6 +58,10 @@ def verify():
     memory_id = _mem_id(resp)
     print(f"[L80] created memory {memory_id} with a semantic LTM strategy")
     try:
+        # MemoryClient.create_memory has no tags parameter; tag through its control-plane client.
+        client.gmcp_client.tag_resource(
+            resourceArn=resp["arn"],
+            tags=lesson_tags("L80", "14_agentcore_platform/ltm_filtered_retrieval.py verify finally"))
         client.create_event(memory_id, actor_id="cohort_us", session_id="s_us", messages=US)
         client.create_event(memory_id, actor_id="cohort_eu", session_id="s_eu", messages=EU)
         print("[L80] wrote cohort-tagged events; polling for async extraction...")

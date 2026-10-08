@@ -25,10 +25,13 @@ import subprocess
 import sys
 import uuid
 
+sys.path.insert(0, ".")
+
 import boto3
 
 from strands import Agent, tool
 from strands.models.openai import OpenAIModel
+from tools.aws_tags import lesson_tags, tag_list
 
 TABLE = "adk_l79_agentic_memory"
 REGION = os.environ.get("AWS_REGION", "us-east-1")
@@ -53,7 +56,8 @@ def ensure_table():
                        KeySchema=[{"AttributeName": "session_id", "KeyType": "HASH"},
                                   {"AttributeName": "mem_key", "KeyType": "RANGE"}],
                        AttributeDefinitions=[{"AttributeName": "session_id", "AttributeType": "S"},
-                                             {"AttributeName": "mem_key", "AttributeType": "S"}])
+                                             {"AttributeName": "mem_key", "AttributeType": "S"}],
+                       Tags=tag_list(lesson_tags("L79", "06_memory/cross_session_memory.py delete_table")))
         c.get_waiter("table_exists").wait(TableName=TABLE)
 
 

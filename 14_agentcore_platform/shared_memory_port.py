@@ -19,7 +19,12 @@ Run (AgentCore adapter needs AWS; runs minutes for extraction):
 
 import os
 import time
+import sys
 import uuid
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from tools.aws_tags import lesson_tags
 
 FACT = "The shared deployment key rotates every Tuesday at the Meridian datacenter."
 QUERY = "when and where does the deployment key rotate"
@@ -55,6 +60,10 @@ class AgentCoreLTMAdapter(SharedMemoryPort):
             strategies=[{"semanticMemoryStrategy": {"name": "team", "namespaces": ["/team/shared"]}}],
             event_expiry_days=7, max_wait=300, poll_interval=10)
         self.memory_id = resp.get("id") or resp.get("memoryId") or resp.get("memory", {}).get("id")
+        # MemoryClient.create_memory has no tags parameter; tag through its control-plane client.
+        self.client.gmcp_client.tag_resource(
+            resourceArn=resp["arn"],
+            tags=lesson_tags("L90", "14_agentcore_platform/shared_memory_port.py AgentCoreLTMAdapter.close"))
 
     def write(self, actor, fact):
         self.client.create_event(self.memory_id, actor_id=actor, session_id=f"s_{actor}",

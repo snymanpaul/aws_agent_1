@@ -39,6 +39,8 @@ import time
 import json
 import boto3
 
+from tools.aws_tags import lesson_tags, tag_list
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 REGION  = "us-east-1"
@@ -161,6 +163,7 @@ print("\n--- create custom LLM-as-judge evaluator (TRACE level) ---")
 CUSTOM_EVAL_NAME = f"l34_math_quality_{RUN_ID}"
 custom_resp = ctrl.create_evaluator(
     evaluatorName=CUSTOM_EVAL_NAME,
+    tags=lesson_tags("L34", "11_platform/agentcore_evaluations.py cleanup"),
     description="Scores math agent responses on correctness and explanation quality",
     level="TRACE",
     evaluatorConfig={
@@ -241,7 +244,8 @@ Evaluators: Helpfulness (TRACE) + GoalSuccessRate (SESSION)
 print(f"--- create trace log group {L34_TRACE_LOG_GROUP} ---")
 logs_client = _session.client("logs")
 try:
-    logs_client.create_log_group(logGroupName=L34_TRACE_LOG_GROUP)
+    logs_client.create_log_group(logGroupName=L34_TRACE_LOG_GROUP,
+                                  tags=lesson_tags("L34", "11_platform/agentcore_evaluations.py cleanup"))
     print(f"  created {L34_TRACE_LOG_GROUP}")
 except logs_client.exceptions.ResourceAlreadyExistsException:
     print(f"  already exists: {L34_TRACE_LOG_GROUP}")
@@ -268,6 +272,7 @@ role_resp = iam.create_role(
     RoleName=EVAL_ROLE_NAME,
     AssumeRolePolicyDocument=json.dumps(trust),
     Description="L34 evaluation execution role",
+    Tags=tag_list(lesson_tags("L34", "11_platform/agentcore_evaluations.py cleanup")),
 )
 EVAL_ROLE_ARN = role_resp["Role"]["Arn"]
 print(f"  roleArn: {EVAL_ROLE_ARN}")
@@ -333,6 +338,7 @@ print(f"""
 try:
     cfg_resp = ctrl.create_online_evaluation_config(
         onlineEvaluationConfigName=f"l34_online_eval_{RUN_ID}",
+        tags=lesson_tags("L34", "11_platform/agentcore_evaluations.py cleanup"),
         description="L34: continuous quality sampling on L27 agent traffic",
         rule={
             "samplingConfig": {"samplingPercentage": 100.0},
